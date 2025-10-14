@@ -94,7 +94,7 @@ func (s *Server) setupWebRoutes() {
 		// Fallback for development
 		s.router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html")
-			w.Write([]byte(`
+			if _, err := w.Write([]byte(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -129,7 +129,9 @@ func (s *Server) setupWebRoutes() {
     </div>
 </body>
 </html>
-			`))
+			`)); err != nil {
+				http.Error(w, "Failed to write response", http.StatusInternalServerError)
+			}
 		})
 	}
 }
@@ -140,29 +142,35 @@ func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{
+		if err := json.NewEncoder(w).Encode(map[string]string{
 			"status": "healthy",
 			"service": "siros-backend",
-		})
+		}); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		}
 	})
 
 	// Resources endpoint
 	mux.HandleFunc("/api/v1/resources", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		if err := json.NewEncoder(w).Encode(map[string]interface{}{
 			"resources": []map[string]string{},
 			"total": 0,
-		})
+		}); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		}
 	})
 
 	// Schemas endpoint
 	mux.HandleFunc("/api/v1/schemas", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		if err := json.NewEncoder(w).Encode(map[string]interface{}{
 			"schemas": []string{"ec2.instance", "s3.bucket", "rds.instance"},
-		})
+		}); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		}
 	})
 }
 
@@ -426,7 +434,11 @@ func (s *Server) mcpReadResource(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	content, _ := json.Marshal(resource)
+	content, err := json.Marshal(resource)
+	if err != nil {
+		s.writeError(w, http.StatusInternalServerError, "Failed to serialize resource", err)
+		return
+	}
 	s.writeJSON(w, map[string]interface{}{
 		"contents": []map[string]interface{}{
 			{
@@ -441,7 +453,9 @@ func (s *Server) mcpReadResource(w http.ResponseWriter, r *http.Request) {
 // Helper methods
 func (s *Server) writeJSON(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
 func (s *Server) writeError(w http.ResponseWriter, status int, message string, err error) {
@@ -457,5 +471,11 @@ func (s *Server) writeError(w http.ResponseWriter, status int, message string, e
 		response.Error = fmt.Sprintf("%s: %v", message, err)
 	}
 	
-	json.NewEncoder(w).Encode(response)
+	if encodeErr := json.NewEncoder(w).Encode(response); encodeErr != nil {
+		// If we can't encode the error response, just write plain text
+		if _, writeErr := w.Write([]byte(message)); writeErr != nil {
+			// Log this error, but don't try to handle it further
+			_ = writeErr
+		}
+	}
 }
