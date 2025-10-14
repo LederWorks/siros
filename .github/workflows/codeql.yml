@@ -31,6 +31,9 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         queries: security-and-quality
+        config: |
+          name: "Siros CodeQL Config"
+          disable-default-queries: false
 
     - name: Set up Go (for Go analysis)
       if: matrix.language == 'go'
@@ -58,3 +61,4 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+        upload: true
