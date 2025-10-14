@@ -14,7 +14,6 @@ import (
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
-	"github.com/google/uuid"
 )
 
 // AWSProvider implements the Provider interface for AWS
@@ -294,7 +293,7 @@ func (p *AWSProvider) convertEC2State(state ec2types.InstanceStateName) types.Re
 		return types.ResourceStateActive
 	case ec2types.InstanceStateNameStopped, ec2types.InstanceStateNameStopping:
 		return types.ResourceStateInactive
-	case ec2types.InstanceStateNameTerminated, ec2types.InstanceStateNameTerminating:
+	case ec2types.InstanceStateNameTerminated:
 		return types.ResourceStateTerminated
 	default:
 		return types.ResourceStateUnknown
