@@ -1,17 +1,35 @@
 # Dependency Review Configuration
-# This file configures the dependency review action to avoid PURL parsing errors
-
-# Only use allow-licenses to avoid conflicts
-allow-licenses:
-  - MIT
-  - Apache-2.0
-  - BSD-2-Clause
-  - BSD-3-Clause
-  - ISC
-  - MPL-2.0
+# This file configures the dependency review action
 
 # Vulnerability settings
 fail-on-severity: high
 
+# License settings
+deny-licenses:
+  - GPL-2.0
+  - GPL-3.0
+  - LGPL-2.0
+  - LGPL-2.1
+  - LGPL-3.0
+  - AGPL-3.0
+
+# Scope configuration
+fail-on-scopes:
+  - "runtime"
+
 # Package URL (PURL) configuration
-ignore-dev-dependencies: true
+ignore-dev-dependencies: false
+
+# Comment configuration
+comment-summary-in-pr: on-failure
+
+# Exclude certain development dependencies from license checks
+exclude-dependencies:
+  # Development and testing dependencies that might have different license requirements
+  - "npm:@types/*"
+  - "npm:@testing-library/*"
+  - "npm:jest"
+  - "npm:eslint*"
+  - "npm:prettier"
+  - "npm:vite"
+  - "npm:typescript"
