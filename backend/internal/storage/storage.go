@@ -131,16 +131,25 @@ func (s *Storage) migrate() error {
 
 // CreateResource creates a new resource
 func (s *Storage) CreateResource(ctx context.Context, resource *types.Resource) error {
-	tagsJSON, _ := json.Marshal(resource.Tags)
-	metadataJSON, _ := json.Marshal(resource.Metadata)
-	linksJSON, _ := json.Marshal(resource.Links)
+	tagsJSON, err := json.Marshal(resource.Tags)
+	if err != nil {
+		return fmt.Errorf("failed to marshal tags: %w", err)
+	}
+	metadataJSON, err := json.Marshal(resource.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+	linksJSON, err := json.Marshal(resource.Links)
+	if err != nil {
+		return fmt.Errorf("failed to marshal links: %w", err)
+	}
 
 	query := `
 		INSERT INTO resources (id, type, provider, region, name, arn, tags, metadata, state, parent_id, children, links, vector, last_scanned_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 	`
 	
-	_, err := s.db.ExecContext(ctx, query,
+	_, err = s.db.ExecContext(ctx, query,
 		resource.ID, resource.Type, resource.Provider, resource.Region, resource.Name,
 		resource.ARN, tagsJSON, metadataJSON, resource.State, resource.ParentID,
 		pq.Array(resource.Children), linksJSON, pq.Array(resource.Vector), resource.LastScannedAt,
@@ -176,9 +185,21 @@ func (s *Storage) GetResource(ctx context.Context, id string) (*types.Resource, 
 	}
 	
 	// Unmarshal JSON fields
-	json.Unmarshal(tagsJSON, &resource.Tags)
-	json.Unmarshal(metadataJSON, &resource.Metadata)
-	json.Unmarshal(linksJSON, &resource.Links)
+	if len(tagsJSON) > 0 {
+		if err := json.Unmarshal(tagsJSON, &resource.Tags); err != nil {
+			log.Printf("Warning: failed to unmarshal tags for resource %s: %v", resource.ID, err)
+		}
+	}
+	if len(metadataJSON) > 0 {
+		if err := json.Unmarshal(metadataJSON, &resource.Metadata); err != nil {
+			log.Printf("Warning: failed to unmarshal metadata for resource %s: %v", resource.ID, err)
+		}
+	}
+	if len(linksJSON) > 0 {
+		if err := json.Unmarshal(linksJSON, &resource.Links); err != nil {
+			log.Printf("Warning: failed to unmarshal links for resource %s: %v", resource.ID, err)
+		}
+	}
 	resource.Children = []string(children)
 	
 	return &resource, nil
@@ -186,9 +207,18 @@ func (s *Storage) GetResource(ctx context.Context, id string) (*types.Resource, 
 
 // UpdateResource updates an existing resource
 func (s *Storage) UpdateResource(ctx context.Context, resource *types.Resource) error {
-	tagsJSON, _ := json.Marshal(resource.Tags)
-	metadataJSON, _ := json.Marshal(resource.Metadata)
-	linksJSON, _ := json.Marshal(resource.Links)
+	tagsJSON, err := json.Marshal(resource.Tags)
+	if err != nil {
+		return fmt.Errorf("failed to marshal tags: %w", err)
+	}
+	metadataJSON, err := json.Marshal(resource.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+	linksJSON, err := json.Marshal(resource.Links)
+	if err != nil {
+		return fmt.Errorf("failed to marshal links: %w", err)
+	}
 
 	query := `
 		UPDATE resources 
@@ -198,7 +228,7 @@ func (s *Storage) UpdateResource(ctx context.Context, resource *types.Resource) 
 		WHERE id = $1
 	`
 	
-	_, err := s.db.ExecContext(ctx, query,
+	_, err = s.db.ExecContext(ctx, query,
 		resource.ID, resource.Type, resource.Provider, resource.Region, resource.Name,
 		resource.ARN, tagsJSON, metadataJSON, resource.State, resource.ParentID,
 		pq.Array(resource.Children), linksJSON, pq.Array(resource.Vector), resource.LastScannedAt,
@@ -268,9 +298,21 @@ func (s *Storage) ListResources(ctx context.Context, filters map[string]string, 
 		}
 
 		// Unmarshal JSON fields
-		json.Unmarshal(tagsJSON, &resource.Tags)
-		json.Unmarshal(metadataJSON, &resource.Metadata)
-		json.Unmarshal(linksJSON, &resource.Links)
+		if len(tagsJSON) > 0 {
+			if err := json.Unmarshal(tagsJSON, &resource.Tags); err != nil {
+				log.Printf("Warning: failed to unmarshal tags for resource %s: %v", resource.ID, err)
+			}
+		}
+		if len(metadataJSON) > 0 {
+			if err := json.Unmarshal(metadataJSON, &resource.Metadata); err != nil {
+				log.Printf("Warning: failed to unmarshal metadata for resource %s: %v", resource.ID, err)
+			}
+		}
+		if len(linksJSON) > 0 {
+			if err := json.Unmarshal(linksJSON, &resource.Links); err != nil {
+				log.Printf("Warning: failed to unmarshal links for resource %s: %v", resource.ID, err)
+			}
+		}
 		resource.Children = []string(children)
 
 		resources = append(resources, resource)
@@ -314,9 +356,21 @@ func (s *Storage) VectorSearch(ctx context.Context, queryVector []float32, limit
 		}
 
 		// Unmarshal JSON fields
-		json.Unmarshal(tagsJSON, &resource.Tags)
-		json.Unmarshal(metadataJSON, &resource.Metadata)
-		json.Unmarshal(linksJSON, &resource.Links)
+		if len(tagsJSON) > 0 {
+			if err := json.Unmarshal(tagsJSON, &resource.Tags); err != nil {
+				log.Printf("Warning: failed to unmarshal tags for resource %s: %v", resource.ID, err)
+			}
+		}
+		if len(metadataJSON) > 0 {
+			if err := json.Unmarshal(metadataJSON, &resource.Metadata); err != nil {
+				log.Printf("Warning: failed to unmarshal metadata for resource %s: %v", resource.ID, err)
+			}
+		}
+		if len(linksJSON) > 0 {
+			if err := json.Unmarshal(linksJSON, &resource.Links); err != nil {
+				log.Printf("Warning: failed to unmarshal links for resource %s: %v", resource.ID, err)
+			}
+		}
 		resource.Children = []string(children)
 
 		resources = append(resources, resource)
@@ -327,14 +381,17 @@ func (s *Storage) VectorSearch(ctx context.Context, queryVector []float32, limit
 
 // CreateChangeRecord creates a new change record
 func (s *Storage) CreateChangeRecord(ctx context.Context, record *types.ChangeRecord) error {
-	changesJSON, _ := json.Marshal(record.Changes)
+	changesJSON, err := json.Marshal(record.Changes)
+	if err != nil {
+		return fmt.Errorf("failed to marshal changes: %w", err)
+	}
 	
 	query := `
 		INSERT INTO change_records (id, resource_id, operation, changes, block_hash, transaction_id, timestamp, actor)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 	
-	_, err := s.db.ExecContext(ctx, query,
+	_, err = s.db.ExecContext(ctx, query,
 		record.ID, record.ResourceID, record.Operation, changesJSON,
 		record.BlockHash, record.TransactionID, record.Timestamp, record.Actor,
 	)
