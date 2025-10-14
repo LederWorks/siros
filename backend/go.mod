@@ -1,6 +1,8 @@
 module github.com/LederWorks/siros/backend
 
-go 1.24.7
+go 1.22
+
+toolchain go1.24.7
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.39.2
@@ -8,7 +10,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.255.0
 	github.com/aws/aws-sdk-go-v2/service/rds v1.108.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.88.4
-	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.9
 	github.com/rs/cors v1.10.1

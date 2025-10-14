@@ -72,7 +72,7 @@ export const GraphView: React.FC = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .graph-view {
           max-width: 1400px;
           margin: 0 auto;

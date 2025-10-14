@@ -35,7 +35,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="main-content">
         {children}
       </main>
-      <style jsx>{`
+      <style>{`
         .layout {
           min-height: 100vh;
           display: flex;

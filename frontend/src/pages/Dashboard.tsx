@@ -71,7 +71,7 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         .dashboard {
           max-width: 1200px;
           margin: 0 auto;

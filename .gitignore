@@ -62,3 +62,8 @@ Thumbs.db
 /tmp/
 *.tmp
 *.temp
+node_modules/
+coverage/
+*.log
+backend/siros-server
+backend/static/

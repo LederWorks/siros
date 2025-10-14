@@ -1,53 +1,36 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM node:18-alpine AS frontend-builder
 
-# Install build dependencies
-RUN apk add --no-cache git ca-certificates gcc musl-dev
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci --only=production
 
-# Set working directory
+COPY frontend/ ./
+RUN npm run build
+
+# Go build stage
+FROM golang:1.21-alpine AS backend-builder
+
 WORKDIR /app
-
-# Copy go mod files
-COPY go.mod go.sum ./
-
-# Download dependencies
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
-# Copy source code
-COPY . .
+COPY backend/ ./
+COPY --from=frontend-builder /app/frontend/dist ./static/
 
-# Build the application
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o siros ./cmd/siros
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o siros-server ./cmd/siros-server
 
 # Final stage
-FROM alpine:3.18
+FROM alpine:latest
 
-# Install runtime dependencies
-RUN apk --no-cache add ca-certificates postgresql-client
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
 
-# Create non-root user
-RUN addgroup -g 1001 -S siros && \
-    adduser -u 1001 -S siros -G siros
+COPY --from=backend-builder /app/siros-server ./
 
-# Set working directory
-WORKDIR /app
-
-# Copy binary from builder stage
-COPY --from=builder /app/siros .
-COPY --from=builder /app/config.yaml .
-
-# Change ownership to non-root user
-RUN chown -R siros:siros /app
-
-# Switch to non-root user
-USER siros
-
-# Expose port
 EXPOSE 8080
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/v1/health || exit 1
 
-# Run the application
-CMD ["./siros"]
+CMD ["./siros-server"]

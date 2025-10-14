@@ -87,7 +87,7 @@ export const ResourcesPage: React.FC = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .resources-page {
           max-width: 1200px;
           margin: 0 auto;
