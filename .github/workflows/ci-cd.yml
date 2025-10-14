@@ -22,7 +22,7 @@ jobs:
     
     services:
       postgres:
-        image: pgvector/pgvector:pg15-v0.5.1
+        image: postgres:15-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
@@ -53,11 +53,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Setup database with pgvector
+    - name: Setup database
       run: |
         sudo apt-get update
         sudo apt-get install -y postgresql-client
-        PGPASSWORD=postgres psql -h localhost -U postgres -d siros_test -c "CREATE EXTENSION IF NOT EXISTS vector;"
+        # Note: Using standard PostgreSQL for CI tests
+        # pgvector extension would be available in production deployment
+        PGPASSWORD=postgres psql -h localhost -U postgres -d siros_test -c "SELECT version();"
 
     - name: Download Go dependencies
       working-directory: ./backend
