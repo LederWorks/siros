@@ -1,0 +1,49 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: 30
+  write_timeout: 30
+  tls:
+    enabled: false
+    cert_file: ""
+    key_file: ""
+
+database:
+  driver: "postgres"
+  host: "localhost"
+  port: 5432
+  database: "siros"
+  username: "siros"
+  password: "siros"
+  ssl_mode: "disable"
+  max_connections: 10
+
+vector:
+  provider: "pgvector"
+  settings:
+    dimension: "1536"
+
+blockchain:
+  enabled: false
+  provider: "ethereum"
+  network: "mainnet"
+  endpoint: ""
+  contract_address: ""
+
+providers:
+  aws:
+    region: "us-east-1"
+    # Credentials can be provided here or via environment variables
+    # access_key_id: ""
+    # secret_access_key: ""
+  
+  azure:
+    # tenant_id: ""
+    # client_id: ""
+    # client_secret: ""
+    # subscription_id: ""
+  
+  gcp:
+    # project_id: ""
+    # service_account_key_file: ""
+    region: "us-central1"
