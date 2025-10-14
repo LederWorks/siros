@@ -1,0 +1,85 @@
+# Label configuration for auto-labeling PRs based on file changes
+
+# Backend related changes
+"backend":
+  - backend/**/*
+  - "**/*.go"
+
+# Frontend related changes  
+"frontend":
+  - frontend/**/*
+  - "**/*.tsx"
+  - "**/*.ts"
+  - "**/*.css"
+  - "**/*.html"
+
+# Documentation changes
+"documentation":
+  - "**/*.md"
+  - docs/**/*
+  - "**/*.rst"
+
+# Configuration changes
+"config":
+  - "**/*.yaml"
+  - "**/*.yml"
+  - "**/*.json"
+  - "**/*.toml"
+  - "**/*.env"
+  - config/**/*
+
+# Build and CI changes
+"build":
+  - ".github/**/*"
+  - scripts/**/*
+  - Dockerfile*
+  - docker-compose*.yml
+  - Makefile
+  - "**/*.sh"
+
+# Dependencies
+"dependencies":
+  - go.mod
+  - go.sum
+  - package.json
+  - package-lock.json
+  - backend/go.mod
+  - backend/go.sum
+  - frontend/package.json
+  - frontend/package-lock.json
+
+# Database related
+"database":
+  - "**/*sql*"
+  - "**/*db*"
+  - "**/*migration*"
+
+# Security related
+"security":
+  - "**/*security*"
+  - "**/*auth*"
+  - "**/*crypto*"
+  - "**/*cert*"
+
+# API related
+"api":
+  - "**/api/**/*"
+  - "**/*api*"
+  - "**/*endpoint*"
+  - "**/*handler*"
+  - "**/*route*"
+
+# Cloud provider integrations
+"cloud-providers":
+  - "**/providers/**/*"
+  - "**/*aws*"
+  - "**/*azure*"
+  - "**/*gcp*"
+
+# Tests
+"tests":
+  - "**/*_test.go"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*test*"
+  - test/**/*

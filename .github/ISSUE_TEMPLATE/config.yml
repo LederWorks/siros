@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussion Forum
+    url: https://github.com/LederWorks/siros/discussions
+    about: Ask questions, share ideas, and discuss Siros with the community
+  - name: 🔒 Security Issues
+    url: https://github.com/LederWorks/siros/security/advisories/new
+    about: Report security vulnerabilities privately
+  - name: 📧 General Support
+    url: mailto:support@lederworks.com
+    about: Contact us directly for general support questions
