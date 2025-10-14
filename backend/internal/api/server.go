@@ -134,6 +134,38 @@ func (s *Server) setupWebRoutes() {
 	}
 }
 
+// RegisterRoutes registers HTTP routes for the API
+func RegisterRoutes(mux *http.ServeMux) {
+	// Health check endpoint
+	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "healthy",
+			"service": "siros-backend",
+		})
+	})
+
+	// Resources endpoint
+	mux.HandleFunc("/api/v1/resources", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"resources": []map[string]string{},
+			"total": 0,
+		})
+	})
+
+	// Schemas endpoint
+	mux.HandleFunc("/api/v1/schemas", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"schemas": []string{"ec2.instance", "s3.bucket", "rds.instance"},
+		})
+	})
+}
+
 // listResources handles GET /api/v1/resources
 func (s *Server) listResources(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
