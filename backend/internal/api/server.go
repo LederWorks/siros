@@ -94,7 +94,7 @@ func (s *Server) setupWebRoutes() {
 		// Fallback for development
 		s.router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html")
-			if _, err := w.Write([]byte(`
+			htmlContent := []byte(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -129,7 +129,8 @@ func (s *Server) setupWebRoutes() {
     </div>
 </body>
 </html>
-			`)); err != nil {
+			`)
+			if _, err := w.Write(htmlContent); err != nil {
 				http.Error(w, "Failed to write response", http.StatusInternalServerError)
 			}
 		})
