@@ -30,13 +30,27 @@ cp -r frontend/dist/* backend/static/
 echo "⚙️ Building backend binary..."
 cd backend
 go mod tidy
-go build -o siros-server ./cmd/siros-server
+
+# Create build directory in repo root if it doesn't exist
+mkdir -p ../build
+
+# Determine the binary name based on OS
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OS" == "Windows_NT" ]]; then
+    BINARY_NAME="../build/siros.exe"
+else
+    BINARY_NAME="../build/siros"
+fi
+
+go build -o "$BINARY_NAME" ./cmd/siros-server
 
 echo "✅ Build complete!"
 echo ""
 echo "🏃 To run the server:"
-echo "   cd backend"
-echo "   ./siros-server"
+if [[ "$BINARY_NAME" == *.exe ]]; then
+    echo "   .\\build\\siros.exe"
+else
+    echo "   ./build/siros"
+fi
 echo ""
 echo "🌐 The server will be available at:"
 echo "   Frontend: http://localhost:8080"

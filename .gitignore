@@ -33,8 +33,9 @@ go.work.sum
 
 # Build artifacts
 build/
-dist/
-backend/siros-server
+bin/
+
+# Backend static assets (embedded frontend)
 backend/static/*
 
 # Frontend dependencies and build
@@ -62,8 +63,3 @@ Thumbs.db
 /tmp/
 *.tmp
 *.temp
-node_modules/
-coverage/
-*.log
-backend/siros-server
-backend/static/

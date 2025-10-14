@@ -1,0 +1,589 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build All (Production)",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build_all.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/build_all.ps1"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$go",
+                "$tsc"
+            ],
+            "detail": "Build complete Siros application with embedded frontend"
+        },
+        {
+            "label": "Build Backend Only",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build.sh",
+            "windows": {
+                "command": "cd backend && go build -o siros-server.exe ./cmd/siros-server"
+            },
+            "linux": {
+                "command": "cd backend && go build -o siros-server ./cmd/siros-server"
+            },
+            "osx": {
+                "command": "cd backend && go build -o siros-server ./cmd/siros-server"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$go",
+            "detail": "Build only the Go backend server"
+        },
+        {
+            "label": "Build Frontend Only",
+            "type": "shell",
+            "command": "npm run build",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ],
+            "detail": "Build only the React frontend"
+        },
+        {
+            "label": "Start Development Server",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/dev.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/dev.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "^.*Starting development server.*$",
+                        "endsPattern": "^.*Server listening on.*$"
+                    }
+                }
+            ],
+            "detail": "Start both backend and frontend in development mode with hot reload"
+        },
+        {
+            "label": "Start Backend Only",
+            "type": "shell",
+            "command": "go run ./cmd/siros-server",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "^.*Starting server.*$",
+                        "endsPattern": "^.*Server listening on.*$"
+                    }
+                }
+            ],
+            "detail": "Start only the Go backend server"
+        },
+        {
+            "label": "Start Frontend Only",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "^.*VITE.*$",
+                        "endsPattern": "^.*Local:.*$"
+                    }
+                }
+            ],
+            "detail": "Start only the React frontend development server"
+        },
+        {
+            "label": "Test All",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/test.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/test.ps1"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$go",
+                "$tsc"
+            ],
+            "detail": "Run all test suites (backend and frontend)"
+        },
+        {
+            "label": "Test Backend",
+            "type": "shell",
+            "command": "go test ./... -v",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$go",
+            "detail": "Run Go backend tests"
+        },
+        {
+            "label": "Test Frontend",
+            "type": "shell",
+            "command": "npm test",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ],
+            "detail": "Run React frontend tests"
+        },
+        {
+            "label": "Test with Coverage",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/test.sh --coverage",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/test.ps1 -Coverage"
+            },
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$go",
+                "$tsc"
+            ],
+            "detail": "Run all tests with coverage reports"
+        },
+        {
+            "label": "Lint All",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/lint.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/lint.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$go",
+                "$eslint-stylish"
+            ],
+            "detail": "Run comprehensive linting for both backend (golangci-lint) and frontend (ESLint + TypeScript)"
+        },
+        {
+            "label": "Lint All (Verbose)",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/lint.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/lint.ps1",
+                "args": [
+                    "-Verbose"
+                ]
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$go",
+                "$eslint-stylish"
+            ],
+            "detail": "Run comprehensive linting with verbose output for debugging"
+        },
+        {
+            "label": "Lint Backend",
+            "type": "shell",
+            "command": "golangci-lint run",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$go",
+            "detail": "Run Go linting with golangci-lint"
+        },
+        {
+            "label": "Lint Frontend",
+            "type": "shell",
+            "command": "npm run lint",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$eslint-stylish",
+            "detail": "Run ESLint on TypeScript/React code"
+        },
+        {
+            "label": "Format All",
+            "type": "shell",
+            "command": "gofmt -w .",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "dependsOn": "Format Frontend",
+            "detail": "Format all code (Go and TypeScript)"
+        },
+        {
+            "label": "Format Frontend",
+            "type": "shell",
+            "command": "npm run format",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Format TypeScript/React code with Prettier"
+        },
+        {
+            "label": "Clean Build Artifacts",
+            "type": "shell",
+            "command": "rm -rf backend/siros-server backend/siros-server.exe frontend/dist frontend/node_modules/.vite",
+            "windows": {
+                "command": "Remove-Item -Force -Recurse -ErrorAction SilentlyContinue backend/siros-server.exe, frontend/dist, frontend/node_modules/.vite"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Clean all build artifacts and temporary files"
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "command": "go mod download",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "dependsOn": "Install Frontend Dependencies",
+            "detail": "Install all dependencies (Go modules and npm packages)"
+        },
+        {
+            "label": "Install Frontend Dependencies",
+            "type": "shell",
+            "command": "npm ci",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Install npm dependencies for frontend"
+        },
+        {
+            "label": "Docker Build",
+            "type": "shell",
+            "command": "docker build -t siros:latest .",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Build Docker image for Siros"
+        },
+        {
+            "label": "Docker Compose Up",
+            "type": "shell",
+            "command": "docker-compose up -d",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Start Siros with Docker Compose (includes PostgreSQL)"
+        },
+        {
+            "label": "Generate Call Graphs",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/generate-callgraph.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/generate-callgraph.ps1",
+                "args": [
+                    "-SkipInstall"
+                ]
+            },
+            "linux": {
+                "command": "${workspaceFolder}/scripts/generate-callgraph.sh"
+            },
+            "osx": {
+                "command": "${workspaceFolder}/scripts/generate-callgraph.sh"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Generate backend call graph visualizations using go-callvis"
+        },
+        {
+            "label": "Generate Call Graphs (Verbose)",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/generate-callgraph.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/generate-callgraph.ps1",
+                "args": [
+                    "-SkipInstall",
+                    "-VerboseOutput"
+                ]
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Generate call graphs with verbose output for debugging"
+        },
+        {
+            "label": "Update Call Graph Documentation",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/generate-callgraph.sh && echo 'Call graphs updated. Opening documentation...' && code docs/BACKEND_CALL_GRAPH.md",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/generate-callgraph.ps1 -SkipInstall; Write-Host 'Call graphs updated. Opening documentation...'; code docs/BACKEND_CALL_GRAPH.md"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Regenerate call graphs and open the documentation file"
+        },
+        {
+            "label": "Clean Call Graphs",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/clean-callgraph.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/clean-callgraph.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Remove all generated call graph files and documentation"
+        },
+        {
+            "label": "Database Init",
+            "type": "shell",
+            "command": "psql -h localhost -U siros -d siros -f scripts/init.sql",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "detail": "Initialize PostgreSQL database with required schema"
+        }
+    ]
+}

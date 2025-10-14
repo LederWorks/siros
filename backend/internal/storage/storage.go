@@ -60,7 +60,7 @@ func (s *Storage) migrate() error {
 	queries := []string{
 		// Enable pgvector extension
 		`CREATE EXTENSION IF NOT EXISTS vector`,
-		
+
 		// Create resources table
 		`CREATE TABLE IF NOT EXISTS resources (
 			id VARCHAR(255) PRIMARY KEY,
@@ -80,7 +80,7 @@ func (s *Storage) migrate() error {
 			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 			last_scanned_at TIMESTAMP WITH TIME ZONE
 		)`,
-		
+
 		// Create schemas table
 		`CREATE TABLE IF NOT EXISTS schemas (
 			id VARCHAR(255) PRIMARY KEY,
@@ -94,7 +94,7 @@ func (s *Storage) migrate() error {
 			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 		)`,
-		
+
 		// Create change_records table
 		`CREATE TABLE IF NOT EXISTS change_records (
 			id VARCHAR(255) PRIMARY KEY,
@@ -106,7 +106,7 @@ func (s *Storage) migrate() error {
 			timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 			actor VARCHAR(255)
 		)`,
-		
+
 		// Create indexes
 		`CREATE INDEX IF NOT EXISTS idx_resources_provider ON resources(provider)`,
 		`CREATE INDEX IF NOT EXISTS idx_resources_type ON resources(type)`,
@@ -148,13 +148,13 @@ func (s *Storage) CreateResource(ctx context.Context, resource *types.Resource) 
 		INSERT INTO resources (id, type, provider, region, name, arn, tags, metadata, state, parent_id, children, links, vector, last_scanned_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 	`
-	
+
 	_, err = s.db.ExecContext(ctx, query,
 		resource.ID, resource.Type, resource.Provider, resource.Region, resource.Name,
 		resource.ARN, tagsJSON, metadataJSON, resource.State, resource.ParentID,
 		pq.Array(resource.Children), linksJSON, pq.Array(resource.Vector), resource.LastScannedAt,
 	)
-	
+
 	return err
 }
 
@@ -164,26 +164,26 @@ func (s *Storage) GetResource(ctx context.Context, id string) (*types.Resource, 
 		SELECT id, type, provider, region, name, arn, tags, metadata, state, parent_id, children, links, created_at, updated_at, last_scanned_at
 		FROM resources WHERE id = $1
 	`
-	
+
 	row := s.db.QueryRowContext(ctx, query, id)
-	
+
 	var resource types.Resource
 	var tagsJSON, metadataJSON, linksJSON []byte
 	var children pq.StringArray
-	
+
 	err := row.Scan(
 		&resource.ID, &resource.Type, &resource.Provider, &resource.Region, &resource.Name,
 		&resource.ARN, &tagsJSON, &metadataJSON, &resource.State, &resource.ParentID,
 		&children, &linksJSON, &resource.CreatedAt, &resource.UpdatedAt, &resource.LastScannedAt,
 	)
-	
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("resource not found: %s", id)
 		}
 		return nil, err
 	}
-	
+
 	// Unmarshal JSON fields
 	if len(tagsJSON) > 0 {
 		if err := json.Unmarshal(tagsJSON, &resource.Tags); err != nil {
@@ -201,7 +201,7 @@ func (s *Storage) GetResource(ctx context.Context, id string) (*types.Resource, 
 		}
 	}
 	resource.Children = []string(children)
-	
+
 	return &resource, nil
 }
 
@@ -227,13 +227,13 @@ func (s *Storage) UpdateResource(ctx context.Context, resource *types.Resource) 
 		    vector = $13, updated_at = NOW(), last_scanned_at = $14
 		WHERE id = $1
 	`
-	
+
 	_, err = s.db.ExecContext(ctx, query,
 		resource.ID, resource.Type, resource.Provider, resource.Region, resource.Name,
 		resource.ARN, tagsJSON, metadataJSON, resource.State, resource.ParentID,
 		pq.Array(resource.Children), linksJSON, pq.Array(resource.Vector), resource.LastScannedAt,
 	)
-	
+
 	return err
 }
 
@@ -254,7 +254,7 @@ func (s *Storage) ListResources(ctx context.Context, filters map[string]string, 
 	if len(filters) > 0 {
 		query += " WHERE "
 		conditions := []string{}
-		
+
 		for key, value := range filters {
 			switch key {
 			case "provider", "type", "state", "region":
@@ -263,7 +263,7 @@ func (s *Storage) ListResources(ctx context.Context, filters map[string]string, 
 				argIndex++
 			}
 		}
-		
+
 		if len(conditions) > 0 {
 			query += fmt.Sprintf("(%s)", conditions[0])
 			for _, condition := range conditions[1:] {
@@ -385,16 +385,16 @@ func (s *Storage) CreateChangeRecord(ctx context.Context, record *types.ChangeRe
 	if err != nil {
 		return fmt.Errorf("failed to marshal changes: %w", err)
 	}
-	
+
 	query := `
 		INSERT INTO change_records (id, resource_id, operation, changes, block_hash, transaction_id, timestamp, actor)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
-	
+
 	_, err = s.db.ExecContext(ctx, query,
 		record.ID, record.ResourceID, record.Operation, changesJSON,
 		record.BlockHash, record.TransactionID, record.Timestamp, record.Actor,
 	)
-	
+
 	return err
 }

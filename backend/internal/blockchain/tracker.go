@@ -14,8 +14,8 @@ import (
 
 // ChangeTracker handles blockchain-based change tracking
 type ChangeTracker struct {
-	config   config.BlockchainConfig
-	enabled  bool
+	config  config.BlockchainConfig
+	enabled bool
 }
 
 // NewChangeTracker creates a new blockchain change tracker
@@ -27,7 +27,7 @@ func NewChangeTracker(cfg config.BlockchainConfig) *ChangeTracker {
 }
 
 // TrackChange records a resource change to the blockchain
-func (ct *ChangeTracker) TrackChange(ctx context.Context, record *types.ChangeRecord) error {
+func (ct *ChangeTracker) TrackChange(_ context.Context, record *types.ChangeRecord) error {
 	if !ct.enabled {
 		return nil // Blockchain tracking disabled
 	}
@@ -87,7 +87,7 @@ func (ct *ChangeTracker) VerifyChangeRecord(record *types.ChangeRecord) bool {
 }
 
 // GetChangeHistory retrieves the change history for a resource (placeholder)
-func (ct *ChangeTracker) GetChangeHistory(ctx context.Context, resourceID string) ([]types.ChangeRecord, error) {
+func (ct *ChangeTracker) GetChangeHistory(_ context.Context, resourceID string) ([]types.ChangeRecord, error) {
 	if !ct.enabled {
 		return []types.ChangeRecord{}, nil
 	}

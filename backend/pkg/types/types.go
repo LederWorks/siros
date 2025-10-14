@@ -6,33 +6,33 @@ import (
 
 // Resource represents a cloud resource
 type Resource struct {
-	ID           string                 `json:"id" db:"id"`
-	Type         string                 `json:"type" db:"type"`
-	Provider     string                 `json:"provider" db:"provider"`
-	Region       string                 `json:"region" db:"region"`
-	Name         string                 `json:"name" db:"name"`
-	ARN          string                 `json:"arn,omitempty" db:"arn"`
-	Tags         map[string]string      `json:"tags" db:"tags"`
-	Metadata     map[string]interface{} `json:"metadata" db:"metadata"`
-	State        ResourceState          `json:"state" db:"state"`
-	ParentID     *string                `json:"parent_id,omitempty" db:"parent_id"`
-	Children     []string               `json:"children,omitempty" db:"children"`
-	Links        []ResourceLink         `json:"links,omitempty" db:"links"`
-	Vector       []float32              `json:"-" db:"vector"`
-	CreatedAt    time.Time              `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time              `json:"updated_at" db:"updated_at"`
-	LastScannedAt *time.Time            `json:"last_scanned_at" db:"last_scanned_at"`
+	ID            string                 `json:"id" db:"id"`
+	Type          string                 `json:"type" db:"type"`
+	Provider      string                 `json:"provider" db:"provider"`
+	Region        string                 `json:"region" db:"region"`
+	Name          string                 `json:"name" db:"name"`
+	ARN           string                 `json:"arn,omitempty" db:"arn"`
+	Tags          map[string]string      `json:"tags" db:"tags"`
+	Metadata      map[string]interface{} `json:"metadata" db:"metadata"`
+	State         ResourceState          `json:"state" db:"state"`
+	ParentID      *string                `json:"parent_id,omitempty" db:"parent_id"`
+	Children      []string               `json:"children,omitempty" db:"children"`
+	Links         []ResourceLink         `json:"links,omitempty" db:"links"`
+	Vector        []float32              `json:"-" db:"vector"`
+	CreatedAt     time.Time              `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time              `json:"updated_at" db:"updated_at"`
+	LastScannedAt *time.Time             `json:"last_scanned_at" db:"last_scanned_at"`
 }
 
 // ResourceState represents the current state of a resource
 type ResourceState string
 
 const (
-	ResourceStateActive    ResourceState = "active"
-	ResourceStateInactive  ResourceState = "inactive"
+	ResourceStateActive     ResourceState = "active"
+	ResourceStateInactive   ResourceState = "inactive"
 	ResourceStateTerminated ResourceState = "terminated"
-	ResourceStateError     ResourceState = "error"
-	ResourceStateUnknown   ResourceState = "unknown"
+	ResourceStateError      ResourceState = "error"
+	ResourceStateUnknown    ResourceState = "unknown"
 )
 
 // ResourceLink represents a link between resources
@@ -45,16 +45,16 @@ type ResourceLink struct {
 
 // Schema represents a resource schema
 type Schema struct {
-	ID          string                 `json:"id" db:"id"`
-	Name        string                 `json:"name" db:"name"`
-	Version     string                 `json:"version" db:"version"`
-	Provider    string                 `json:"provider" db:"provider"`
-	Type        string                 `json:"type" db:"type"`
-	Properties  map[string]interface{} `json:"properties" db:"properties"`
-	Required    []string               `json:"required" db:"required"`
-	IsCustom    bool                   `json:"is_custom" db:"is_custom"`
-	CreatedAt   time.Time              `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at" db:"updated_at"`
+	ID         string                 `json:"id" db:"id"`
+	Name       string                 `json:"name" db:"name"`
+	Version    string                 `json:"version" db:"version"`
+	Provider   string                 `json:"provider" db:"provider"`
+	Type       string                 `json:"type" db:"type"`
+	Properties map[string]interface{} `json:"properties" db:"properties"`
+	Required   []string               `json:"required" db:"required"`
+	IsCustom   bool                   `json:"is_custom" db:"is_custom"`
+	CreatedAt  time.Time              `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time              `json:"updated_at" db:"updated_at"`
 }
 
 // ChangeRecord represents a blockchain change record
@@ -122,12 +122,12 @@ type TerraformState struct {
 
 // TerraformResource represents a Terraform-managed resource
 type TerraformResource struct {
-	Module    string                 `json:"module"`
-	Mode      string                 `json:"mode"`
-	Type      string                 `json:"type"`
-	Name      string                 `json:"name"`
-	Provider  string                 `json:"provider"`
-	Instances []TerraformInstance    `json:"instances"`
+	Module    string              `json:"module"`
+	Mode      string              `json:"mode"`
+	Type      string              `json:"type"`
+	Name      string              `json:"name"`
+	Provider  string              `json:"provider"`
+	Instances []TerraformInstance `json:"instances"`
 }
 
 // TerraformInstance represents a Terraform resource instance

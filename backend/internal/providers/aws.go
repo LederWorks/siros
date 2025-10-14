@@ -12,8 +12,8 @@ import (
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 // AWSProvider implements the Provider interface for AWS
@@ -85,7 +85,7 @@ func (p *AWSProvider) Scan(ctx context.Context) ([]types.Resource, error) {
 // scanEC2Instances scans for EC2 instances
 func (p *AWSProvider) scanEC2Instances(ctx context.Context) ([]types.Resource, error) {
 	ec2Client := ec2.NewFromConfig(p.awsCfg)
-	
+
 	result, err := ec2Client.DescribeInstances(ctx, &ec2.DescribeInstancesInput{})
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (p *AWSProvider) scanEC2Instances(ctx context.Context) ([]types.Resource, e
 				ARN:      fmt.Sprintf("arn:aws:ec2:%s::instance/%s", p.config.Region, aws.ToString(instance.InstanceId)),
 				Tags:     p.convertEC2Tags(instance.Tags),
 				Metadata: map[string]interface{}{
-					"instance_type":    string(instance.InstanceType),
+					"instance_type":   string(instance.InstanceType),
 					"state":           string(instance.State.Name),
 					"vpc_id":          aws.ToString(instance.VpcId),
 					"subnet_id":       aws.ToString(instance.SubnetId),
@@ -126,7 +126,7 @@ func (p *AWSProvider) scanEC2Instances(ctx context.Context) ([]types.Resource, e
 // scanS3Buckets scans for S3 buckets
 func (p *AWSProvider) scanS3Buckets(ctx context.Context) ([]types.Resource, error) {
 	s3Client := s3.NewFromConfig(p.awsCfg)
-	
+
 	result, err := s3Client.ListBuckets(ctx, &s3.ListBucketsInput{})
 	if err != nil {
 		return nil, err
@@ -135,7 +135,7 @@ func (p *AWSProvider) scanS3Buckets(ctx context.Context) ([]types.Resource, erro
 	var resources []types.Resource
 	for _, bucket := range result.Buckets {
 		bucketName := aws.ToString(bucket.Name)
-		
+
 		// Get bucket location
 		location, err := s3Client.GetBucketLocation(ctx, &s3.GetBucketLocationInput{
 			Bucket: bucket.Name,
@@ -169,7 +169,7 @@ func (p *AWSProvider) scanS3Buckets(ctx context.Context) ([]types.Resource, erro
 // scanRDSInstances scans for RDS instances
 func (p *AWSProvider) scanRDSInstances(ctx context.Context) ([]types.Resource, error) {
 	rdsClient := rds.NewFromConfig(p.awsCfg)
-	
+
 	result, err := rdsClient.DescribeDBInstances(ctx, &rds.DescribeDBInstancesInput{})
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func (p *AWSProvider) GetResource(id string) (*types.Resource, error) {
 	if strings.HasPrefix(id, "i-") {
 		return p.getEC2Instance(id)
 	}
-	
+
 	// For S3 buckets and RDS, we'd need different logic
 	return nil, fmt.Errorf("resource type not supported for direct fetch: %s", id)
 }
@@ -219,7 +219,7 @@ func (p *AWSProvider) GetResource(id string) (*types.Resource, error) {
 // getEC2Instance retrieves a specific EC2 instance
 func (p *AWSProvider) getEC2Instance(instanceID string) (*types.Resource, error) {
 	ec2Client := ec2.NewFromConfig(p.awsCfg)
-	
+
 	result, err := ec2Client.DescribeInstances(context.Background(), &ec2.DescribeInstancesInput{
 		InstanceIds: []string{instanceID},
 	})
@@ -241,7 +241,7 @@ func (p *AWSProvider) getEC2Instance(instanceID string) (*types.Resource, error)
 		ARN:      fmt.Sprintf("arn:aws:ec2:%s::instance/%s", p.config.Region, aws.ToString(instance.InstanceId)),
 		Tags:     p.convertEC2Tags(instance.Tags),
 		Metadata: map[string]interface{}{
-			"instance_type":    string(instance.InstanceType),
+			"instance_type":   string(instance.InstanceType),
 			"state":           string(instance.State.Name),
 			"vpc_id":          aws.ToString(instance.VpcId),
 			"subnet_id":       aws.ToString(instance.SubnetId),

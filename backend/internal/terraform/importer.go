@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/LederWorks/siros/backend/pkg/types"
 	"github.com/LederWorks/siros/backend/internal/storage"
+	"github.com/LederWorks/siros/backend/pkg/types"
 )
 
 // StateImporter handles Terraform state imports
@@ -81,12 +81,12 @@ func (si *StateImporter) convertTerraformResource(tfResource types.TerraformReso
 		Name:     name,
 		Tags:     tags,
 		Metadata: map[string]interface{}{
-			"terraform_type":     tfResource.Type,
-			"terraform_name":     tfResource.Name,
-			"terraform_module":   tfResource.Module,
-			"schema_version":     instance.SchemaVersion,
-			"dependencies":       instance.Dependencies,
-			"attributes":         instance.Attributes,
+			"terraform_type":   tfResource.Type,
+			"terraform_name":   tfResource.Name,
+			"terraform_module": tfResource.Module,
+			"schema_version":   instance.SchemaVersion,
+			"dependencies":     instance.Dependencies,
+			"attributes":       instance.Attributes,
 		},
 		State: types.ResourceStateActive, // Assume active if in Terraform state
 	}
@@ -112,13 +112,13 @@ func (si *StateImporter) convertTerraformResource(tfResource types.TerraformReso
 // mapTerraformType maps Terraform resource types to Siros types
 func mapTerraformType(tfType string) string {
 	typeMapping := map[string]string{
-		"aws_instance":          "ec2.instance",
-		"aws_s3_bucket":         "s3.bucket",
-		"aws_db_instance":       "rds.instance",
-		"aws_lambda_function":   "lambda.function",
-		"aws_vpc":               "ec2.vpc",
-		"aws_subnet":            "ec2.subnet",
-		"aws_security_group":    "ec2.security_group",
+		"aws_instance":            "ec2.instance",
+		"aws_s3_bucket":           "s3.bucket",
+		"aws_db_instance":         "rds.instance",
+		"aws_lambda_function":     "lambda.function",
+		"aws_vpc":                 "ec2.vpc",
+		"aws_subnet":              "ec2.subnet",
+		"aws_security_group":      "ec2.security_group",
 		"azurerm_virtual_machine": "azure.virtualmachine",
 		"azurerm_storage_account": "azure.storageaccount",
 		"google_compute_instance": "gcp.compute.instance",
@@ -138,7 +138,7 @@ func extractProvider(providerStr string) string {
 	// Provider strings are typically like:
 	// "provider[\"registry.terraform.io/hashicorp/aws\"]"
 	// We want to extract "aws"
-	
+
 	if providerStr == "" {
 		return "unknown"
 	}
@@ -159,11 +159,11 @@ func extractProvider(providerStr string) string {
 
 // contains checks if a string contains a substring (case-insensitive)
 func contains(s, substr string) bool {
-	return len(s) >= len(substr) && 
-		   (s == substr || 
-		    s[:len(substr)] == substr || 
-		    s[len(s)-len(substr):] == substr ||
-		    findInString(s, substr))
+	return len(s) >= len(substr) &&
+		(s == substr ||
+			s[:len(substr)] == substr ||
+			s[len(s)-len(substr):] == substr ||
+			findInString(s, substr))
 }
 
 func findInString(s, substr string) bool {

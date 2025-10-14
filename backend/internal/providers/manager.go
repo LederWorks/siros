@@ -40,22 +40,22 @@ func (m *Manager) GetProvider(name string) (types.Provider, error) {
 // ScanAll scans all registered providers for resources
 func (m *Manager) ScanAll(ctx context.Context) ([]types.Resource, error) {
 	var allResources []types.Resource
-	
+
 	for name, provider := range m.providers {
 		resources, err := provider.Scan(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan provider %s: %w", name, err)
 		}
-		
+
 		// Set scan timestamp
 		now := time.Now()
 		for i := range resources {
 			resources[i].LastScannedAt = &now
 		}
-		
+
 		allResources = append(allResources, resources...)
 	}
-	
+
 	return allResources, nil
 }
 
