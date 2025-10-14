@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/LederWorks/siros/pkg/types"
-	"github.com/LederWorks/siros/internal/storage"
+	"github.com/LederWorks/siros/backend/pkg/types"
+	"github.com/LederWorks/siros/backend/internal/storage"
 )
 
 // StateImporter handles Terraform state imports

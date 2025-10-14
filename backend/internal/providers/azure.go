@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/LederWorks/siros/internal/config"
-	"github.com/LederWorks/siros/pkg/types"
+	"github.com/LederWorks/siros/backend/internal/config"
+	"github.com/LederWorks/siros/backend/pkg/types"
 )
 
 // AzureProvider implements the Provider interface for Azure

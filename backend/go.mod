@@ -1,4 +1,4 @@
-module github.com/LederWorks/siros
+module github.com/LederWorks/siros/backend
 
 go 1.24.7
 
@@ -32,3 +32,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.6 // indirect
 	github.com/aws/smithy-go v1.23.0 // indirect
 )
+
+replace github.com/LederWorks/siros/backend => .

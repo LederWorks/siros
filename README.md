@@ -2,45 +2,84 @@
 
 🌐 **Siros** is a comprehensive Go-based multi-cloud resource platform that provides unified resource management across AWS, Azure, and Google Cloud Platform with advanced features including semantic search, blockchain change tracking, and multiple API interfaces.
 
+## 📂 Monorepo Structure
+
+```
+siros/
+├── backend/                      # Go backend code
+│   ├── cmd/
+│   │   └── siros-server/         # Main entry point for API server
+│   │       └── main.go
+│   │
+│   ├── internal/                 # Non-exported application code
+│   │   ├── api/                  # API layer (HTTP/Terraform/MCP)
+│   │   ├── storage/              # Storage layer connectors
+│   │   ├── providers/            # Cloud provider integrations
+│   │   ├── config/               # Configuration management
+│   │   ├── blockchain/           # Blockchain integration
+│   │   └── terraform/            # Terraform integration
+│   │
+│   ├── pkg/                      # Exported packages
+│   │   └── types/                # Type definitions
+│   │
+│   ├── static/                   # Built frontend assets (embedded)
+│   ├── go.mod
+│   └── go.sum
+│
+├── frontend/                     # React + TypeScript portal
+│   ├── public/
+│   ├── src/
+│   │   ├── components/           # UI components
+│   │   ├── pages/                # Views (Dashboard, Resources, Graph, Search)
+│   │   ├── api/                  # API client
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+│
+├── scripts/                      # Build & deployment scripts
+│   ├── build_all.sh             # Build frontend + embed into Go binary
+│   └── dev.sh                   # Run backend & frontend in dev mode
+│
+├── README.md
+└── .gitignore
+```
+
 ## ✨ Features
 
 ### 🔌 Multi-Cloud Integration
-- **AWS Support**: EC2, S3, RDS with full metadata extraction
-- **Azure Support**: Virtual Machines, Storage Accounts (placeholder implementation)
-- **GCP Support**: Compute Engine, Cloud Storage (placeholder implementation)
-- **Unified API**: Single interface for all cloud providers
+- **AWS Support**: Full integration with EC2, S3, RDS including metadata extraction
+- **Azure Support**: Virtual Machines, Storage Accounts (extensible framework)
+- **GCP Support**: Compute Engine, Cloud Storage (extensible framework)
+- **Unified API**: Single interface for all cloud providers with consistent resource models
 
 ### 🧠 Advanced Storage & Search
-- **PostgreSQL with pgvector**: Vector database for semantic resource search
+- **PostgreSQL + pgvector**: Vector database for semantic resource search
 - **Resource Vectorization**: Automatic embedding generation for metadata
 - **Semantic Search**: Find resources using natural language queries
-- **Relationship Mapping**: Parent-child resource hierarchies
+- **Relationship Mapping**: Parent-child resource hierarchies and cross-cloud linking
 
 ### 🔗 Multiple API Interfaces
-- **REST HTTP API**: Standard RESTful resource management
-- **Terraform Integration**: Provider support for Infrastructure as Code
-- **MCP (Model Context Protocol)**: AI/LLM integration for intelligent resource queries
-- **WebSocket Support**: Real-time resource updates
+- **REST HTTP API**: Full CRUD operations for resource management
+- **Terraform Integration**: Import Terraform state and map resources
+- **MCP (Model Context Protocol)**: AI/LLM integration for intelligent queries
+- **React Frontend**: Modern responsive web interface
 
 ### ⛓️ Change Tracking & Audit
-- **Blockchain Integration**: Immutable change records
-- **Resource History**: Track all modifications over time
+- **Blockchain Framework**: Immutable change record architecture
+- **Resource History**: Track all modifications with cryptographic hashes
 - **Audit Compliance**: Full audit trail for compliance requirements
-
-### 📊 Resource Management
-- **Custom Schemas**: Define your own resource types
-- **Cross-Cloud Linking**: Connect resources across providers
-- **Hierarchy Support**: Parent-child resource relationships
-- **Metadata Enrichment**: Automatic metadata extraction and tagging
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Go 1.21 or higher
+- Node.js 18+ and npm
 - PostgreSQL 15+ with pgvector extension
 - Docker (optional, for database)
 
-### Installation
+### Development Setup
 
 1. **Clone the repository**
    ```bash
@@ -51,11 +90,14 @@
 2. **Set up PostgreSQL with pgvector**
    ```bash
    # Using Docker (recommended for development)
-   make init-db
+   docker run --name siros-postgres \
+     -e POSTGRES_PASSWORD=siros \
+     -e POSTGRES_USER=siros \
+     -e POSTGRES_DB=siros \
+     -p 5432:5432 -d postgres:15-alpine
    
-   # Or manually with existing PostgreSQL
-   createdb siros
-   psql -d siros -c "CREATE EXTENSION vector;"
+   # Enable pgvector extension
+   docker exec siros-postgres psql -U siros -d siros -c "CREATE EXTENSION IF NOT EXISTS vector;"
    ```
 
 3. **Configure cloud providers**
@@ -64,18 +106,119 @@
    # Edit config.local.yaml with your cloud credentials
    ```
 
-4. **Build and run**
+4. **Development mode (hot reload)**
    ```bash
-   make build
-   ./build/siros -config config.local.yaml
+   # Starts both backend (:8080) and frontend dev server (:5173)
+   ./scripts/dev.sh
    ```
 
-5. **Access the platform**
-   - Web Interface: http://localhost:8080
-   - API Health: http://localhost:8080/api/v1/health
-   - Resources API: http://localhost:8080/api/v1/resources
+5. **Production build**
+   ```bash
+   # Builds frontend and embeds it in Go binary
+   ./scripts/build_all.sh
+   
+   # Run the single binary
+   cd backend
+   ./siros-server -config ../config.local.yaml
+   ```
 
-## 📋 Configuration
+### Access Points
+- **Frontend (Dev)**: http://localhost:5173 (with Vite dev server)
+- **Frontend (Prod)**: http://localhost:8080 (embedded in Go binary)
+- **API**: http://localhost:8080/api/v1/
+- **Health Check**: http://localhost:8080/api/v1/health
+
+## 🏗️ Development Workflow
+
+### Frontend Development
+```bash
+cd frontend
+npm install           # Install dependencies
+npm run dev          # Start dev server with hot reload
+npm run build        # Build for production
+npm run lint         # Run ESLint
+```
+
+### Backend Development
+```bash
+cd backend
+go mod tidy          # Update dependencies
+go run ./cmd/siros-server  # Run server
+go test ./...        # Run tests
+go build -o siros-server ./cmd/siros-server  # Build binary
+```
+
+### Full Stack Development
+```bash
+# Development with hot reload for both frontend and backend
+./scripts/dev.sh
+
+# Production build (frontend embedded in Go binary)
+./scripts/build_all.sh
+```
+
+## 📋 API Examples
+
+### REST API
+```bash
+# Health check
+curl http://localhost:8080/api/v1/health
+
+# List resources
+curl http://localhost:8080/api/v1/resources
+
+# Search with semantic query
+curl -X POST http://localhost:8080/api/v1/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "web servers in production", "filters": {"provider": "aws"}}'
+
+# Create custom resource
+curl -X POST http://localhost:8080/api/v1/resources \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "my-app-server-1",
+    "type": "custom.application",
+    "provider": "aws",
+    "name": "Production Web Server",
+    "tags": {"environment": "production", "team": "platform"}
+  }'
+```
+
+### MCP Integration
+```bash
+# Initialize MCP session
+curl -X POST http://localhost:8080/api/v1/mcp/initialize
+
+# List resources for AI/LLM
+curl -X POST http://localhost:8080/api/v1/mcp/resources/list
+
+# Read resource content
+curl -X POST http://localhost:8080/api/v1/mcp/resources/read \
+  -H "Content-Type: application/json" \
+  -d '{"uri": "resource://siros/my-app-server-1"}'
+```
+
+## 🐳 Docker Deployment
+
+### Full Stack with Docker Compose
+```bash
+# Run PostgreSQL + Siros
+docker-compose up -d
+
+# Stop services
+docker-compose down
+```
+
+### Custom Docker Build
+```bash
+# Build custom image
+docker build -t siros .
+
+# Run container
+docker run -p 8080:8080 siros
+```
+
+## �� Configuration
 
 Create a `config.yaml` file or use environment variables:
 
@@ -113,141 +256,21 @@ providers:
 - `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`: Azure credentials
 - `GCP_PROJECT_ID`: Google Cloud project ID
 
-## 🔧 API Usage
+## 🎯 Frontend Features
 
-### REST API Examples
+The React frontend provides:
 
-**List all resources:**
-```bash
-curl http://localhost:8080/api/v1/resources
-```
+- **📊 Dashboard**: System status, quick stats, and feature overview
+- **📦 Resources**: Browse and filter multi-cloud resources
+- **🔍 Search**: Semantic search with natural language queries
+- **🔗 Graph View**: Interactive resource relationship visualization (coming soon)
 
-**Get specific resource:**
-```bash
-curl http://localhost:8080/api/v1/resources/{resource-id}
-```
-
-**Search resources:**
-```bash
-curl -X POST http://localhost:8080/api/v1/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "web servers", "filters": {"provider": "aws"}}'
-```
-
-**Create resource:**
-```bash
-curl -X POST http://localhost:8080/api/v1/resources \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id": "my-resource-1",
-    "type": "custom.server",
-    "provider": "aws",
-    "name": "My Web Server",
-    "tags": {"environment": "production"}
-  }'
-```
-
-### MCP Integration
-
-Siros implements the Model Context Protocol for AI/LLM integration:
-
-```bash
-# Initialize MCP session
-curl -X POST http://localhost:8080/api/v1/mcp/initialize
-
-# List available resources
-curl -X POST http://localhost:8080/api/v1/mcp/resources/list
-
-# Read resource content
-curl -X POST http://localhost:8080/api/v1/mcp/resources/read \
-  -H "Content-Type: application/json" \
-  -d '{"uri": "resource://siros/my-resource-1"}'
-```
-
-## 🔨 Development
-
-### Build Commands
-```bash
-make build          # Build the application
-make build-prod     # Production build with optimizations
-make test           # Run tests
-make lint           # Run linter
-make clean          # Clean build artifacts
-```
-
-### Database Commands
-```bash
-make init-db        # Initialize development database
-make stop-db        # Stop development database
-```
-
-### Development Tools
-```bash
-make install-tools  # Install development tools
-make dev           # Run with live reload (requires air)
-```
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Web Frontend  │    │   HTTP API      │    │   MCP API       │
-└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
-          │                      │                      │
-          └──────────────────────┼──────────────────────┘
-                                 │
-                    ┌─────────────┴───────────┐
-                    │    API Server           │
-                    │  (Gorilla Mux + CORS)  │
-                    └─────────────┬───────────┘
-                                  │
-                    ┌─────────────┴───────────┐
-                    │   Business Logic        │
-                    │ - Resource Management   │
-                    │ - Provider Abstraction │
-                    │ - Vector Search         │
-                    └─────────────┬───────────┘
-                                  │
-          ┌───────────────────────┼───────────────────────┐
-          │                       │                       │
-┌─────────┴───────┐    ┌─────────┴───────┐    ┌─────────┴───────┐
-│ PostgreSQL      │    │ Cloud Providers │    │ Blockchain      │
-│ + pgvector      │    │ - AWS           │    │ Integration     │
-│                 │    │ - Azure         │    │                 │
-│ - Resources     │    │ - GCP           │    │ - Change Log    │
-│ - Metadata      │    │                 │    │ - Audit Trail   │
-│ - Vector Index  │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the Mozilla Public License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## 🔮 Roadmap
-
-- [ ] **Enhanced Frontend**: Full React/TypeScript SPA with D3.js visualizations
-- [ ] **Terraform Provider**: Complete Terraform integration
-- [ ] **Blockchain Implementation**: Ethereum/Polygon change tracking
-- [ ] **Advanced Analytics**: Resource cost analysis and optimization
-- [ ] **Multi-tenancy**: Organization and user management
-- [ ] **Plugin System**: Custom provider plugins
-- [ ] **GraphQL API**: Alternative query interface
-- [ ] **Real-time Updates**: WebSocket-based live resource updates
-
-## 📞 Support
-
-- 📧 **Email**: support@lederworks.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/LederWorks/siros/issues)
-- 📖 **Documentation**: [Wiki](https://github.com/LederWorks/siros/wiki)
+### Frontend Tech Stack
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **React Router** for navigation
+- **D3.js** & **Cytoscape.js** for visualizations (planned)
+- **CSS-in-JS** for styling
 
 ---
 

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LederWorks/siros/internal/config"
-	"github.com/LederWorks/siros/pkg/types"
+	"github.com/LederWorks/siros/backend/internal/config"
+	"github.com/LederWorks/siros/backend/pkg/types"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"

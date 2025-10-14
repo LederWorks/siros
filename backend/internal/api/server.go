@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/LederWorks/siros/internal/config"
-	"github.com/LederWorks/siros/internal/storage"
-	"github.com/LederWorks/siros/pkg/types"
+	"github.com/LederWorks/siros/backend/internal/config"
+	"github.com/LederWorks/siros/backend/internal/storage"
+	"github.com/LederWorks/siros/backend/pkg/types"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )

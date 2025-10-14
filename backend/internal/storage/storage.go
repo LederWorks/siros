@@ -8,8 +8,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/LederWorks/siros/internal/config"
-	"github.com/LederWorks/siros/pkg/types"
+	"github.com/LederWorks/siros/backend/internal/config"
+	"github.com/LederWorks/siros/backend/pkg/types"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
