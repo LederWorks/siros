@@ -21,7 +21,7 @@ func NewHealthController(logger *log.Logger) *HealthController {
 }
 
 // Check handles GET /api/v1/health
-func (h *HealthController) Check(w http.ResponseWriter, r *http.Request) {
+func (h *HealthController) Check(w http.ResponseWriter, _ *http.Request) {
 	response := map[string]interface{}{
 		"status":    "healthy",
 		"service":   "siros-backend",
@@ -39,7 +39,7 @@ func (h *HealthController) Check(w http.ResponseWriter, r *http.Request) {
 }
 
 // Version handles GET /api/v1/version
-func (h *HealthController) Version(w http.ResponseWriter, r *http.Request) {
+func (h *HealthController) Version(w http.ResponseWriter, _ *http.Request) {
 	response := map[string]interface{}{
 		"name":        "siros",
 		"version":     "1.0.0",

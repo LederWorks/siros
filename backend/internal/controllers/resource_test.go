@@ -26,7 +26,7 @@ func newMockResourceService() *mockResourceService {
 	}
 }
 
-func (m *mockResourceService) CreateResource(ctx context.Context, req models.CreateResourceRequest) (*models.Resource, error) {
+func (m *mockResourceService) CreateResource(_ context.Context, req *models.CreateResourceRequest) (*models.Resource, error) {
 	resource := &models.Resource{
 		ID:       "test-id",
 		Type:     req.Type,
@@ -40,14 +40,14 @@ func (m *mockResourceService) CreateResource(ctx context.Context, req models.Cre
 	return resource, nil
 }
 
-func (m *mockResourceService) GetResource(ctx context.Context, id string) (*models.Resource, error) {
+func (m *mockResourceService) GetResource(_ context.Context, id string) (*models.Resource, error) {
 	if resource, exists := m.resources[id]; exists {
 		return resource, nil
 	}
 	return nil, fmt.Errorf("resource not found: %s", id)
 }
 
-func (m *mockResourceService) UpdateResource(ctx context.Context, id string, req models.UpdateResourceRequest, actor string) (*models.Resource, error) {
+func (m *mockResourceService) UpdateResource(_ context.Context, id string, req models.UpdateResourceRequest, _ string) (*models.Resource, error) {
 	if resource, exists := m.resources[id]; exists {
 		if req.Name != nil {
 			resource.Name = *req.Name
@@ -60,7 +60,7 @@ func (m *mockResourceService) UpdateResource(ctx context.Context, id string, req
 	return nil, fmt.Errorf("resource not found: %s", id)
 }
 
-func (m *mockResourceService) DeleteResource(ctx context.Context, id, actor string) error {
+func (m *mockResourceService) DeleteResource(_ context.Context, id, _ string) error {
 	if _, exists := m.resources[id]; exists {
 		delete(m.resources, id)
 		return nil
@@ -68,7 +68,7 @@ func (m *mockResourceService) DeleteResource(ctx context.Context, id, actor stri
 	return fmt.Errorf("resource not found: %s", id)
 }
 
-func (m *mockResourceService) ListResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (m *mockResourceService) ListResources(_ context.Context, _ *models.SearchQuery) ([]models.Resource, error) {
 	var result []models.Resource
 	for _, resource := range m.resources {
 		result = append(result, *resource)
@@ -76,11 +76,11 @@ func (m *mockResourceService) ListResources(ctx context.Context, query models.Se
 	return result, nil
 }
 
-func (m *mockResourceService) SearchResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
-	return m.ListResources(ctx, query)
+func (m *mockResourceService) SearchResources(_ context.Context, query *models.SearchQuery) ([]models.Resource, error) {
+	return m.ListResources(context.Background(), query)
 }
 
-func (m *mockResourceService) GetResourcesByParent(ctx context.Context, parentID string) ([]models.Resource, error) {
+func (m *mockResourceService) GetResourcesByParent(_ context.Context, parentID string) ([]models.Resource, error) {
 	var result []models.Resource
 	for _, resource := range m.resources {
 		if resource.ParentID != nil && *resource.ParentID == parentID {
@@ -90,7 +90,7 @@ func (m *mockResourceService) GetResourcesByParent(ctx context.Context, parentID
 	return result, nil
 }
 
-func (m *mockResourceService) VectorSearchResources(ctx context.Context, vector []float32, threshold float32, limit int) ([]models.Resource, error) {
+func (m *mockResourceService) VectorSearchResources(_ context.Context, _ []float32, _ float32, _ int) ([]models.Resource, error) {
 	return []models.Resource{}, nil
 }
 
@@ -163,7 +163,7 @@ func TestResourceController_GetResource(t *testing.T) {
 	mockService.resources["test-id"] = testResource
 
 	// Test valid request
-	req := httptest.NewRequest("GET", "/api/v1/resources/test-id", nil)
+	req := httptest.NewRequest("GET", "/api/v1/resources/test-id", http.NoBody)
 	req = mux.SetURLVars(req, map[string]string{"id": "test-id"})
 	w := httptest.NewRecorder()
 
@@ -184,7 +184,7 @@ func TestResourceController_GetResource(t *testing.T) {
 	}
 
 	// Test non-existent resource
-	req = httptest.NewRequest("GET", "/api/v1/resources/non-existent", nil)
+	req = httptest.NewRequest("GET", "/api/v1/resources/non-existent", http.NoBody)
 	req = mux.SetURLVars(req, map[string]string{"id": "non-existent"})
 	w = httptest.NewRecorder()
 
@@ -257,7 +257,7 @@ func TestResourceController_DeleteResource(t *testing.T) {
 	mockService.resources["test-id"] = testResource
 
 	// Test valid delete
-	req := httptest.NewRequest("DELETE", "/api/v1/resources/test-id", nil)
+	req := httptest.NewRequest("DELETE", "/api/v1/resources/test-id", http.NoBody)
 	req = mux.SetURLVars(req, map[string]string{"id": "test-id"})
 	w := httptest.NewRecorder()
 
@@ -273,7 +273,7 @@ func TestResourceController_DeleteResource(t *testing.T) {
 	}
 
 	// Test delete non-existent resource
-	req = httptest.NewRequest("DELETE", "/api/v1/resources/non-existent", nil)
+	req = httptest.NewRequest("DELETE", "/api/v1/resources/non-existent", http.NoBody)
 	req = mux.SetURLVars(req, map[string]string{"id": "non-existent"})
 	w = httptest.NewRecorder()
 
@@ -305,7 +305,7 @@ func TestResourceController_ListResources(t *testing.T) {
 	}
 
 	// Test list all resources
-	req := httptest.NewRequest("GET", "/api/v1/resources", nil)
+	req := httptest.NewRequest("GET", "/api/v1/resources", http.NoBody)
 	w := httptest.NewRecorder()
 
 	controller.ListResources(w, req)

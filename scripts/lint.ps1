@@ -47,15 +47,20 @@ try {
         # Check if golangci-lint is available
         $golangciPath = Get-Command golangci-lint -ErrorAction SilentlyContinue
         if ($golangciPath) {
-            $lintResult = & golangci-lint run
-            if ($LASTEXITCODE -eq 0) {
+            $configPath = "$ProjectRoot\.golangci.yml"
+            Write-Host "  Running: golangci-lint run --config $configPath" -ForegroundColor Gray
+            Write-Host ""  # Add spacing for better readability
+
+            # Use Start-Process to preserve exact output formatting and colors
+            $process = Start-Process -FilePath "golangci-lint" -ArgumentList "run", "--config", $configPath -NoNewWindow -Wait -PassThru
+            $lintExitCode = $process.ExitCode
+
+            Write-Host ""  # Add spacing after output
+            if ($lintExitCode -eq 0) {
                 Write-Success "Backend linting passed!"
             }
             else {
-                Write-Error "Backend linting failed!"
-                if ($Verbose) {
-                    Write-Host $lintResult
-                }
+                Write-Error "Backend linting failed! (Exit code: $lintExitCode)"
                 exit 1
             }
         }
@@ -71,15 +76,19 @@ try {
         Set-Location "$ProjectRoot\frontend"
 
         if ((Test-Path "package.json") -and (Test-Path "node_modules")) {
-            $lintResult = & npm run lint
-            if ($LASTEXITCODE -eq 0) {
+            Write-Host "  Running: npm run lint" -ForegroundColor Gray
+            Write-Host ""  # Add spacing for better readability
+
+            # Use Start-Process to preserve exact output formatting and colors
+            $process = Start-Process -FilePath "npm" -ArgumentList "run", "lint" -NoNewWindow -Wait -PassThru
+            $lintExitCode = $process.ExitCode
+
+            Write-Host ""  # Add spacing after output
+            if ($lintExitCode -eq 0) {
                 Write-Success "Frontend linting passed!"
             }
             else {
-                Write-Error "Frontend linting failed!"
-                if ($Verbose) {
-                    Write-Host $lintResult
-                }
+                Write-Error "Frontend linting failed! (Exit code: $lintExitCode)"
                 exit 1
             }
         }
@@ -94,15 +103,19 @@ try {
         Write-Status "Running TypeScript type checking..."
         if ((Test-Path "$ProjectRoot\frontend\package.json") -and (Test-Path "$ProjectRoot\frontend\node_modules")) {
             Set-Location "$ProjectRoot\frontend"
-            $typeCheckResult = & npm run type-check
-            if ($LASTEXITCODE -eq 0) {
+            Write-Host "  Running: npm run type-check" -ForegroundColor Gray
+            Write-Host ""  # Add spacing for better readability
+
+            # Use Start-Process to preserve exact output formatting and colors
+            $process = Start-Process -FilePath "npm" -ArgumentList "run", "type-check" -NoNewWindow -Wait -PassThru
+            $typeCheckExitCode = $process.ExitCode
+
+            Write-Host ""  # Add spacing after output
+            if ($typeCheckExitCode -eq 0) {
                 Write-Success "TypeScript type checking passed!"
             }
             else {
-                Write-Error "TypeScript type checking failed!"
-                if ($Verbose) {
-                    Write-Host $typeCheckResult
-                }
+                Write-Error "TypeScript type checking failed! (Exit code: $typeCheckExitCode)"
                 exit 1
             }
         }

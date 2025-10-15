@@ -87,7 +87,7 @@ func (ct *ChangeTracker) VerifyChangeRecord(record *types.ChangeRecord) bool {
 }
 
 // GetChangeHistory retrieves the change history for a resource (placeholder)
-func (ct *ChangeTracker) GetChangeHistory(_ context.Context, resourceID string) ([]types.ChangeRecord, error) {
+func (ct *ChangeTracker) GetChangeHistory(_ context.Context, _ string) ([]types.ChangeRecord, error) {
 	if !ct.enabled {
 		return []types.ChangeRecord{}, nil
 	}

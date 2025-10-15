@@ -45,7 +45,7 @@ type BlockchainRepository interface {
 }
 
 // NewRepositories creates a new Repositories instance with all repositories
-func NewRepositories(db *sql.DB, logger *log.Logger) *Repositories {
+func NewRepositories(db *sql.DB, _ *log.Logger) *Repositories {
 	return &Repositories{
 		Resource:   NewResourceRepository(db),
 		Schema:     NewSchemaRepository(db),

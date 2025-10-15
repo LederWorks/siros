@@ -11,17 +11,17 @@ import (
 	"github.com/LederWorks/siros/backend/internal/config"
 	"github.com/LederWorks/siros/backend/pkg/types"
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
-// Storage provides database operations
+// Storage provides database operations.
 type Storage struct {
 	db     *sql.DB
 	config config.DatabaseConfig
 }
 
 // New creates a new storage instance
-func New(cfg config.DatabaseConfig) (*Storage, error) {
+func New(cfg *config.DatabaseConfig) (*Storage, error) {
 	db, err := sql.Open(cfg.Driver, cfg.ConnectionString())
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
@@ -39,7 +39,7 @@ func New(cfg config.DatabaseConfig) (*Storage, error) {
 
 	storage := &Storage{
 		db:     db,
-		config: cfg,
+		config: *cfg,
 	}
 
 	// Initialize database schema
@@ -221,9 +221,9 @@ func (s *Storage) UpdateResource(ctx context.Context, resource *types.Resource) 
 	}
 
 	query := `
-		UPDATE resources 
-		SET type = $2, provider = $3, region = $4, name = $5, arn = $6, tags = $7, 
-		    metadata = $8, state = $9, parent_id = $10, children = $11, links = $12, 
+		UPDATE resources
+		SET type = $2, provider = $3, region = $4, name = $5, arn = $6, tags = $7,
+		    metadata = $8, state = $9, parent_id = $10, children = $11, links = $12,
 		    vector = $13, updated_at = NOW(), last_scanned_at = $14
 		WHERE id = $1
 	`
@@ -326,7 +326,7 @@ func (s *Storage) VectorSearch(ctx context.Context, queryVector []float32, limit
 	query := `
 		SELECT id, type, provider, region, name, arn, tags, metadata, state, parent_id, children, links, created_at, updated_at, last_scanned_at,
 		       vector <=> $1 AS distance
-		FROM resources 
+		FROM resources
 		WHERE vector IS NOT NULL
 		ORDER BY distance
 		LIMIT $2

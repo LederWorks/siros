@@ -69,7 +69,7 @@ func run() error {
 	}()
 
 	// Initialize storage
-	storageInstance, err := storage.New(cfg.Database)
+	storageInstance, err := storage.New(&cfg.Database)
 	if err != nil {
 		return fmt.Errorf("failed to initialize storage: %w", err)
 	}

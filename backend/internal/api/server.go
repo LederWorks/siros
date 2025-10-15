@@ -77,7 +77,7 @@ func (s *Server) setupWebRoutes() {
 }
 
 // serveDevelopmentPage serves a development placeholder page.
-func (s *Server) serveDevelopmentPage(w http.ResponseWriter, r *http.Request) {
+func (s *Server) serveDevelopmentPage(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlContent := []byte(`
 <!DOCTYPE html>

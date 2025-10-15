@@ -82,7 +82,7 @@ func (c *AuditController) GetAuditTrail(w http.ResponseWriter, r *http.Request) 
 }
 
 // ListChanges handles GET /api/v1/audit/changes
-func (c *AuditController) ListChanges(w http.ResponseWriter, r *http.Request) {
+func (c *AuditController) ListChanges(w http.ResponseWriter, _ *http.Request) {
 	c.logger.Printf("Listing recent changes")
 
 	// Parse query parameters

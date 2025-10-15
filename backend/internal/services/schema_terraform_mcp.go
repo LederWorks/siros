@@ -30,15 +30,15 @@ func (s *schemaService) CreateSchema(ctx context.Context, schema models.Schema) 
 	return s.schemaRepo.Create(ctx, &schema)
 }
 
-func (s *schemaService) GetSchema(ctx context.Context, name, provider string) (*models.Schema, error) {
+func (s *schemaService) GetSchema(ctx context.Context, name, _ string) (*models.Schema, error) {
 	return s.schemaRepo.GetByName(ctx, name)
 }
 
-func (s *schemaService) ListSchemas(ctx context.Context, provider string) ([]models.Schema, error) {
+func (s *schemaService) ListSchemas(ctx context.Context, _ string) ([]models.Schema, error) {
 	return s.schemaRepo.List(ctx)
 }
 
-func (s *schemaService) UpdateSchema(ctx context.Context, name, provider string, schema models.Schema) error {
+func (s *schemaService) UpdateSchema(ctx context.Context, _, _ string, schema models.Schema) error {
 	if err := schema.Validate(); err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (s *schemaService) UpdateSchema(ctx context.Context, name, provider string,
 	return s.schemaRepo.Update(ctx, &schema)
 }
 
-func (s *schemaService) DeleteSchema(ctx context.Context, name, provider string) error {
+func (s *schemaService) DeleteSchema(ctx context.Context, name, _ string) error {
 	return s.schemaRepo.Delete(ctx, name)
 }
 
@@ -64,7 +64,7 @@ func NewTerraformService(resourceRepo repositories.ResourceRepository, logger *l
 	}
 }
 
-func (s *terraformService) StoreKey(ctx context.Context, key models.TerraformKey) error {
+func (s *terraformService) StoreKey(_ context.Context, key models.TerraformKey) error {
 	if err := key.Validate(); err != nil {
 		return err
 	}
@@ -75,19 +75,19 @@ func (s *terraformService) StoreKey(ctx context.Context, key models.TerraformKey
 	return nil
 }
 
-func (s *terraformService) GetKey(ctx context.Context, key string) (*models.TerraformKey, error) {
+func (s *terraformService) GetKey(_ context.Context, key string) (*models.TerraformKey, error) {
 	s.logger.Printf("Getting Terraform key: %s", key)
 	// TODO: Implement actual retrieval
 	return nil, nil
 }
 
-func (s *terraformService) ListKeysByPath(ctx context.Context, path string) ([]models.TerraformKey, error) {
+func (s *terraformService) ListKeysByPath(_ context.Context, path string) ([]models.TerraformKey, error) {
 	s.logger.Printf("Listing Terraform keys by path: %s", path)
 	// TODO: Implement actual listing
 	return []models.TerraformKey{}, nil
 }
 
-func (s *terraformService) DeleteKey(ctx context.Context, key string) error {
+func (s *terraformService) DeleteKey(_ context.Context, key string) error {
 	s.logger.Printf("Deleting Terraform key: %s", key)
 	// TODO: Implement actual deletion
 	return nil
@@ -107,7 +107,7 @@ func NewMCPService(resourceRepo repositories.ResourceRepository, logger *log.Log
 	}
 }
 
-func (s *mcpService) Initialize(ctx context.Context, req MCPInitRequest) (*MCPInitResponse, error) {
+func (s *mcpService) Initialize(_ context.Context, _ MCPInitRequest) (*MCPInitResponse, error) {
 	s.logger.Printf("Initializing MCP session")
 	response := MCPInitResponse{
 		"server_name":      "siros",
@@ -125,13 +125,13 @@ func (s *mcpService) Initialize(ctx context.Context, req MCPInitRequest) (*MCPIn
 	return &response, nil
 }
 
-func (s *mcpService) ListResources(ctx context.Context) ([]MCPResource, error) {
+func (s *mcpService) ListResources(_ context.Context) ([]MCPResource, error) {
 	s.logger.Printf("Listing MCP resources")
 	// TODO: Implement actual resource listing
 	return []MCPResource{}, nil
 }
 
-func (s *mcpService) ReadResource(ctx context.Context, uri string) (*MCPResourceContent, error) {
+func (s *mcpService) ReadResource(_ context.Context, uri string) (*MCPResourceContent, error) {
 	s.logger.Printf("Reading MCP resource: %s", uri)
 	// TODO: Implement actual resource reading
 	content := MCPResourceContent{
@@ -142,13 +142,13 @@ func (s *mcpService) ReadResource(ctx context.Context, uri string) (*MCPResource
 	return &content, nil
 }
 
-func (s *mcpService) ListTools(ctx context.Context) ([]MCPTool, error) {
+func (s *mcpService) ListTools(_ context.Context) ([]MCPTool, error) {
 	s.logger.Printf("Listing MCP tools")
 	// TODO: Implement actual tool listing
 	return []MCPTool{}, nil
 }
 
-func (s *mcpService) CallTool(ctx context.Context, name string, arguments map[string]interface{}) (*MCPToolResult, error) {
+func (s *mcpService) CallTool(_ context.Context, name string, _ map[string]interface{}) (*MCPToolResult, error) {
 	s.logger.Printf("Calling MCP tool: %s", name)
 	// TODO: Implement actual tool calling
 	result := MCPToolResult{
@@ -162,13 +162,13 @@ func (s *mcpService) CallTool(ctx context.Context, name string, arguments map[st
 	return &result, nil
 }
 
-func (s *mcpService) ListPrompts(ctx context.Context) ([]MCPPrompt, error) {
+func (s *mcpService) ListPrompts(_ context.Context) ([]MCPPrompt, error) {
 	s.logger.Printf("Listing MCP prompts")
 	// TODO: Implement actual prompt listing
 	return []MCPPrompt{}, nil
 }
 
-func (s *mcpService) GetPrompt(ctx context.Context, name string, arguments map[string]interface{}) (*MCPPromptResult, error) {
+func (s *mcpService) GetPrompt(_ context.Context, name string, _ map[string]interface{}) (*MCPPromptResult, error) {
 	s.logger.Printf("Getting MCP prompt: %s", name)
 	// TODO: Implement actual prompt retrieval
 	result := MCPPromptResult{

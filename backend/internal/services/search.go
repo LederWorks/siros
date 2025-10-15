@@ -167,7 +167,7 @@ func (s *searchService) SimilaritySearch(ctx context.Context, resourceID string,
 	return results, nil
 }
 
-func (s *searchService) ScanProviders(ctx context.Context, providers []string) (*ProviderScanResult, error) {
+func (s *searchService) ScanProviders(_ context.Context, providers []string) (*ProviderScanResult, error) {
 	s.logger.Printf("Scanning providers: %v", providers)
 
 	// TODO: Implement actual provider scanning

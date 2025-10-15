@@ -36,7 +36,7 @@ func (p *AzureProvider) Validate() error {
 }
 
 // Scan scans Azure for resources (placeholder implementation)
-func (p *AzureProvider) Scan(ctx context.Context) ([]types.Resource, error) {
+func (p *AzureProvider) Scan(_ context.Context) ([]types.Resource, error) {
 	// This is a placeholder implementation
 	// In a real implementation, you would use the Azure SDK to enumerate resources
 	return []types.Resource{
@@ -84,7 +84,7 @@ func (p *AzureProvider) Scan(ctx context.Context) ([]types.Resource, error) {
 }
 
 // GetResource retrieves a specific resource by ID (placeholder implementation)
-func (p *AzureProvider) GetResource(id string) (*types.Resource, error) {
+func (p *AzureProvider) GetResource(_ string) (*types.Resource, error) {
 	// This is a placeholder implementation
 	return nil, fmt.Errorf("Azure GetResource not implemented")
 }

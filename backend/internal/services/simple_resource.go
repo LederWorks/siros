@@ -35,7 +35,7 @@ func (s *simpleResourceService) generateID() string {
 	return fmt.Sprintf("%x", b)
 }
 
-func (s *simpleResourceService) CreateResource(ctx context.Context, req models.CreateResourceRequest) (*models.Resource, error) {
+func (s *simpleResourceService) CreateResource(ctx context.Context, req *models.CreateResourceRequest) (*models.Resource, error) {
 	// Validate the request
 	if err := req.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
@@ -129,14 +129,14 @@ func (s *simpleResourceService) DeleteResource(ctx context.Context, id string, d
 	return nil
 }
 
-func (s *simpleResourceService) ListResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (s *simpleResourceService) ListResources(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
 	// Validate and set defaults
 	if err := query.Validate(); err != nil {
 		return nil, fmt.Errorf("query validation failed: %w", err)
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.List(ctx, query)
+	resources, err := s.resourceRepo.List(ctx, *query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list resources: %w", err)
 	}
@@ -144,14 +144,14 @@ func (s *simpleResourceService) ListResources(ctx context.Context, query models.
 	return resources, nil
 }
 
-func (s *simpleResourceService) SearchResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (s *simpleResourceService) SearchResources(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
 	// Validate and set defaults
 	if err := query.Validate(); err != nil {
 		return nil, fmt.Errorf("query validation failed: %w", err)
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.Search(ctx, query)
+	resources, err := s.resourceRepo.Search(ctx, *query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search resources: %w", err)
 	}

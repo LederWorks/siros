@@ -42,7 +42,7 @@ func (c *ResourceController) CreateResource(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	resource, err := c.resourceService.CreateResource(r.Context(), req)
+	resource, err := c.resourceService.CreateResource(r.Context(), &req)
 	if err != nil {
 		c.logger.Printf("Failed to create resource: %v", err)
 
@@ -270,7 +270,7 @@ func (c *ResourceController) GetParents(w http.ResponseWriter, r *http.Request) 
 func (c *ResourceController) ListResources(w http.ResponseWriter, r *http.Request) {
 	query := c.parseSearchQuery(r)
 
-	resources, err := c.resourceService.ListResources(r.Context(), query)
+	resources, err := c.resourceService.ListResources(r.Context(), &query)
 	if err != nil {
 		c.logger.Printf("Failed to list resources: %v", err)
 
@@ -296,7 +296,7 @@ func (c *ResourceController) SearchResources(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	resources, err := c.resourceService.SearchResources(r.Context(), query)
+	resources, err := c.resourceService.SearchResources(r.Context(), &query)
 	if err != nil {
 		c.logger.Printf("Failed to search resources: %v", err)
 

@@ -10,12 +10,12 @@ import (
 
 // ResourceService defines the interface for resource business logic
 type ResourceService interface {
-	CreateResource(ctx context.Context, req models.CreateResourceRequest) (*models.Resource, error)
+	CreateResource(ctx context.Context, req *models.CreateResourceRequest) (*models.Resource, error)
 	GetResource(ctx context.Context, id string) (*models.Resource, error)
 	UpdateResource(ctx context.Context, id string, req models.UpdateResourceRequest, modifiedBy string) (*models.Resource, error)
 	DeleteResource(ctx context.Context, id string, deletedBy string) error
-	ListResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error)
-	SearchResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error)
+	ListResources(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
+	SearchResources(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
 	GetResourcesByParent(ctx context.Context, parentID string) ([]models.Resource, error)
 }
 
@@ -115,7 +115,7 @@ func NewResourceService(
 	}
 }
 
-func (s *resourceService) CreateResource(ctx context.Context, req models.CreateResourceRequest) (*models.Resource, error) {
+func (s *resourceService) CreateResource(ctx context.Context, req *models.CreateResourceRequest) (*models.Resource, error) {
 	// Validate the request
 	if err := req.Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
@@ -266,14 +266,14 @@ func (s *resourceService) DeleteResource(ctx context.Context, id string, deleted
 	return nil
 }
 
-func (s *resourceService) ListResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (s *resourceService) ListResources(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
 	// Validate and set defaults
 	if err := query.Validate(); err != nil {
 		return nil, fmt.Errorf("query validation failed: %w", err)
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.List(ctx, query)
+	resources, err := s.resourceRepo.List(ctx, *query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list resources: %w", err)
 	}
@@ -281,14 +281,14 @@ func (s *resourceService) ListResources(ctx context.Context, query models.Search
 	return resources, nil
 }
 
-func (s *resourceService) SearchResources(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (s *resourceService) SearchResources(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
 	// Validate and set defaults
 	if err := query.Validate(); err != nil {
 		return nil, fmt.Errorf("query validation failed: %w", err)
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.Search(ctx, query)
+	resources, err := s.resourceRepo.Search(ctx, *query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search resources: %w", err)
 	}

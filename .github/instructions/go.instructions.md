@@ -1,10 +1,95 @@
 ---
-applyTo: "backend/**/*.go,go.mod,go.sum"
+applyTo: 'backend/**/*.go,go.mod,go.sum'
 ---
 
 # Go Backend Development Instructions
 
-This document provides comprehensive guidelines for developing the Siros backend using Go, following MVC architecture patterns and best practices for multi-cloud resource management.
+This document provides comprehensive guidelines for developing the Siros backend using Go, following MVC architecture patterns and best practices.
+
+## Code Style Guidelines
+
+### Function Naming and Structure
+
+```go
+// Use clear, descriptive function names
+func CreateMultiCloudResource(ctx context.Context, req CreateResourceRequest) (*Resource, error)
+
+// Implement proper error handling
+if err != nil {
+    return nil, fmt.Errorf("failed to create resource: %w", err)
+}
+
+// Use context for cancellation and timeouts
+ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+defer cancel()
+```
+
+### Unused Parameter Handling
+
+Go linting tools (revive, golangci-lint) detect unused parameters automatically. Follow these guidelines:
+
+#### Renaming Unused Parameters
+
+- **Prefix with underscore `_`** for unused parameters that must be kept for interface compliance
+- **Use blank identifier `_`** for completely ignored parameters
+- **Keep original names** when parameters might be used in future implementations
+
+```go
+// Interface compliance - keep parameter for future use
+func (s *Service) ProcessData(ctx context.Context, data map[string]interface{}, _metadata ResourceMetadata) error {
+    // metadata might be used later, so prefix with _
+    return s.process(ctx, data)
+}
+
+// Completely unused parameter - use blank identifier
+func (s *Service) HandleRequest(_ context.Context, req Request) Response {
+    // context not needed in this implementation
+    return s.handleSync(req)
+}
+
+// Mock implementations - often have unused parameters
+func (m *MockService) CreateResource(_ context.Context, _req CreateResourceRequest, _actor string) (*Resource, error) {
+    return m.mockResource, nil
+}
+```
+
+#### When to Rename Back
+
+The linter will detect if you use a parameter that starts with `_`:
+
+- **`revive` linter** warns about used parameters with `_` prefix
+- **Rename back to original name** when implementing functionality that uses the parameter
+- **Keep descriptive names** for parameters that are actively used
+
+```go
+// Before implementing
+func (s *Service) ProcessWithMetadata(ctx context.Context, data map[string]interface{}, _metadata ResourceMetadata) error {
+    return s.process(ctx, data) // metadata not used yet
+}
+
+// After implementing metadata processing
+func (s *Service) ProcessWithMetadata(ctx context.Context, data map[string]interface{}, metadata ResourceMetadata) error {
+    enriched := s.enrichWithMetadata(data, metadata) // now metadata is used
+    return s.process(ctx, enriched)
+}
+```
+
+#### Interface Design Considerations
+
+- **Keep consistent signatures** across interface implementations
+- **Document unused parameters** in interface comments
+- **Consider future extensibility** when designing interfaces
+
+````go
+type ResourceProcessor interface {
+    // Process processes resource data
+    // ctx: request context for cancellation
+    // data: resource data to process
+    // metadata: resource metadata (may be unused in some implementations)
+    // actor: user performing the action (for audit trail)
+    Process(ctx context.Context, data map[string]interface{}, metadata ResourceMetadata, actor string) error
+}
+```cloud resource management.
 
 ## Architecture Guidelines
 
@@ -41,9 +126,10 @@ func (c *ResourceController) CreateResource(w http.ResponseWriter, r *http.Reque
     // 3. Format response via view layer
     views.WriteResourceResponse(w, http.StatusCreated, resource)
 }
-```
+````
 
 **Controller Standards:**
+
 - **Thin Controllers**: Only handle HTTP concerns, delegate business logic to services
 - **Validation**: Validate input before passing to service layer
 - **Error Handling**: Convert service errors to appropriate HTTP responses
@@ -51,6 +137,7 @@ func (c *ResourceController) CreateResource(w http.ResponseWriter, r *http.Reque
 - **Context Propagation**: Pass context through all service calls
 
 #### Models (`internal/models/`)
+
 Models define data structures and core business logic:
 
 ```go
@@ -92,6 +179,7 @@ func (r *Resource) GenerateVector(vectorizer VectorService) error {
 ```
 
 **Model Standards:**
+
 - **Data Validation**: Models enforce business rules and data integrity
 - **Immutable Core**: Use value objects where appropriate
 - **Business Logic**: Encapsulate domain-specific operations
@@ -99,6 +187,7 @@ func (r *Resource) GenerateVector(vectorizer VectorService) error {
 - **Audit Trail**: Support blockchain change tracking
 
 #### Views (`internal/views/`)
+
 Views handle response formatting and data presentation:
 
 ```go
@@ -138,6 +227,7 @@ func WriteError(w http.ResponseWriter, status int, message string, err error) {
 ```
 
 **View Standards:**
+
 - **Consistent Formatting**: Use standardized response structures
 - **Data Sanitization**: Remove sensitive information from responses
 - **Content Negotiation**: Support multiple response formats
@@ -145,6 +235,7 @@ func WriteError(w http.ResponseWriter, status int, message string, err error) {
 - **Security**: Prevent information leakage in error messages
 
 #### Services (`internal/services/`)
+
 Services contain business logic and coordinate between models and repositories:
 
 ```go
@@ -201,6 +292,7 @@ func (s *resourceService) CreateResource(ctx context.Context, req CreateResource
 ```
 
 #### Repositories (`internal/repositories/`)
+
 Repositories handle data access and persistence:
 
 ```go
@@ -236,6 +328,7 @@ func (r *resourceRepository) Create(ctx context.Context, resource *models.Resour
 ## Code Style Guidelines
 
 ### Function Naming and Structure
+
 ```go
 // Use clear, descriptive function names
 func CreateMultiCloudResource(ctx context.Context, req CreateResourceRequest) (*Resource, error)
@@ -251,6 +344,7 @@ defer cancel()
 ```
 
 ### Architecture Patterns
+
 - Follow **clean architecture** principles with clear layer separation
 - Implement **dependency injection** for testability using interfaces
 - Use **interfaces** for abstractions between layers
@@ -259,6 +353,7 @@ defer cancel()
 ## API Development
 
 ### HTTP Routing
+
 - Use **Gorilla Mux** for HTTP routing
 - Implement **middleware** for CORS, logging, and authentication
 - Follow **REST conventions** for endpoint design
@@ -266,6 +361,7 @@ defer cancel()
 - Support **filtering, pagination, and sorting** for list endpoints
 
 ### REST API Structure
+
 ```
 GET    /api/v1/resources              # List resources with filtering
 POST   /api/v1/resources              # Create new resource
@@ -289,6 +385,7 @@ GET    /api/v1/blockchain/audit/{id}  # Get resource audit trail
 ## Database Integration
 
 ### PostgreSQL with pgvector
+
 - Use **PostgreSQL** with **pgvector** extension for vector operations
 - Implement **prepared statements** to prevent SQL injection
 - Use **database transactions** for atomic operations
@@ -297,6 +394,7 @@ GET    /api/v1/blockchain/audit/{id}  # Get resource audit trail
 - Implement **blockchain record insertion** for all resource changes
 
 ### Transaction Management
+
 ```go
 func (s *resourceService) CreateResourceWithAudit(ctx context.Context, req CreateResourceRequest) (*models.Resource, error) {
     tx, err := s.db.BeginTx(ctx, nil)
@@ -327,6 +425,7 @@ func (s *resourceService) CreateResourceWithAudit(ctx context.Context, req Creat
 ## Multi-Cloud Provider Integration
 
 ### Provider Pattern
+
 ```go
 type CloudProvider interface {
     ListResources(ctx context.Context, filters ResourceFilters) ([]Resource, error)
@@ -365,6 +464,7 @@ type OCIProvider struct {
 ```
 
 ### Resource Management
+
 - Store resources as **individual vectors** with original CSP structure
 - Enrich with **metadata**: parent_id, created, created_by, modified, modified_by, IAM
 - Support **custom schemas** beyond predefined cloud resource types
@@ -374,15 +474,16 @@ type OCIProvider struct {
 ## Testing Standards
 
 ### Unit Testing
+
 ```go
 func TestCreateResource(t *testing.T) {
     // Setup
     mockStorage := &MockStorage{}
     service := NewResourceService(mockStorage)
-    
+
     // Test case
     resource, err := service.CreateResource(context.Background(), validRequest)
-    
+
     // Assertions
     assert.NoError(t, err)
     assert.NotNil(t, resource)
@@ -391,6 +492,7 @@ func TestCreateResource(t *testing.T) {
 ```
 
 ### Controller Testing
+
 ```go
 func TestResourceController_CreateResource(t *testing.T) {
     // Setup
@@ -414,6 +516,7 @@ func TestResourceController_CreateResource(t *testing.T) {
 ```
 
 ### Service Testing
+
 ```go
 func TestResourceService_CreateResource(t *testing.T) {
     // Setup with mocked dependencies
@@ -432,8 +535,9 @@ func TestResourceService_CreateResource(t *testing.T) {
 ```
 
 ### Test Suite Organization
+
 - **models**: Business logic and validation tests
-- **services**: Business logic orchestration tests  
+- **services**: Business logic orchestration tests
 - **controllers**: HTTP handler and API tests
 - **repositories**: Data access layer tests
 - **integration**: End-to-end tests with real dependencies
@@ -441,18 +545,21 @@ func TestResourceService_CreateResource(t *testing.T) {
 ## Security Best Practices
 
 ### Input Validation
+
 - Validate **all user inputs** at the controller layer
 - Use **parameterized queries** to prevent SQL injection
 - Implement **input sanitization** for all user-provided data
 - Use **struct tags** for validation rules
 
 ### Error Handling
+
 - Use **structured logging** for debugging and monitoring
 - **Sanitize sensitive data** in logs and responses
 - Implement **proper error wrapping** with context
 - Provide **meaningful error messages** without exposing internals
 
 ### Authentication & Authorization
+
 - Implement **middleware** for authentication
 - Use **context** to pass user information through request pipeline
 - Validate **permissions** at the service layer
@@ -461,6 +568,7 @@ func TestResourceService_CreateResource(t *testing.T) {
 ## Development Commands
 
 ### Cross-Platform Development
+
 ```bash
 # Linux/macOS
 cd backend && go run ./cmd/siros-server
@@ -474,6 +582,7 @@ go build -o siros-server.exe ./cmd/siros-server
 ```
 
 ### Testing
+
 ```bash
 # Run comprehensive test suite
 ./scripts/test.sh                    # Linux/macOS
@@ -487,18 +596,21 @@ go build -o siros-server.exe ./cmd/siros-server
 ## Performance Considerations
 
 ### Database Optimization
+
 - Use **connection pooling** for database connections
 - Implement **proper indexing** for vector similarity queries
 - Use **prepared statements** for frequently executed queries
 - Consider **read replicas** for high-traffic scenarios
 
 ### Concurrency
+
 - Think about **concurrency** and **race conditions**
 - Use **context** for cancellation and timeouts
 - Implement **proper locking** for shared resources
 - Consider **worker pools** for parallel processing
 
 ### Memory Management
+
 - Be mindful of **memory allocation** for large datasets
 - Use **streaming** for large data processing
 - Implement **proper cleanup** of resources
@@ -507,18 +619,21 @@ go build -o siros-server.exe ./cmd/siros-server
 ## Deployment Considerations
 
 ### Single Binary Deployment
+
 - **Embed frontend assets** in Go binary using `embed.FS`
 - Support **configuration via files and environment variables**
 - Implement **graceful shutdown** and **health checks**
 - Provide **Docker images** for containerized deployment
 
 ### Configuration Management
+
 - Use **environment variables** for sensitive configuration
 - Provide **default values** for optional settings
 - Implement **configuration validation** at startup
 - Support **hot reloading** of non-sensitive configuration
 
 ### Monitoring and Observability
+
 - Implement **structured logging** with appropriate levels
 - Add **metrics collection** for key operations
 - Include **health check endpoints** for monitoring
