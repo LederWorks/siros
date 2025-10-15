@@ -20,6 +20,82 @@ AGENTS.md (root)                            ← Master tracking & entry point
 - **\*.instructions.md**: Technology-specific development standards and patterns
 - **Component AGENTS.md**: Detailed tracking for specific subsystems and components
 
+### 📋 Hierarchical AGENTS.md Authority System
+
+The Siros project implements a **bottom-up precedence** hierarchy where component-level AGENTS.md files have authority over root-level coordination:
+
+```
+Root AGENTS.md (General Coordination)
+├── Limited Authority: Only coordinates where no component AGENTS.md exists
+├── Defers to Component Authority: Component-specific decisions override root
+└── Cross-Component Coordination: Manages integration between components
+
+Component AGENTS.md (Primary Authority)
+├── Full Authority: Complete control over component-specific decisions
+├── Implementation Details: Technical implementation and tracking
+├── Resource Allocation: Component resource and priority management
+└── Standards Compliance: Component-specific compliance and quality standards
+```
+
+**Authority Rules:**
+
+1. **Component Precedence**: Component AGENTS.md files have full authority over their domains
+2. **Root Coordination**: Root AGENTS.md coordinates only when no component file exists
+3. **Cross-Component Issues**: Root AGENTS.md manages integration and coordination between components
+4. **Hierarchy Navigation**: Each AGENTS.md file must reference its position in the hierarchy
+5. **Conflict Resolution**: Component authority wins over root in case of conflicts
+
+### 🏗️ Template Infrastructure
+
+**Status**: 📋 **PLANNED**
+**Lead Technology**: Jinja2, Template Generation, Automated Content Creation
+
+#### Planned Template System
+
+**Template Directory Structure:**
+
+```
+/templates/
+├── agents/
+│   ├── root-agents.md.j2          # Root AGENTS.md template
+│   ├── component-agents.md.j2     # Component AGENTS.md template
+│   └── agents-config.yaml         # AGENTS.md configuration schema
+├── instructions/
+│   ├── technology-instructions.md.j2  # Technology instruction template
+│   ├── instruction-config.yaml        # Instruction file configuration
+│   └── standard-headings.yaml         # Standard heading definitions
+├── scripts/
+│   ├── generate-agents.py          # AGENTS.md generation script
+│   ├── validate-hierarchy.py       # Hierarchy validation script
+│   └── template-utils.py           # Template utility functions
+└── schemas/
+    ├── agents-schema.json          # AGENTS.md validation schema
+    ├── instruction-schema.json     # Instruction file validation schema
+    └── hierarchy-schema.json       # Hierarchy validation schema
+```
+
+**Standard AGENTS.md Template Structure:**
+
+1. **📋 Documentation References** - Hierarchical documentation structure and cross-references
+2. **📁 Component Inventory** - File/folder tracking with implementation status
+3. **🏗️ Architecture Overview** - Component architecture and design principles
+4. **📚 Component Status Overview** - Detailed implementation tracking and cross-component coordination
+5. **🎯 Cross-Component Coordination** - Interdependencies and coordination requirements
+6. **🔄 Feature Roadmap** - Development priorities, phases, and long-term vision
+7. **📝 Standards Compliance** - Code quality, testing, and documentation standards adherence
+8. **🐛 Known Issues & Workarounds** - Current limitations, technical debt, and solutions
+
+**Standard Instruction File Headings:**
+
+1. **Purpose & Scope** - File purpose and application scope
+2. **Architecture Guidelines** - Core architectural principles and patterns
+3. **Implementation Standards** - Coding standards and best practices
+4. **Quality Assurance** - Testing, linting, and validation requirements
+5. **Security Standards** - Security best practices and compliance requirements
+6. **Performance Standards** - Performance optimization and monitoring guidelines
+7. **Documentation Standards** - Documentation requirements and formatting guidelines
+8. **Maintenance Standards** - Update procedures and lifecycle management
+
 ## 📁 Repository Inventory
 
 ### Root Level Files & Folders
@@ -41,6 +117,8 @@ AGENTS.md (root)                            ← Master tracking & entry point
 | **frontend/**            | React/TypeScript web application                      | ✅ Active Development |
 | **scripts/**             | Cross-platform build and automation scripts           | ✅ Complete           |
 | **docs/**                | Project documentation and generated content           | 🔄 In Progress         |
+| **infrastructure/**      | Multi-cloud deployment configurations and automation  | 📋 Planned             |
+| **templates/**           | Template infrastructure (Jinja2, AGENTS.md, etc.)     | 📋 Planned             |
 | **build/**               | Compiled binaries and build artifacts                 | 📦 Generated           |
 
 ### Key Configuration Files
@@ -64,8 +142,9 @@ AGENTS.md (root)                            ← Master tracking & entry point
 | **Backend (Go)** | API server, business logic, data persistence | ✅ Active Development | [backend/AGENTS.md](backend/AGENTS.md) |
 | **Frontend (React/TS)** | Web portal, user interface, dashboard | ✅ Active Development | [frontend/AGENTS.md](frontend/AGENTS.md) |
 | **Scripts** | Build automation, cross-platform tooling | ✅ Complete | [scripts/AGENTS.md](scripts/AGENTS.md) |
-| **Infrastructure** | Docker, database, deployment configs | 🔄 In Progress | [infrastructure/AGENTS.md](infrastructure/AGENTS.md) |
-| **Documentation** | Guides, API docs, architecture specs | 🔄 In Progress | [docs/AGENTS.md](docs/AGENTS.md) |
+| **Infrastructure** | Multi-cloud deployment configurations and automation | � Planned | 📋 Planned |
+| **Documentation** | Guides, API docs, architecture specs | 🔄 In Progress | 📋 Planned |
+| **Templates** | Content generation, AGENTS.md automation | 📋 Planned | 📋 Planned |
 
 ### Architecture Principles
 
@@ -174,34 +253,64 @@ AGENTS.md (root)                            ← Master tracking & entry point
 
 ### High Priority (Current Sprint)
 
-1. **Backend Optimization**
+1. **Template Infrastructure & Documentation Hierarchy**
+   - [ ] Create `/templates/` root directory with Jinja2 and other template engines
+   - [ ] Implement AGENTS.md template with standardized 8-section structure
+   - [ ] Create component-specific AGENTS.md files (frontend, backend, docs, infrastructure)
+   - [ ] Implement hierarchical AGENTS.md authority system (bottom-up precedence)
+   - [ ] Establish standard heading conventions for instructions and AGENTS.md files
+   - [ ] Create template generation scripts for automatic AGENTS.md creation
+
+2. **Infrastructure Root Folder & Multi-Cloud Deployment**
+   - [ ] Create `/infrastructure/` root directory for deployment configurations
+   - [ ] Implement local deployment setup with Docker Compose and development scripts
+   - [ ] Create AWS deployment configurations (Terraform, CloudFormation, CDK)
+   - [ ] Create Azure deployment configurations (Terraform, ARM templates, Bicep)
+   - [ ] Create GCP deployment configurations (Terraform, Deployment Manager, gcloud CLI)
+   - [ ] Create multi-cloud Pulumi configurations for cross-platform deployments
+   - [ ] Implement infrastructure AGENTS.md with deployment tracking and coordination
+   - [ ] Create infrastructure-specific CLI scripts for deployment automation
+
+2. **Backend Optimization**
    - [ ] Vector similarity performance tuning
    - [ ] Database query optimization for large datasets
    - [ ] Enhanced error handling and logging
 
-2. **Frontend Enhancement**
+3. **Frontend Enhancement**
    - [ ] Advanced resource visualization components
    - [ ] Real-time dashboard updates
    - [ ] Improved search and filtering UX
 
-3. **Integration Testing**
+4. **Integration Testing**
    - [ ] End-to-end API testing
    - [ ] Multi-cloud provider integration testing
    - [ ] Performance testing under load
 
 ### Medium Priority (Next Sprint)
 
-1. **Documentation Completion**
+1. **Template System Implementation**
+   - [ ] Jinja2 template engine integration for automated content generation
+   - [ ] Create instruction file templates with standardized sections
+   - [ ] Implement template validation and consistency checking
+   - [ ] Develop template generation workflows for new components
+
+2. **AGENTS.md Hierarchy System**
+   - [ ] Document hierarchical authority rules (component > root precedence)
+   - [ ] Implement cross-reference validation between AGENTS.md files
+   - [ ] Create automated hierarchy consistency checking
+   - [ ] Establish component coordination protocols
+
+3. **Documentation Completion**
    - [ ] API documentation generation
    - [ ] User guide and tutorials
    - [ ] Architecture decision records
 
-2. **Deployment Automation**
+4. **Deployment Automation**
    - [ ] Production deployment scripts
    - [ ] Container orchestration
    - [ ] CI/CD pipeline optimization
 
-3. **Security Hardening**
+5. **Security Hardening**
    - [ ] Authentication and authorization
    - [ ] Audit trail enhancement
    - [ ] Security scanning automation
@@ -210,6 +319,10 @@ AGENTS.md (root)                            ← Master tracking & entry point
 
 #### Short-Term Goals (Next 2-4 weeks)
 
+- [ ] **Create Template Infrastructure**: Set up `/templates/` directory with Jinja2 and automated content generation
+- [ ] **Implement AGENTS.md Hierarchy**: Create component AGENTS.md files with bottom-up authority system
+- [ ] **Establish Standard Headings**: Define standard section structures for AGENTS.md and instruction files
+- [ ] **Generate Component AGENTS.md**: Create AGENTS.md files for frontend, backend, docs, and infrastructure components
 - [ ] Complete frontend testing implementation
 - [ ] Enhance backend performance optimization
 - [ ] Finalize production deployment automation
@@ -238,6 +351,9 @@ AGENTS.md (root)                            ← Master tracking & entry point
 - [x] **Markdown Standards**: Consistent formatting, heading hierarchy, and content organization
 - [x] **Technology Instructions**: Comprehensive platform-specific development guidelines
 - [x] **Component Tracking**: Detailed implementation status and roadmap documentation
+- [ ] **Template Infrastructure**: Jinja2-based template system for automated content generation (planned)
+- [ ] **Hierarchy Validation**: Automated validation of AGENTS.md hierarchy and cross-references (planned)
+- [ ] **Standard Headings**: Consistent section structures across all documentation types (planned)
 
 ### Development Standards
 
@@ -307,6 +423,10 @@ AGENTS.md (root)                            ← Master tracking & entry point
 
 #### High Priority
 
+- [ ] **Template Infrastructure Setup**: Create `/templates/` directory with Jinja2 template engine and automated generation scripts
+- [ ] **Component AGENTS.md Creation**: Generate AGENTS.md files for frontend, backend, docs, infrastructure, and templates components
+- [ ] **Hierarchy Authority Implementation**: Implement bottom-up precedence system where component AGENTS.md files override root coordination
+- [ ] **Standard Heading System**: Establish and implement consistent section structures for all AGENTS.md and instruction files
 - [ ] **Frontend Testing**: Complete Jest/Vitest implementation for component testing
 - [ ] **API Documentation**: Automated OpenAPI/Swagger documentation generation
 - [ ] **Performance Monitoring**: Application performance metrics and alerting
@@ -370,6 +490,9 @@ AGENTS.md (root)                            ← Master tracking & entry point
 - **[Backend AGENTS.md](backend/AGENTS.md)**: Go backend development tracking
 - **[Frontend AGENTS.md](frontend/AGENTS.md)**: React/TypeScript frontend tracking
 - **[Scripts AGENTS.md](scripts/AGENTS.md)**: Build automation tracking
+- **[Documentation AGENTS.md](docs/AGENTS.md)**: Documentation tracking (planned)
+- **[Infrastructure AGENTS.md](infrastructure/AGENTS.md)**: Deployment tracking (planned)
+- **[Templates AGENTS.md](templates/AGENTS.md)**: Template system tracking (planned)
 
 ## 🤝 Contributing
 

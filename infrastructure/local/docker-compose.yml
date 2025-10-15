@@ -1,0 +1,177 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database with pgvector extension
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: siros-postgres
+    environment:
+      POSTGRES_DB: siros
+      POSTGRES_USER: siros
+      POSTGRES_PASSWORD: siros
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - siros-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U siros -d siros"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Siros Backend API Server
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: development
+    container_name: siros-backend
+    environment:
+      SIROS_ENV: development
+      SIROS_LOG_LEVEL: debug
+      SIROS_DB_HOST: postgres
+      SIROS_DB_PORT: 5432
+      SIROS_DB_NAME: siros
+      SIROS_DB_USER: siros
+      SIROS_DB_PASSWORD: siros
+      SIROS_DB_SSL_MODE: disable
+      SIROS_HTTP_PORT: 8080
+      SIROS_CORS_ORIGINS: http://localhost:5173,http://localhost:3000
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../backend:/app/backend
+      - ../config.yaml:/app/config.yaml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - siros-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Frontend Development Server (optional for full-stack development)
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    container_name: siros-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+      VITE_APP_NAME: Siros
+      VITE_APP_VERSION: dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    networks:
+      - siros-network
+    depends_on:
+      - backend
+    profiles:
+      - full-stack
+    restart: unless-stopped
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: siros-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@siros.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - siros-network
+    profiles:
+      - dev-tools
+    restart: unless-stopped
+
+  # Redis for caching (optional for advanced features)
+  redis:
+    image: redis:7-alpine
+    container_name: siros-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - siros-network
+    profiles:
+      - caching
+    restart: unless-stopped
+
+  # Prometheus for monitoring (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: siros-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
+    networks:
+      - siros-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+  # Grafana for visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: siros-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - siros-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  siros-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

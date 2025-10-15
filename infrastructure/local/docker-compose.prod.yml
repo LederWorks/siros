@@ -1,0 +1,235 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database with pgvector extension - Production Configuration
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: siros-postgres-prod
+    environment:
+      POSTGRES_DB: siros
+      POSTGRES_USER: siros
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-siros}
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    networks:
+      - siros-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U siros -d siros"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.5"
+        reservations:
+          memory: 512M
+          cpus: "0.25"
+
+  # Siros Backend API Server - Production Configuration
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: production
+    container_name: siros-backend-prod
+    environment:
+      SIROS_ENV: production
+      SIROS_LOG_LEVEL: info
+      SIROS_DB_HOST: postgres
+      SIROS_DB_PORT: 5432
+      SIROS_DB_NAME: siros
+      SIROS_DB_USER: siros
+      SIROS_DB_PASSWORD: ${POSTGRES_PASSWORD:-siros}
+      SIROS_DB_SSL_MODE: require
+      SIROS_HTTP_PORT: 8080
+      SIROS_CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost}
+      SIROS_JWT_SECRET: ${JWT_SECRET:-changeme}
+      SIROS_ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../config.yaml:/app/config.yaml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - siros-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+
+  # Nginx Reverse Proxy with SSL termination
+  nginx:
+    image: nginx:alpine
+    container_name: siros-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ../frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    networks:
+      - siros-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+
+  # Redis for caching and session storage
+  redis:
+    image: redis:7-alpine
+    container_name: siros-redis-prod
+    command: redis-server /etc/redis/redis.conf
+    volumes:
+      - ./redis/redis.conf:/etc/redis/redis.conf:ro
+      - redis_data:/data
+    networks:
+      - siros-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+
+  # Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: siros-prometheus-prod
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert-rules:/etc/prometheus/alert-rules:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+      - "--web.enable-admin-api"
+    networks:
+      - siros-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: siros-grafana-prod
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_SECURITY_DISABLE_GRAVATAR: true
+      GF_ANALYTICS_REPORTING_ENABLED: false
+      GF_ANALYTICS_CHECK_FOR_UPDATES: false
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - siros-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+
+  # Log aggregation with Loki
+  loki:
+    image: grafana/loki:latest
+    container_name: siros-loki-prod
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - siros-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+
+  # Log shipping with Promtail
+  promtail:
+    image: grafana/promtail:latest
+    container_name: siros-promtail-prod
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - siros-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.1"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  loki_data:
+    driver: local
+
+networks:
+  siros-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

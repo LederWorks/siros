@@ -103,6 +103,51 @@ CI/CD Pipeline (ci-cd.yml)
     └── Cross-platform binary releases
 ```
 
+### GitHub Automation Infrastructure
+
+**Status**: 🔄 **IN PROGRESS**
+**Lead Technology**: GitHub Actions, Semantic Release, Repository API
+
+#### Planned Automation Components
+
+##### Semantic Versioning & Release Management
+
+- [ ] **Conventional Commits**: Enforce conventional commit format for automated versioning
+- [ ] **Semantic Release**: Automated version calculation, changelog generation, and release creation
+- [ ] **Release Assets**: Automated binary compilation and asset attachment for releases
+- [ ] **Cross-Platform Releases**: Windows, Linux, macOS binaries with checksums
+- [ ] **GitHub Releases**: Automated release notes with breaking changes and feature summaries
+
+##### Repository Configuration Automation
+
+- [ ] **Security Settings API**: Programmatic configuration using GitHub REST API
+- [ ] **Branch Protection Rules**: Automated setup of protection rules with required checks
+- [ ] **Repository Settings**: Consistent configuration across repositories and environments
+- [ ] **Team Permissions**: Automated team-based access control and repository permissions
+- [ ] **Webhook Configuration**: Automated webhook setup for external integrations
+
+##### Dependabot Enhancement
+
+- [ ] **Auto-Merge Workflows**: Merge dependency PRs automatically when tests pass
+- [ ] **Security-First Updates**: Prioritize security updates over feature updates
+- [ ] **Custom Update Schedules**: Environment-specific dependency update timing
+- [ ] **Grouped Updates**: Logical grouping of related dependency updates
+- [ ] **Update Validation**: Enhanced testing before auto-merge approval
+
+#### Implementation Strategy
+
+**Phase 2A: Core Automation (Next Sprint)**
+
+1. **Semantic Release Setup**: Configure semantic-release with conventional commits
+2. **Basic Auto-Merge**: Simple Dependabot auto-merge for patch updates
+3. **Repository API Scripts**: Basic repository configuration scripts
+
+**Phase 2B: Advanced Automation (Following Sprint)**
+
+1. **Security Configuration**: Complete repository security automation
+2. **Enhanced Branch Protection**: Complex branch protection with team reviews
+3. **Release Strategy**: Multi-environment release workflows
+
 ## 📚 Component Status Overview
 
 ### GitHub Workflows
@@ -268,6 +313,52 @@ When security requirements change:
 - **Code Owners**: Update ownership patterns for new components
 - **Required Updates**: Protection rules, review requirements, access controls
 
+### Repository Automation Requirements
+
+When implementing GitHub automation features:
+
+#### Semantic Versioning Integration
+
+**Conventional Commits Enforcement:**
+
+- **Commit Lint**: GitHub Action to validate commit message format
+- **PR Title Validation**: Ensure PR titles follow conventional commit format
+- **Required Updates**: commitlint configuration, semantic-release config
+
+**Release Automation:**
+
+- **Semantic Release**: Automated version calculation and changelog generation
+- **Asset Management**: Cross-platform binary compilation and upload
+- **Required Updates**: Release workflow triggers, asset build scripts
+
+#### Repository Configuration Automation
+
+**GitHub API Integration:**
+
+- **Repository Settings**: Programmatic security and branch protection setup
+- **Team Management**: Automated team-based access control
+- **Required Updates**: API tokens, configuration templates, validation scripts
+
+**Security Policy Automation:**
+
+- **Security Settings**: Automated vulnerability scanning and secret detection configuration
+- **Compliance Validation**: Automated compliance checking and reporting
+- **Required Updates**: Security policy templates, validation workflows
+
+#### Dependabot Enhancement Requirements
+
+**Auto-Merge Configuration:**
+
+- **Test Validation**: Enhanced testing before automatic merge approval
+- **Security Prioritization**: Security updates processed with higher priority
+- **Required Updates**: Dependabot config, auto-merge workflows, test thresholds
+
+**Dependency Management:**
+
+- **Update Grouping**: Logical grouping of related dependency updates
+- **Schedule Optimization**: Environment-specific update timing and frequency
+- **Required Updates**: Grouping rules, schedule configurations, notification settings
+
 ## 🔄 Feature Roadmap
 
 ### 🔄 Phase 1: Core CI/CD (COMPLETE)
@@ -287,6 +378,12 @@ When security requirements change:
 - [ ] **Quality Gates**: Automated quality thresholds and gates
 - [ ] **Notification Integration**: Slack/Teams notifications for build results
 - [ ] **Advanced Security**: Enhanced security scanning and compliance checks
+- [ ] **Auto-Kanban Workflow**: Develop workflow similar to auto-label that automatically opens tickets under a Kanban board for implementation issues, extracting tasks from AGENTS.md files and placing them in GitHub Projects
+- [ ] **Semantic Versioning Automation**: Implement conventional commits and automated semantic versioning with release note generation using semantic-release or similar tools
+- [ ] **Release Management Automation**: Automated release workflows with changelog generation, asset uploading, and cross-platform binary distribution
+- [ ] **Repository Security Configuration**: Programmatic configuration of GitHub repository security settings including secret scanning, vulnerability alerts, and security policies
+- [ ] **Branch Protection Automation**: Automated setup and maintenance of branch protection rules with required status checks and review requirements
+- [ ] **Dependabot Auto-Merge**: Enhanced Dependabot configuration with automatic PR opening and merging when all tests pass and security checks are satisfied
 
 ### 🔒 Phase 3: Enterprise Features (PLANNED)
 
@@ -296,6 +393,11 @@ When security requirements change:
 - [ ] **Disaster Recovery**: Backup and recovery automation
 - [ ] **Audit Logging**: Enhanced audit trail and compliance reporting
 - [ ] **Enterprise Security**: Advanced authentication and authorization
+- [ ] **GitHub Repository Configuration API**: Programmatic repository setup using GitHub REST API for consistent security settings across repositories
+- [ ] **Advanced Branch Protection**: Complex branch protection rules with required reviewers, status checks, and merge restrictions
+- [ ] **Automated Security Policy Management**: Programmatic management of security policies, vulnerability disclosure, and incident response procedures
+- [ ] **Dependabot Security Automation**: Advanced Dependabot configuration with security-first dependency updates and automatic vulnerability patching
+- [ ] **Release Strategy Automation**: Multi-environment release strategies with canary deployments, rollback automation, and release validation
 
 ### 📊 Phase 4: Analytics & Optimization (PLANNED)
 
@@ -306,14 +408,31 @@ When security requirements change:
 - [ ] **Security Analytics**: Security posture monitoring and reporting
 - [ ] **Predictive Analytics**: Failure prediction and preventive measures
 
+### 📚 Phase 5: Documentation & Standards Overhaul (PLANNED)
+
+- [ ] **Instruction File Review & Refactoring**: Complete review and refactoring of all instruction files (remaining 80% after github.instructions.md completion)
+  - [ ] **Go Instructions**: Review, cut, and refactor go.instructions.md for clarity and accuracy
+  - [ ] **TypeScript Instructions**: Review, cut, and refactor typescript.instructions.md for modern practices
+  - [ ] **Scripts Instructions**: Review, cut, and refactor scripts.instructions.md for cross-platform standards
+  - [ ] **PowerShell Instructions**: Review, cut, and refactor powershell.instructions.md for best practices
+  - [ ] **Bash Instructions**: Review, cut, and refactor bash.instructions.md for POSIX compliance
+  - [ ] **Markdown Instructions**: Review, cut, and refactor markdown.instructions.md for documentation standards
+  - [ ] **VS Code Instructions**: Review, cut, and refactor vscode.instructions.md for workspace optimization
+- [ ] **CONTRIBUTING.md Updates**: Update contribution guidelines with latest script tasks and workflow developments
+- [ ] **Copilot Instructions Enhancement**: Update copilot-instructions.md with latest MCP servers and available toolset integration to improve GitHub Copilot Chat utilization
+
 ### 📈 Long-Term Vision & Roadmap
 
 #### Short-Term Goals (Next 2-4 weeks)
 
-- [ ] Complete performance testing integration
-- [ ] Enhance security scanning coverage
-- [ ] Optimize workflow execution times
-- [ ] Complete deployment automation
+- [ ] **Fix CodeQL Workflows**: Debug and resolve CodeQL security analysis workflow issues
+- [ ] **Test Docker & Release Pipelines**: Thoroughly test Docker build and release automation workflows
+- [ ] **Complete Instruction File Reviews**: Begin systematic review of all instruction files starting with highest priority
+- [ ] **Update CONTRIBUTING.md**: Add latest script tasks and workflow developments to contribution guidelines
+- [ ] **Enhance Copilot Instructions**: Update with MCP servers and toolset integration information
+- [ ] **Implement Semantic Versioning**: Set up conventional commits workflow and semantic-release automation for version management
+- [ ] **Configure Repository Security**: Programmatically configure security settings, secret scanning, and vulnerability policies
+- [ ] **Enhance Dependabot Configuration**: Set up automatic PR merging for dependency updates when tests pass
 
 #### Medium-Term Goals (Next 2-3 months)
 
@@ -393,6 +512,18 @@ When security requirements change:
    - **Component**: Security scanning workflow
    - **Workaround**: Monitor GitHub Security tab for results
    - **Status**: Expected behavior, not a bug
+
+4. **CodeQL Workflows Not Working**
+   - **Issue**: CodeQL security analysis workflows are not functioning correctly
+   - **Component**: Security scanning (CodeQL)
+   - **Impact**: Limited security analysis coverage
+   - **Status**: ❌ Requires investigation and fixes
+
+5. **Docker Build and Release Pipelines Untested**
+   - **Issue**: Docker build and release pipelines have not been thoroughly tested
+   - **Component**: Container builds and release automation
+   - **Impact**: No guarantee of successful production deployments
+   - **Status**: ❌ Requires testing and validation
 
 ### Technical Debt
 
