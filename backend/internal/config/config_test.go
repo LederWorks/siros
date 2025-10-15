@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -65,5 +66,85 @@ func TestConnectionString(t *testing.T) {
 
 	if actual != expected {
 		t.Errorf("Expected connection string '%s', got: '%s'", expected, actual)
+	}
+}
+
+func TestValidateConfigPath(t *testing.T) {
+	tests := []struct {
+		name    string
+		path    string
+		wantErr bool
+		errMsg  string
+	}{
+		{
+			name:    "valid yaml file",
+			path:    "config.yaml",
+			wantErr: false,
+		},
+		{
+			name:    "valid yml file",
+			path:    "config.yml",
+			wantErr: false,
+		},
+		{
+			name:    "valid json file",
+			path:    "config.json",
+			wantErr: false,
+		},
+		{
+			name:    "empty path",
+			path:    "",
+			wantErr: true,
+			errMsg:  "config path cannot be empty",
+		},
+		{
+			name:    "directory traversal attempt",
+			path:    "../../../etc/passwd.yaml",
+			wantErr: true,
+			errMsg:  "config path cannot contain directory traversal sequences",
+		},
+		{
+			name:    "invalid extension",
+			path:    "config.txt",
+			wantErr: true,
+			errMsg:  "config file must have .yaml, .yml, or .json extension",
+		},
+		{
+			name:    "path with dots but valid",
+			path:    "my.config.yaml",
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := validateConfigPath(tt.path)
+
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("validateConfigPath() expected error but got none")
+					return
+				}
+				if !strings.Contains(err.Error(), tt.errMsg) {
+					t.Errorf("validateConfigPath() error = %v, want error containing %v", err, tt.errMsg)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("validateConfigPath() unexpected error = %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestLoadWithInvalidPath(t *testing.T) {
+	// Test that Load properly handles invalid paths
+	_, err := Load("../../../etc/passwd.yaml")
+	if err == nil {
+		t.Error("Expected error for directory traversal attempt, got none")
+	}
+
+	if !strings.Contains(err.Error(), "invalid config file path") {
+		t.Errorf("Expected error about invalid config file path, got: %v", err)
 	}
 }

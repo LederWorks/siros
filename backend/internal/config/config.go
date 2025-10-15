@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -128,21 +130,84 @@ func Load(path string) (*Config, error) {
 	}
 
 	// Load from file if it exists
-	if _, err := os.Stat(path); err == nil {
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read config file: %w", err)
-		}
-
-		if err := yaml.Unmarshal(data, cfg); err != nil {
-			return nil, fmt.Errorf("failed to parse config file: %w", err)
-		}
+	if err := loadConfigFile(cfg, path); err != nil {
+		return nil, err
 	}
 
 	// Override with environment variables
 	loadEnvVars(cfg)
 
 	return cfg, nil
+}
+
+// loadConfigFile safely loads configuration from a file
+func loadConfigFile(cfg *Config, path string) error {
+	// Validate and sanitize the file path
+	cleanPath, err := validateConfigPath(path)
+	if err != nil {
+		return fmt.Errorf("invalid config file path: %w", err)
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(cleanPath); err != nil {
+		// File doesn't exist - this is OK, we'll use defaults
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("failed to access config file: %w", err)
+	}
+
+	// Read the file safely
+	// #nosec G304 -- Path is validated by validateConfigPath() which prevents directory traversal
+	data, err := os.ReadFile(cleanPath)
+	if err != nil {
+		return fmt.Errorf("failed to read config file: %w", err)
+	}
+
+	// Parse YAML
+	if err := yaml.Unmarshal(data, cfg); err != nil {
+		return fmt.Errorf("failed to parse config file: %w", err)
+	}
+
+	return nil
+}
+
+// validateConfigPath validates and cleans the configuration file path
+func validateConfigPath(path string) (string, error) {
+	// Reject empty paths
+	if path == "" {
+		return "", fmt.Errorf("config path cannot be empty")
+	}
+
+	// Clean the path to resolve any . or .. elements
+	cleanPath := filepath.Clean(path)
+
+	// Reject paths that try to traverse directories with ..
+	if strings.Contains(cleanPath, "..") {
+		return "", fmt.Errorf("config path cannot contain directory traversal sequences")
+	}
+
+	// Ensure the path has a valid extension for config files
+	ext := filepath.Ext(cleanPath)
+	validExts := []string{".yaml", ".yml", ".json"}
+	validExt := false
+	for _, validExtension := range validExts {
+		if ext == validExtension {
+			validExt = true
+			break
+		}
+	}
+	if !validExt {
+		return "", fmt.Errorf("config file must have .yaml, .yml, or .json extension")
+	}
+
+	// Convert to absolute path to prevent confusion
+	absPath, err := filepath.Abs(cleanPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve absolute path: %w", err)
+	}
+
+	return absPath, nil
 }
 
 // loadEnvVars loads environment variables into config

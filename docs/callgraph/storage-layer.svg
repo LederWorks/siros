@@ -68,7 +68,7 @@
 <!-- (*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString -->
 <g id="node7" class="node">
 <title>(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString</title>
-<g id="a_node7"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString | defined in config.go:163">
+<g id="a_node7"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString | defined in config.go:228">
 <path fill="moccasin" stroke="black" stroke-width="1.5" d="M710.37,-128C710.37,-128 454.08,-128 454.08,-128 448.08,-128 442.08,-122 442.08,-116 442.08,-116 442.08,-104 442.08,-104 442.08,-98 448.08,-92 454.08,-92 454.08,-92 710.37,-92 710.37,-92 716.37,-92 722.37,-98 722.37,-104 722.37,-104 722.37,-116 722.37,-116 722.37,-122 716.37,-128 710.37,-128"/>
 <text xml:space="preserve" text-anchor="middle" x="582.22" y="-105.33" font-family="Verdana" font-size="14.00">(*DatabaseConfig).ConnectionString</text>
 </a>
@@ -110,37 +110,37 @@
 </a>
 </g>
 </g>
-<!-- (*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource -->
-<g id="node4" class="node">
-<title>(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource</title>
-<g id="a_node4"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource | defined in storage.go:133&#10;at storage.go:155: calling [github.com/lib/pq.Array]&#10;at storage.go:155: calling [github.com/lib/pq.Array]">
-<path fill="lightblue" stroke="black" stroke-width="1.5" d="M220.54,-212C220.54,-212 30.25,-212 30.25,-212 24.25,-212 18.25,-206 18.25,-200 18.25,-200 18.25,-188 18.25,-188 18.25,-182 24.25,-176 30.25,-176 30.25,-176 220.54,-176 220.54,-176 226.54,-176 232.54,-182 232.54,-188 232.54,-188 232.54,-200 232.54,-200 232.54,-206 226.54,-212 220.54,-212"/>
-<text xml:space="preserve" text-anchor="middle" x="125.39" y="-189.32" font-family="Verdana" font-size="14.00">(*Storage).CreateResource</text>
-</a>
-</g>
-</g>
-<!-- (*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource&#45;&gt;github.com/lib/pq.Array -->
-<g id="edge5" class="edge">
-<title>(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource&#45;&gt;github.com/lib/pq.Array</title>
-<g id="a_edge5"><a xlink:title="at storage.go:155: calling [github.com/lib/pq.Array]&#10;at storage.go:155: calling [github.com/lib/pq.Array]">
-<path fill="none" stroke="saddlebrown" d="M233.15,-194C255.46,-194 277.69,-194 295.87,-194"/>
-<polygon fill="saddlebrown" stroke="saddlebrown" points="295.67,-197.5 305.67,-194 295.67,-190.5 295.67,-197.5"/>
-</a>
-</g>
-</g>
 <!-- (*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource -->
-<g id="node5" class="node">
+<g id="node4" class="node">
 <title>(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource</title>
-<g id="a_node5"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource | defined in storage.go:209&#10;at storage.go:234: calling [github.com/lib/pq.Array]&#10;at storage.go:234: calling [github.com/lib/pq.Array]">
-<path fill="lightblue" stroke="black" stroke-width="1.5" d="M222.79,-284C222.79,-284 28,-284 28,-284 22,-284 16,-278 16,-272 16,-272 16,-260 16,-260 16,-254 22,-248 28,-248 28,-248 222.79,-248 222.79,-248 228.79,-248 234.79,-254 234.79,-260 234.79,-260 234.79,-272 234.79,-272 234.79,-278 228.79,-284 222.79,-284"/>
-<text xml:space="preserve" text-anchor="middle" x="125.39" y="-261.32" font-family="Verdana" font-size="14.00">(*Storage).UpdateResource</text>
+<g id="a_node4"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource | defined in storage.go:209&#10;at storage.go:234: calling [github.com/lib/pq.Array]&#10;at storage.go:234: calling [github.com/lib/pq.Array]">
+<path fill="lightblue" stroke="black" stroke-width="1.5" d="M222.79,-212C222.79,-212 28,-212 28,-212 22,-212 16,-206 16,-200 16,-200 16,-188 16,-188 16,-182 22,-176 28,-176 28,-176 222.79,-176 222.79,-176 228.79,-176 234.79,-182 234.79,-188 234.79,-188 234.79,-200 234.79,-200 234.79,-206 228.79,-212 222.79,-212"/>
+<text xml:space="preserve" text-anchor="middle" x="125.39" y="-189.32" font-family="Verdana" font-size="14.00">(*Storage).UpdateResource</text>
 </a>
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource&#45;&gt;github.com/lib/pq.Array -->
-<g id="edge6" class="edge">
+<g id="edge5" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource&#45;&gt;github.com/lib/pq.Array</title>
-<g id="a_edge6"><a xlink:title="at storage.go:234: calling [github.com/lib/pq.Array]&#10;at storage.go:234: calling [github.com/lib/pq.Array]">
+<g id="a_edge5"><a xlink:title="at storage.go:234: calling [github.com/lib/pq.Array]&#10;at storage.go:234: calling [github.com/lib/pq.Array]">
+<path fill="none" stroke="saddlebrown" d="M235.32,-194C256.77,-194 278.04,-194 295.56,-194"/>
+<polygon fill="saddlebrown" stroke="saddlebrown" points="295.54,-197.5 305.54,-194 295.54,-190.5 295.54,-197.5"/>
+</a>
+</g>
+</g>
+<!-- (*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource -->
+<g id="node5" class="node">
+<title>(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource</title>
+<g id="a_node5"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource | defined in storage.go:133&#10;at storage.go:155: calling [github.com/lib/pq.Array]&#10;at storage.go:155: calling [github.com/lib/pq.Array]">
+<path fill="lightblue" stroke="black" stroke-width="1.5" d="M220.54,-284C220.54,-284 30.25,-284 30.25,-284 24.25,-284 18.25,-278 18.25,-272 18.25,-272 18.25,-260 18.25,-260 18.25,-254 24.25,-248 30.25,-248 30.25,-248 220.54,-248 220.54,-248 226.54,-248 232.54,-254 232.54,-260 232.54,-260 232.54,-272 232.54,-272 232.54,-278 226.54,-284 220.54,-284"/>
+<text xml:space="preserve" text-anchor="middle" x="125.39" y="-261.32" font-family="Verdana" font-size="14.00">(*Storage).CreateResource</text>
+</a>
+</g>
+</g>
+<!-- (*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource&#45;&gt;github.com/lib/pq.Array -->
+<g id="edge6" class="edge">
+<title>(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource&#45;&gt;github.com/lib/pq.Array</title>
+<g id="a_edge6"><a xlink:title="at storage.go:155: calling [github.com/lib/pq.Array]&#10;at storage.go:155: calling [github.com/lib/pq.Array]">
 <path fill="none" stroke="saddlebrown" d="M183.27,-247.31C199.9,-241.79 218.09,-235.7 234.79,-230 255.26,-223.01 277.95,-215.07 296.79,-208.43"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="297.7,-211.82 305.96,-205.19 295.37,-205.22 297.7,-211.82"/>
 </a>

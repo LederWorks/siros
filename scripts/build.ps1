@@ -1,157 +1,134 @@
-# Siros Backend Build - Windows PowerShell Version
+# Siros Full Production Build Script for PowerShell
+# Builds the complete Siros platform using modular frontend and backend scripts
+
+[CmdletBinding()]
 param(
+    [switch]$Verbose,
+    [switch]$SkipInstall,
+    [string]$Config = "",
     [switch]$Help
 )
 
 if ($Help) {
-    Write-Host "🔨 Siros Backend Build" -ForegroundColor Cyan
+    Write-Host "🔨 Siros Full Production Build" -ForegroundColor Blue
     Write-Host ""
-    Write-Host "Usage: .\scripts\build.ps1"
+    Write-Host "USAGE:" -ForegroundColor Yellow
+    Write-Host "  .\scripts\build_all.ps1 [options]"
     Write-Host ""
-    Write-Host "This script builds only the Siros backend with placeholder frontend:"
-    Write-Host "  1. Creates placeholder frontend assets (if missing)"
-    Write-Host "  2. Builds Go backend binary with embedded assets"
-    Write-Host "  3. Creates development binary siros-server.exe"
+    Write-Host "OPTIONS:" -ForegroundColor Yellow
+    Write-Host "  -Verbose            Enable verbose output"
+    Write-Host "  -SkipInstall        Skip automatic dependency installation"
+    Write-Host "  -Config <path>      Use custom config file"
+    Write-Host "  -Help               Show this help message"
     Write-Host ""
-    Write-Host "Output: Backend binary at build/siros.exe"
+    Write-Host "DESCRIPTION:" -ForegroundColor Yellow
+    Write-Host "  Builds the complete Siros platform in production mode:"
+    Write-Host "  1. Builds React frontend (npm run build)"
+    Write-Host "  2. Builds Go backend with embedded frontend assets"
+    Write-Host "  3. Creates single production binary at build/siros.exe"
     Write-Host ""
-    Write-Host "For full production build (with React frontend), use:"
-    Write-Host "  .\scripts\build_all.ps1"
+    Write-Host "EXAMPLES:" -ForegroundColor Yellow
+    Write-Host "  .\scripts\build_all.ps1                    # Build with default settings"
+    Write-Host "  .\scripts\build_all.ps1 -Verbose           # Build with verbose output"
+    Write-Host "  .\scripts\build_all.ps1 -SkipInstall       # Build without installing dependencies"
     exit 0
 }
 
+# Set error action preference
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔨 Building Siros backend with placeholder frontend..." -ForegroundColor Blue
+# Output functions
+function Write-Status {
+    param([string]$Message)
+    Write-Host "[INFO] $Message" -ForegroundColor Cyan
+}
+
+function Write-Success {
+    param([string]$Message)
+    Write-Host "[SUCCESS] $Message" -ForegroundColor Green
+}
+
+function Write-Warning {
+    param([string]$Message)
+    Write-Host "[WARNING] $Message" -ForegroundColor Yellow
+}
+
+function Write-Error {
+    param([string]$Message)
+    Write-Host "[ERROR] $Message" -ForegroundColor Red
+}
+
+# Get script directory and project root
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = Split-Path -Parent $ScriptDir
+
+Write-Host ""
+Write-Host "� Siros Full Production Build" -ForegroundColor Blue
+Write-Host ""
 
 # Check if we're in the right directory
-if (-not (Test-Path "go.mod") -and -not (Test-Path "backend")) {
-    Write-Host "❌ Error: Please run this script from the project root" -ForegroundColor Red
+if (-not (Test-Path (Join-Path $ProjectRoot "backend")) -or -not (Test-Path (Join-Path $ProjectRoot "frontend"))) {
+    Write-Error "Backend or frontend directory not found"
+    Write-Warning "Please run this script from the project root"
     exit 1
 }
 
 try {
-    # Ensure backend/static directory exists with at least one file for embed
-    if (-not (Test-Path "backend/static")) {
-        New-Item -ItemType Directory -Path "backend/static" -Force | Out-Null
-    }
+    # Build frontend first
+    Write-Status "Step 1/2: Building React frontend..."
+    $frontendArgs = @()
+    if ($Verbose) { $frontendArgs += "-Verbose" }
+    if ($SkipInstall) { $frontendArgs += "-SkipInstall" }
+    if ($Config) { $frontendArgs += "-Config", $Config }
 
-    if (-not (Test-Path "backend/static/index.html")) {
-        Write-Host "📝 Creating placeholder frontend assets..." -ForegroundColor Yellow
+    $frontendScript = Join-Path $ScriptDir "build_frontend.ps1"
+    & $frontendScript @frontendArgs
 
-        $placeholderHtml = @'
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Siros - Multi-Cloud Resource Platform</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 2px solid #007cba;
-            padding-bottom: 20px;
-        }
-        .api-link {
-            display: inline-block;
-            margin: 10px;
-            padding: 12px 24px;
-            background: #007cba;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-        .api-link:hover {
-            background: #005a8b;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🌐 Siros</h1>
-            <p>Multi-Cloud Resource Platform</p>
-        </div>
-
-        <h2>🔗 API Endpoints</h2>
-        <div style="text-align: center; margin: 20px 0;">
-            <a href="/api/v1/health" class="api-link">🔍 Health Check</a>
-            <a href="/api/v1/resources" class="api-link">📦 Resources</a>
-            <a href="/api/v1/schemas" class="api-link">📋 Schemas</a>
-        </div>
-
-        <h2>✨ Features</h2>
-        <ul>
-            <li>✅ HTTP API for resource management</li>
-            <li>✅ PostgreSQL with pgvector for semantic search</li>
-            <li>✅ Multi-cloud provider support (AWS, Azure, GCP)</li>
-            <li>✅ Terraform integration</li>
-            <li>✅ MCP (Model Context Protocol) API</li>
-            <li>🔄 Blockchain change tracking</li>
-            <li>🔄 React frontend (embedded in binary)</li>
-        </ul>
-    </div>
-</body>
-</html>
-'@
-
-        Set-Content -Path "backend/static/index.html" -Value $placeholderHtml -Encoding UTF8
-    }
-
-    # Build the backend binary
-    Write-Host "⚙️ Building backend binary..." -ForegroundColor Green
-    Push-Location backend
-
-    go mod tidy
     if ($LASTEXITCODE -ne 0) {
-        throw "Go mod tidy failed"
+        Write-Error "Frontend build failed!"
+        exit 1
     }
+    Write-Success "Frontend build completed"
 
-    # Create build directory in repo root if it doesn't exist
-    if (-not (Test-Path "../build")) {
-        New-Item -ItemType Directory -Path "../build" -Force | Out-Null
-    }
+    # Build backend with embedded frontend
+    Write-Status "Step 2/2: Building Go backend with embedded frontend..."
+    $backendArgs = @()
+    if ($Verbose) { $backendArgs += "-Verbose" }
+    if ($SkipInstall) { $backendArgs += "-SkipInstall" }
+    if ($Config) { $backendArgs += "-Config", $Config }
 
-    go build -o ../build/siros.exe ./cmd/siros-server
+    $backendScript = Join-Path $ScriptDir "build_backend.ps1"
+    & $backendScript @backendArgs
+
     if ($LASTEXITCODE -ne 0) {
-        throw "Backend build failed"
+        Write-Error "Backend build failed!"
+        exit 1
+    }
+    Write-Success "Backend build completed"
+
+    # Verify final binary
+    $binaryPath = Join-Path $ProjectRoot "build" "siros.exe"
+    if (-not (Test-Path $binaryPath)) {
+        Write-Error "Build completed but binary not found at: $binaryPath"
+        exit 1
     }
 
-    Pop-Location
-
+    $binaryInfo = Get-Item $binaryPath
     Write-Host ""
-    Write-Host "✅ Build successful! Binary created at build/siros.exe" -ForegroundColor Green
+    Write-Success "Complete production build finished!"
+    Write-Status "Binary location: $binaryPath"
+    Write-Status "Binary size: $([math]::Round($binaryInfo.Length / 1MB, 2)) MB"
     Write-Host ""
-    Write-Host "🚀 To run the server:" -ForegroundColor Cyan
+    Write-Host "🏃 To run the server:" -ForegroundColor Cyan
     Write-Host "   .\build\siros.exe" -ForegroundColor Gray
     Write-Host ""
     Write-Host "🌐 The server will be available at:" -ForegroundColor Cyan
     Write-Host "   Frontend: http://localhost:8080" -ForegroundColor Gray
     Write-Host "   API:      http://localhost:8080/api/v1" -ForegroundColor Gray
+    Write-Host ""
+
 }
 catch {
-    Write-Host "❌ Build failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Error "Build failed: $($_.Exception.Message)"
     exit 1
-}
-finally {
-    # Return to original directory
-    if (Get-Location | Where-Object { $_.Path -ne $PWD }) {
-        Pop-Location -ErrorAction SilentlyContinue
-    }
 }

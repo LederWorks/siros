@@ -57,7 +57,7 @@
 <!-- github.com/LederWorks/siros/backend/internal/api.NewServer -->
 <g id="node1" class="node">
 <title>github.com/LederWorks/siros/backend/internal/api.NewServer</title>
-<g id="a_node1"><a xlink:title="github.com/LederWorks/siros/backend/internal/api.NewServer | defined in server.go:30&#10;at server.go:34: calling [github.com/gorilla/mux.NewRouter]&#10;at server.go:45: calling [github.com/LederWorks/siros/backend/internal/controllers.NewControllers]&#10;at server.go:47: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes]">
+<g id="a_node1"><a xlink:title="github.com/LederWorks/siros/backend/internal/api.NewServer | defined in server.go:31&#10;at server.go:48: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes]&#10;at server.go:46: calling [github.com/LederWorks/siros/backend/internal/controllers.NewControllers]&#10;at server.go:35: calling [github.com/gorilla/mux.NewRouter]">
 <path fill="lightblue" stroke="black" stroke-width="1.5" d="M398.7,-139C398.7,-139 323.16,-139 323.16,-139 317.16,-139 311.16,-133 311.16,-127 311.16,-127 311.16,-115 311.16,-115 311.16,-109 317.16,-103 323.16,-103 323.16,-103 398.7,-103 398.7,-103 404.7,-103 410.7,-109 410.7,-115 410.7,-115 410.7,-127 410.7,-127 410.7,-133 404.7,-139 398.7,-139"/>
 <text xml:space="preserve" text-anchor="middle" x="360.93" y="-116.33" font-family="Verdana" font-size="14.00">NewServer</text>
 </a>
@@ -66,16 +66,16 @@
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes -->
 <g id="node2" class="node">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes</title>
-<g id="a_node2"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes | defined in server.go:59&#10;at server.go:61: calling [github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes]&#10;at server.go:64: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes]">
+<g id="a_node2"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes | defined in server.go:60&#10;at server.go:65: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes]&#10;at server.go:62: calling [github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes]">
 <path fill="lightblue" stroke="black" stroke-width="0.5" d="M712.87,-52C712.87,-52 554.08,-52 554.08,-52 548.08,-52 542.08,-46 542.08,-40 542.08,-40 542.08,-28 542.08,-28 542.08,-22 548.08,-16 554.08,-16 554.08,-16 712.87,-16 712.87,-16 718.87,-16 724.87,-22 724.87,-28 724.87,-28 724.87,-40 724.87,-40 724.87,-46 718.87,-52 712.87,-52"/>
 <text xml:space="preserve" text-anchor="middle" x="633.47" y="-29.32" font-family="Verdana" font-size="14.00">(*Server).setupRoutes</text>
 </a>
 </g>
 </g>
 <!-- github.com/LederWorks/siros/backend/internal/api.NewServer&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes -->
-<g id="edge12" class="edge">
+<g id="edge3" class="edge">
 <title>github.com/LederWorks/siros/backend/internal/api.NewServer&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes</title>
-<g id="a_edge12"><a xlink:title="at server.go:47: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes]">
+<g id="a_edge3"><a xlink:title="at server.go:48: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes]">
 <path fill="none" stroke="black" d="M411.24,-105.14C454.37,-91.28 517.4,-71.01 565.16,-55.65"/>
 <polygon fill="black" stroke="black" points="566.13,-59.01 574.58,-52.62 563.99,-52.35 566.13,-59.01"/>
 </a>
@@ -91,9 +91,9 @@
 </g>
 </g>
 <!-- github.com/LederWorks/siros/backend/internal/api.NewServer&#45;&gt;github.com/LederWorks/siros/backend/internal/controllers.NewControllers -->
-<g id="edge8" class="edge">
+<g id="edge5" class="edge">
 <title>github.com/LederWorks/siros/backend/internal/api.NewServer&#45;&gt;github.com/LederWorks/siros/backend/internal/controllers.NewControllers</title>
-<g id="a_edge8"><a xlink:title="at server.go:45: calling [github.com/LederWorks/siros/backend/internal/controllers.NewControllers]">
+<g id="a_edge5"><a xlink:title="at server.go:46: calling [github.com/LederWorks/siros/backend/internal/controllers.NewControllers]">
 <path fill="none" stroke="saddlebrown" d="M411.24,-118.27C452.07,-116 510.75,-112.75 557.41,-110.16"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="557.39,-113.67 567.18,-109.62 557,-106.68 557.39,-113.67"/>
 </a>
@@ -109,9 +109,9 @@
 </g>
 </g>
 <!-- github.com/LederWorks/siros/backend/internal/api.NewServer&#45;&gt;github.com/gorilla/mux.NewRouter -->
-<g id="edge7" class="edge">
+<g id="edge11" class="edge">
 <title>github.com/LederWorks/siros/backend/internal/api.NewServer&#45;&gt;github.com/gorilla/mux.NewRouter</title>
-<g id="a_edge7"><a xlink:title="at server.go:34: calling [github.com/gorilla/mux.NewRouter]">
+<g id="a_edge11"><a xlink:title="at server.go:35: calling [github.com/gorilla/mux.NewRouter]">
 <path fill="none" stroke="saddlebrown" d="M396.73,-139.7C425.07,-153.17 466.55,-169 505.08,-169 505.08,-169 505.08,-169 1085.41,-169 1122.69,-169 1118.08,-203.44 1150.41,-222 1161.65,-228.45 1174.26,-234.14 1186.55,-238.98"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="1185.23,-242.22 1195.82,-242.48 1187.7,-235.68 1185.23,-242.22"/>
 </a>
@@ -120,16 +120,16 @@
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes -->
 <g id="node3" class="node">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes</title>
-<g id="a_node3"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes | defined in server.go:68&#10;at server.go:72: calling [(*github.com/gorilla/mux.Route).Handler]&#10;at server.go:75: calling [(*github.com/gorilla/mux.Route).HandlerFunc]&#10;at server.go:72: calling [(*github.com/gorilla/mux.Router).PathPrefix]&#10;at server.go:75: calling [(*github.com/gorilla/mux.Router).PathPrefix]">
+<g id="a_node3"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes | defined in server.go:69&#10;at server.go:76: calling [(*github.com/gorilla/mux.Route).HandlerFunc]&#10;at server.go:73: calling [(*github.com/gorilla/mux.Router).PathPrefix]&#10;at server.go:76: calling [(*github.com/gorilla/mux.Router).PathPrefix]&#10;at server.go:73: calling [(*github.com/gorilla/mux.Route).Handler]">
 <path fill="lightblue" stroke="black" stroke-width="0.5" d="M1036.41,-52C1036.41,-52 846.87,-52 846.87,-52 840.87,-52 834.87,-46 834.87,-40 834.87,-40 834.87,-28 834.87,-28 834.87,-22 840.87,-16 846.87,-16 846.87,-16 1036.41,-16 1036.41,-16 1042.41,-16 1048.41,-22 1048.41,-28 1048.41,-28 1048.41,-40 1048.41,-40 1048.41,-46 1042.41,-52 1036.41,-52"/>
 <text xml:space="preserve" text-anchor="middle" x="941.64" y="-29.32" font-family="Verdana" font-size="14.00">(*Server).setupWebRoutes</text>
 </a>
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes -->
-<g id="edge11" class="edge">
+<g id="edge2" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes</title>
-<g id="a_edge11"><a xlink:title="at server.go:64: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes]">
+<g id="a_edge2"><a xlink:title="at server.go:65: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes]">
 <path fill="none" stroke="black" d="M725.09,-34C755.93,-34 790.85,-34 823.46,-34"/>
 <polygon fill="black" stroke="black" points="823.38,-37.5 833.38,-34 823.38,-30.5 823.38,-37.5"/>
 </a>
@@ -138,16 +138,16 @@
 <!-- github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes -->
 <g id="node9" class="node">
 <title>github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes</title>
-<g id="a_node9"><a xlink:title="github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes | defined in api.go:9">
+<g id="a_node9"><a xlink:title="github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes | defined in api.go:10">
 <path fill="moccasin" stroke="black" stroke-width="1.5" d="M997.78,-124C997.78,-124 885.49,-124 885.49,-124 879.49,-124 873.49,-118 873.49,-112 873.49,-112 873.49,-100 873.49,-100 873.49,-94 879.49,-88 885.49,-88 885.49,-88 997.78,-88 997.78,-88 1003.78,-88 1009.78,-94 1009.78,-100 1009.78,-100 1009.78,-112 1009.78,-112 1009.78,-118 1003.78,-124 997.78,-124"/>
 <text xml:space="preserve" text-anchor="middle" x="941.64" y="-101.33" font-family="Verdana" font-size="14.00">SetupAPIRoutes</text>
 </a>
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes&#45;&gt;github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes -->
-<g id="edge9" class="edge">
+<g id="edge12" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes&#45;&gt;github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes</title>
-<g id="a_edge9"><a xlink:title="at server.go:61: calling [github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes]">
+<g id="a_edge12"><a xlink:title="at server.go:62: calling [github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes]">
 <path fill="none" stroke="saddlebrown" d="M704.33,-52.15C742.76,-61.95 791.35,-74.05 834.87,-84 843.58,-85.99 852.71,-88 861.8,-89.96"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="860.85,-93.34 871.36,-92 862.31,-86.49 860.85,-93.34"/>
 </a>
@@ -163,9 +163,9 @@
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes&#45;&gt;(*github.com/gorilla/mux.Router).PathPrefix -->
-<g id="edge10" class="edge">
+<g id="edge6" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes&#45;&gt;(*github.com/gorilla/mux.Router).PathPrefix</title>
-<g id="a_edge10"><a xlink:title="at server.go:72: calling [(*github.com/gorilla/mux.Router).PathPrefix]&#10;at server.go:75: calling [(*github.com/gorilla/mux.Router).PathPrefix]">
+<g id="a_edge6"><a xlink:title="at server.go:73: calling [(*github.com/gorilla/mux.Router).PathPrefix]&#10;at server.go:76: calling [(*github.com/gorilla/mux.Router).PathPrefix]">
 <path fill="none" stroke="saddlebrown" d="M1048.51,-36.79C1082.37,-37.68 1119.61,-38.66 1152.57,-39.53"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="1152.44,-43.02 1162.53,-39.79 1152.62,-36.03 1152.44,-43.02"/>
 </a>
@@ -181,9 +181,9 @@
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes&#45;&gt;(*github.com/gorilla/mux.Route).Handler -->
-<g id="edge1" class="edge">
+<g id="edge7" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes&#45;&gt;(*github.com/gorilla/mux.Route).Handler</title>
-<g id="a_edge1"><a xlink:title="at server.go:72: calling [(*github.com/gorilla/mux.Route).Handler]">
+<g id="a_edge7"><a xlink:title="at server.go:73: calling [(*github.com/gorilla/mux.Route).Handler]">
 <path fill="none" stroke="saddlebrown" d="M1011.6,-52.15C1057.02,-64.11 1116.69,-79.82 1164.54,-92.41"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="1163.47,-95.75 1174.03,-94.91 1165.25,-88.98 1163.47,-95.75"/>
 </a>
@@ -199,9 +199,9 @@
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes&#45;&gt;(*github.com/gorilla/mux.Route).HandlerFunc -->
-<g id="edge2" class="edge">
+<g id="edge1" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes&#45;&gt;(*github.com/gorilla/mux.Route).HandlerFunc</title>
-<g id="a_edge2"><a xlink:title="at server.go:75: calling [(*github.com/gorilla/mux.Route).HandlerFunc]">
+<g id="a_edge1"><a xlink:title="at server.go:76: calling [(*github.com/gorilla/mux.Route).HandlerFunc]">
 <path fill="none" stroke="saddlebrown" d="M1005.32,-52.18C1019.86,-57.41 1034.99,-63.71 1048.41,-71 1098.79,-98.38 1100.33,-122.08 1150.41,-150 1158.95,-154.76 1168.24,-159.14 1177.58,-163.07"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="1176.11,-166.25 1186.69,-166.75 1178.73,-159.76 1176.11,-166.25"/>
 </a>
@@ -210,7 +210,7 @@
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).Router -->
 <g id="node4" class="node">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).Router</title>
-<g id="a_node4"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/api.Server).Router | defined in server.go:52&#10;at server.go:54: calling [github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig]&#10;at server.go:55: calling [(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply]">
+<g id="a_node4"><a xlink:title="(*github.com/LederWorks/siros/backend/internal/api.Server).Router | defined in server.go:53&#10;at server.go:55: calling [github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig]&#10;at server.go:56: calling [(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply]">
 <path fill="lightblue" stroke="black" stroke-width="1.5" d="M420.08,-242C420.08,-242 301.79,-242 301.79,-242 295.79,-242 289.79,-236 289.79,-230 289.79,-230 289.79,-218 289.79,-218 289.79,-212 295.79,-206 301.79,-206 301.79,-206 420.08,-206 420.08,-206 426.08,-206 432.08,-212 432.08,-218 432.08,-218 432.08,-230 432.08,-230 432.08,-236 426.08,-242 420.08,-242"/>
 <text xml:space="preserve" text-anchor="middle" x="360.93" y="-219.32" font-family="Verdana" font-size="14.00">(*Server).Router</text>
 </a>
@@ -226,9 +226,9 @@
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).Router&#45;&gt;github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig -->
-<g id="edge4" class="edge">
+<g id="edge9" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).Router&#45;&gt;github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig</title>
-<g id="a_edge4"><a xlink:title="at server.go:54: calling [github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig]">
+<g id="a_edge9"><a xlink:title="at server.go:55: calling [github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig]">
 <path fill="none" stroke="saddlebrown" d="M432.66,-224C472.7,-224 522.6,-224 562.51,-224"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="562.51,-227.5 572.51,-224 562.51,-220.5 562.51,-227.5"/>
 </a>
@@ -244,9 +244,9 @@
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/internal/api.Server).Router&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply -->
-<g id="edge5" class="edge">
+<g id="edge10" class="edge">
 <title>(*github.com/LederWorks/siros/backend/internal/api.Server).Router&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply</title>
-<g id="a_edge5"><a xlink:title="at server.go:55: calling [(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply]">
+<g id="a_edge10"><a xlink:title="at server.go:56: calling [(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply]">
 <path fill="none" stroke="saddlebrown" d="M432.31,-242.73C469.95,-252.75 516.37,-265.1 555.03,-275.39"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="553.69,-278.65 564.25,-277.84 555.49,-271.89 553.69,-278.65"/>
 </a>
@@ -262,9 +262,9 @@
 </g>
 </g>
 <!-- github.com/LederWorks/siros/backend/cmd/siros&#45;server.run&#45;&gt;github.com/LederWorks/siros/backend/internal/api.NewServer -->
-<g id="edge3" class="edge">
+<g id="edge8" class="edge">
 <title>github.com/LederWorks/siros/backend/cmd/siros&#45;server.run&#45;&gt;github.com/LederWorks/siros/backend/internal/api.NewServer</title>
-<g id="a_edge3"><a xlink:title="at main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]">
+<g id="a_edge8"><a xlink:title="at main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]">
 <path fill="none" stroke="saddlebrown" d="M128.96,-131.78C168.63,-129.93 245.29,-126.35 299.38,-123.83"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="299.23,-127.34 309.05,-123.38 298.9,-120.35 299.23,-127.34"/>
 </a>
@@ -280,9 +280,9 @@
 </g>
 </g>
 <!-- (*github.com/LederWorks/siros/backend/cmd/siros&#45;server.App).startServer&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api.Server).Router -->
-<g id="edge6" class="edge">
+<g id="edge4" class="edge">
 <title>(*github.com/LederWorks/siros/backend/cmd/siros&#45;server.App).startServer&#45;&gt;(*github.com/LederWorks/siros/backend/internal/api.Server).Router</title>
-<g id="a_edge6"><a xlink:title="at main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]">
+<g id="a_edge4"><a xlink:title="at main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]">
 <path fill="none" stroke="saddlebrown" d="M180.02,-210.7C210.97,-212.99 246.68,-215.63 278.09,-217.95"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="277.71,-221.43 287.94,-218.68 278.22,-214.45 277.71,-221.43"/>
 </a>

@@ -1,4 +1,7 @@
-# GitHub Copilot Instructions for Siros
+# GitHub Copilot Instructions| [🛠️ Scripts Instructions](instructions/scripts.instructions.md) | `scripts/**/*.ps1`, `scripts/**/*.sh`, `scripts/**/*.sql` | Script development standards, cross-platform compatibility, parameter conventions, output formatting, testing practices |
+
+| [📜 PowerShell Instructions](instructions/powershell.instructions.md) | `scripts/**/*.ps1` | PowerShell-specific standards, [CmdletBinding()] patterns, Windows development, PowerShell 5.1+ compatibility |
+| [🐚 Bash Instructions](instructions/bash.instructions.md) | `scripts/**/*.sh` | Bash-specific standards, POSIX compliance, Unix/Linux development, cross-shell compatibility |for Siros
 
 ## 🏗️ Project Overview
 
@@ -19,6 +22,31 @@ Siros treats every cloud resource as an **individual vector** while preserving o
 
 This project uses modular instruction files for platform-specific development guidelines. Each file contains targeted guidance for specific components or technologies:
 
+### Instruction Standards
+
+The Siros project follows a **hierarchical documentation architecture** designed for AI agent navigation and comprehensive development guidance:
+
+```
+AGENTS.md (root)                     ← Master tracking & component coordination
+├── .github/copilot-instructions.md  ← GitHub Copilot project context (this file)
+├── .github/instructions/*.md        ← Technology-specific development standards
+└── */AGENTS.md                      ← Component-specific tracking documents
+```
+
+#### Documentation Hierarchy Purpose
+
+- **[Root AGENTS.md](../AGENTS.md)**: Master project tracking, component status overview, cross-component coordination
+- **copilot-instructions.md** (this file): GitHub Copilot context and instruction file navigation
+- **\*.instructions.md**: Technology-specific development standards and implementation patterns
+- **Component AGENTS.md**: Detailed tracking for subsystems (backend, frontend, scripts, infrastructure, docs)
+
+#### AI Agent Navigation Pattern
+
+1. **Start Here**: copilot-instructions.md provides project context and instruction file overview
+2. **Technology Guidance**: Use appropriate \*.instructions.md for specific development tasks
+3. **Component Tracking**: Reference relevant component AGENTS.md for detailed status and roadmaps
+4. **Cross-Reference**: AGENTS.md files and instruction files cross-reference for comprehensive guidance
+
 ### Core Instruction Files
 
 | File                                                                  | Scope                                                      | Description                                                                                                               |
@@ -27,7 +55,34 @@ This project uses modular instruction files for platform-specific development gu
 | [🔧 Go Instructions](instructions/go.instructions.md)                 | `backend/**/*.go`, `**/*_test.go`                          | Go development guidelines, MVC architecture, API development, database integration, testing standards                     |
 | [⚛️ TypeScript Instructions](instructions/typescript.instructions.md) | `frontend/**/*.ts`, `frontend/**/*.tsx`                    | React/TypeScript development, component architecture, state management, API integration, accessibility                    |
 | [🔄 GitHub Instructions](instructions/github.instructions.md)         | `.github/**/*.yml`, `.github/**/*.yaml`, `.github/**/*.md` | GitHub Actions workflows, repository configuration, issue templates, security practices                                   |
-| [💻 VSCode Instructions](instructions/vscode.instructions.md)         | `.vscode/**/*`                                             | VS Code workspace configuration, task automation, debugging, extension recommendations, development workflow optimization |
+| [�️ Scripts Instructions](instructions/scripts.instructions.md)       | `scripts/**/*.ps1`, `scripts/**/*.sh`, `scripts/**/*.sql`  | Script development standards, cross-platform compatibility, parameter conventions, output formatting, testing practices   |
+| [�💻 VSCode Instructions](instructions/vscode.instructions.md)        | `.vscode/**/*`                                             | VS Code workspace configuration, task automation, debugging, extension recommendations, development workflow optimization |
+
+### AGENTS.md Files
+
+The project includes component-specific AGENTS.md files for detailed development tracking:
+
+| File                                                       | Component        | Description                                                                             |
+| ---------------------------------------------------------- | ---------------- | --------------------------------------------------------------------------------------- |
+| [📊 Root AGENTS.md](../AGENTS.md)                          | Project Overview | Master tracking, component coordination, cross-component issues, development priorities |
+| [🔧 Backend AGENTS.md](../backend/AGENTS.md)               | Go Backend       | MVC implementation, API development, database integration, multi-cloud providers        |
+| [⚛️ Frontend AGENTS.md](../frontend/AGENTS.md)             | React/TypeScript | UI components, dashboard, API integration, responsive design                            |
+| [🛠️ Scripts AGENTS.md](../scripts/AGENTS.md)               | Build Automation | Cross-platform scripts, testing orchestration, development workflows                    |
+| [🐳 Infrastructure AGENTS.md](../infrastructure/AGENTS.md) | Deployment       | Docker, database, CI/CD, production deployment                                          |
+| [📚 Documentation AGENTS.md](../docs/AGENTS.md)            | Documentation    | API docs, guides, architecture specs, user documentation                                |
+
+**AGENTS.md Schema**: Each component AGENTS.md follows a standardized 8-section structure:
+
+- **📋 Documentation References**: Hierarchical documentation structure and cross-references
+- **📁 Repository Inventory** (or **Scripts Inventory** for scripts): File/folder tracking with implementation status
+- **🏗️ Architecture Overview**: Component architecture and design principles
+- **📚 Component Status Overview**: Detailed implementation tracking and cross-component coordination
+- **🎯 Cross-Component Coordination**: Interdependencies and coordination requirements with other components
+- **🔄 Feature Roadmap**: Development priorities, phases, and long-term vision
+- **📝 Standards Compliance**: Code quality, testing, and documentation standards adherence
+- **🐛 Known Issues & Workarounds**: Current limitations, technical debt, and solutions
+- **📚 Related Documentation**: Cross-references to instruction files and other documentation
+- **🤝 Contributing**: Component-specific development guidance and workflow
 
 ### When to Use Each Instruction File
 
@@ -35,6 +90,9 @@ This project uses modular instruction files for platform-specific development gu
 - **Go Backend Instructions**: When working on backend services, APIs, database operations, or server-side business logic
 - **TypeScript Frontend Instructions**: When developing UI components, frontend application logic, or client-side integrations
 - **GitHub Workflow Instructions**: When setting up CI/CD pipelines, configuring repository settings, or managing collaborative workflows
+- **Scripts Instructions**: When creating or modifying build scripts, development automation, cross-platform scripts, or deployment automation
+- **PowerShell Instructions**: When developing PowerShell scripts specifically, working with Windows-specific features, or dealing with [CmdletBinding()] patterns
+- **Bash Instructions**: When developing Bash scripts specifically, working with Unix/Linux environments, or ensuring POSIX compliance
 - **VS Code Instructions**: When configuring development environment, setting up debugging, managing tasks, or optimizing workspace settings
 
 ### Cross-Reference Guidelines
@@ -44,8 +102,9 @@ These instruction files work together to provide comprehensive development guida
 1. **Documentation Standards**: All technical writing should follow the markdown instructions
 2. **Full-Stack Development**: Backend and frontend instructions complement each other for complete application development
 3. **DevOps Integration**: GitHub workflow instructions support the development processes defined in platform-specific files
-4. **Development Environment**: VS Code instructions provide workspace optimization and task automation for efficient development
-5. **Quality Assurance**: Each instruction file includes testing and quality standards appropriate to its domain
+4. **Scripts & Automation**: Scripts instructions provide standards for build automation, development workflows, and cross-platform compatibility
+5. **Development Environment**: VS Code instructions provide workspace optimization and task automation for efficient development
+6. **Quality Assurance**: Each instruction file includes testing and quality standards appropriate to its domain
 
 ## 📂 Repository Structure
 
@@ -58,6 +117,9 @@ siros/
 │   │   ├── typescript.instructions.md  # React/TypeScript frontend standards
 │   │   ├── github.instructions.md      # GitHub workflow and CI/CD guidelines
 │   │   ├── markdown.instructions.md    # Documentation writing standards
+│   │   ├── scripts.instructions.md     # Script development and automation standards
+│   │   ├── powershell.instructions.md  # PowerShell-specific development standards
+│   │   ├── bash.instructions.md        # Bash-specific development standards
 │   │   └── vscode.instructions.md      # VS Code workspace configuration
 │   ├── workflows/                # GitHub Actions CI/CD workflows
 │   ├── copilot-instructions.md   # GitHub Copilot project context
@@ -138,10 +200,12 @@ siros/
 │   └── .eslintrc.cjs
 │
 ├── scripts/                      # Build & deployment scripts
-│   ├── build_all.sh             # Production build (embed frontend in Go binary)
-│   ├── build_all.ps1            # Windows production build
-│   ├── build.sh                 # Backend-only build
-│   ├── build.ps1                # Windows backend build
+│   ├── build_all.sh             # Production build (orchestrates frontend + backend)
+│   ├── build_all.ps1            # Windows production build orchestration
+│   ├── build_backend.sh         # Backend-only build with embedded assets
+│   ├── build_backend.ps1        # Windows backend build
+│   ├── build_frontend.sh        # Frontend-only build (React/TypeScript)
+│   ├── build_frontend.ps1       # Windows frontend build
 │   ├── dev.sh                   # Development mode (hot reload)
 │   ├── dev.ps1                  # Windows development mode
 │   ├── test.sh                  # Comprehensive test runner
@@ -197,6 +261,7 @@ For detailed platform-specific coding guidelines, please refer to the appropriat
 - **Frontend Development**: See [TypeScript Frontend Instructions](instructions/typescript.instructions.md) for React patterns, component architecture, and state management
 - **Documentation**: See [Markdown Instructions](instructions/markdown.instructions.md) for writing standards and formatting guidelines
 - **CI/CD & Repository Management**: See [GitHub Workflow Instructions](instructions/github.instructions.md) for workflow automation and collaboration processes
+- **Scripts & Automation**: See [Scripts Instructions](instructions/scripts.instructions.md) for build automation, development workflows, and cross-platform script development
 
 ### General Development Principles
 
@@ -212,7 +277,11 @@ For detailed platform-specific coding guidelines, please refer to the appropriat
 
 ## 🔧 Development Workflow
 
+For detailed script development guidelines including cross-platform compatibility, parameter standards, and automation best practices, see [Scripts Instructions](instructions/scripts.instructions.md).
+
 ### Cross-Platform Development Commands
+
+Siros provides comprehensive build automation through modular scripts that work across Windows, Linux, and macOS:
 
 #### Linux/macOS (Bash)
 
@@ -220,8 +289,12 @@ For detailed platform-specific coding guidelines, please refer to the appropriat
 # Start development environment (both backend and frontend)
 ./scripts/dev.sh
 
-# Build production version (embed frontend in Go binary)
+# Build production version (orchestrated frontend + backend)
 ./scripts/build_all.sh
+
+# Build individual components
+./scripts/build_frontend.sh    # Frontend only
+./scripts/build_backend.sh     # Backend only
 
 # Run comprehensive test suite
 ./scripts/test.sh
@@ -242,8 +315,12 @@ cd frontend && npm run dev
 # Start development environment (both backend and frontend)
 .\scripts\dev.ps1
 
-# Build production version (embed frontend in Go binary)
+# Build production version (orchestrated frontend + backend)
 .\scripts\build_all.ps1
+
+# Build individual components
+.\scripts\build_frontend.ps1    # Frontend only
+.\scripts\build_backend.ps1     # Backend only
 
 # Run comprehensive test suite
 .\scripts\test.ps1
@@ -257,6 +334,18 @@ cd backend; go run ./cmd/siros-server
 # Frontend development only
 cd frontend; npm run dev
 ```
+
+### Script Development Standards
+
+All scripts in the Siros project follow comprehensive standards for cross-platform compatibility, consistent parameter interfaces, and maintainable automation. For detailed guidelines on:
+
+- **Cross-Platform Pairs**: PowerShell (.ps1) and Bash (.sh) implementations
+- **Parameter Standards**: Consistent -Verbose, -SkipInstall, -Config, -Help parameters
+- **Output Formatting**: Color-coded status messages and error handling
+- **Dependency Management**: Automatic tool installation and update patterns
+- **Testing Requirements**: Script validation and cross-platform testing
+
+See [Scripts Instructions](instructions/scripts.instructions.md) for complete development guidelines.
 
 ### Testing Guidelines
 

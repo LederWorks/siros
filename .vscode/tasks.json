@@ -76,9 +76,9 @@
         {
             "label": "Start Development Server",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/dev.sh",
+            "command": "${workspaceFolder}/scripts/env_dev.sh",
             "windows": {
-                "command": "${workspaceFolder}/scripts/dev.ps1"
+                "command": "${workspaceFolder}/scripts/env_dev.ps1"
             },
             "group": "build",
             "presentation": {
@@ -355,6 +355,46 @@
             "detail": "Run ESLint on TypeScript/React code"
         },
         {
+            "label": "Security Scan (Gosec)",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/backend_gosec.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/backend_gosec.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Run Gosec security scanner on Go backend code"
+        },
+        {
+            "label": "Security Scan (No Fail)",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/backend_gosec.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/backend_gosec.ps1",
+                "args": ["-NoFail"]
+            },
+            "args": ["--no-fail"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Run Gosec security scanner without failing on issues (warnings only)"
+        },
+        {
             "label": "Format All",
             "type": "shell",
             "command": "gofmt -w .",
@@ -483,20 +523,20 @@
             "detail": "Start Siros with Docker Compose (includes PostgreSQL)"
         },
         {
-            "label": "Generate Call Graphs",
+            "label": "Generate Backend Call Graphs",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/generate-callgraph.sh",
+            "command": "${workspaceFolder}/scripts/backend_callgraph.sh",
             "windows": {
-                "command": "${workspaceFolder}/scripts/generate-callgraph.ps1",
+                "command": "${workspaceFolder}/scripts/backend_callgraph.ps1",
                 "args": [
                     "-SkipInstall"
                 ]
             },
             "linux": {
-                "command": "${workspaceFolder}/scripts/generate-callgraph.sh"
+                "command": "${workspaceFolder}/scripts/backend_callgraph.sh"
             },
             "osx": {
-                "command": "${workspaceFolder}/scripts/generate-callgraph.sh"
+                "command": "${workspaceFolder}/scripts/backend_callgraph.sh"
             },
             "group": "build",
             "presentation": {
@@ -507,14 +547,14 @@
                 "showReuseMessage": true,
                 "clear": false
             },
-            "detail": "Generate backend call graph visualizations using go-callvis"
+            "detail": "Generate backend call graph visualizations (auto-cleans previous graphs)"
         },
         {
-            "label": "Generate Call Graphs (Verbose)",
+            "label": "Generate Backend Call Graphs (Verbose)",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/generate-callgraph.sh",
+            "command": "${workspaceFolder}/scripts/backend_callgraph.sh --verbose",
             "windows": {
-                "command": "${workspaceFolder}/scripts/generate-callgraph.ps1",
+                "command": "${workspaceFolder}/scripts/backend_callgraph.ps1",
                 "args": [
                     "-SkipInstall",
                     "-VerboseOutput"
@@ -534,9 +574,9 @@
         {
             "label": "Update Call Graph Documentation",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/generate-callgraph.sh && echo 'Call graphs updated. Opening documentation...' && code docs/BACKEND_CALL_GRAPH.md",
+            "command": "${workspaceFolder}/scripts/backend_callgraph.sh && echo 'Call graphs updated. Opening documentation...' && code docs/BACKEND_CALL_GRAPH.md",
             "windows": {
-                "command": "${workspaceFolder}/scripts/generate-callgraph.ps1 -SkipInstall; Write-Host 'Call graphs updated. Opening documentation...'; code docs/BACKEND_CALL_GRAPH.md"
+                "command": "${workspaceFolder}/scripts/backend_callgraph.ps1 -SkipInstall; Write-Host 'Call graphs updated. Opening documentation...'; code docs/BACKEND_CALL_GRAPH.md"
             },
             "group": "build",
             "presentation": {
@@ -548,24 +588,6 @@
                 "clear": false
             },
             "detail": "Regenerate call graphs and open the documentation file"
-        },
-        {
-            "label": "Clean Call Graphs",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/clean-callgraph.sh",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/clean-callgraph.ps1"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Remove all generated call graph files and documentation"
         },
         {
             "label": "Database Init",

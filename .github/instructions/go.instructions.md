@@ -1200,12 +1200,190 @@ func TestResourceService_CreateResource(t *testing.T) {
 
 ## Security Best Practices
 
+### Secure File Operations and Path Handling
+
+The `G304` security warning indicates potential file inclusion vulnerabilities (CWE-22). Follow these patterns for secure file operations:
+
+#### Path Validation and Sanitization
+
+**❌ BAD: Unsanitized file path usage**
+
+```go
+// Vulnerable to directory traversal attacks
+func loadConfig(path string) error {
+    data, err := os.ReadFile(path) // G304 - potential security issue
+    if err != nil {
+        return err
+    }
+    // ... process data
+}
+```
+
+**✅ GOOD: Comprehensive path validation**
+
+```go
+import (
+    "filepath"
+    "strings"
+    "os"
+    "fmt"
+)
+
+func validateConfigPath(path string) (string, error) {
+    // Reject empty paths
+    if path == "" {
+        return "", fmt.Errorf("config path cannot be empty")
+    }
+
+    // Clean the path to resolve any . or .. elements
+    cleanPath := filepath.Clean(path)
+
+    // Reject paths that try to traverse directories with ..
+    if strings.Contains(cleanPath, "..") {
+        return "", fmt.Errorf("config path cannot contain directory traversal sequences")
+    }
+
+    // Ensure the path has a valid extension for config files
+    ext := filepath.Ext(cleanPath)
+    validExts := []string{".yaml", ".yml", ".json"}
+    validExt := false
+    for _, validExtension := range validExts {
+        if ext == validExtension {
+            validExt = true
+            break
+        }
+    }
+    if !validExt {
+        return "", fmt.Errorf("config file must have a valid extension (.yaml, .yml, .json)")
+    }
+
+    // Convert to absolute path for consistency
+    absPath, err := filepath.Abs(cleanPath)
+    if err != nil {
+        return "", fmt.Errorf("failed to resolve absolute path: %w", err)
+    }
+
+    return absPath, nil
+}
+
+func loadConfigFile(cfg *Config, path string) error {
+    // Validate and sanitize the file path
+    cleanPath, err := validateConfigPath(path)
+    if err != nil {
+        return fmt.Errorf("invalid config file path: %w", err)
+    }
+
+    // Check if file exists
+    if _, err := os.Stat(cleanPath); err != nil {
+        if os.IsNotExist(err) {
+            return nil // File doesn't exist - use defaults
+        }
+        return fmt.Errorf("failed to access config file: %w", err)
+    }
+
+    // Read the file safely with justified nosec comment
+    // #nosec G304 -- Path is validated by validateConfigPath() which prevents directory traversal
+    data, err := os.ReadFile(cleanPath)
+    if err != nil {
+        return fmt.Errorf("failed to read config file: %w", err)
+    }
+
+    // Parse configuration data
+    if err := yaml.Unmarshal(data, cfg); err != nil {
+        return fmt.Errorf("failed to parse config file: %w", err)
+    }
+
+    return nil
+}
+```
+
+#### Security Testing for File Operations
+
+Always test path validation with security-focused test cases:
+
+```go
+func TestValidateConfigPath(t *testing.T) {
+    tests := []struct {
+        name        string
+        path        string
+        expectError bool
+        errorMsg    string
+    }{
+        {
+            name:        "valid yaml config",
+            path:        "config.yaml",
+            expectError: false,
+        },
+        {
+            name:        "valid json config",
+            path:        "config.json",
+            expectError: false,
+        },
+        {
+            name:        "directory traversal attempt",
+            path:        "../../../etc/passwd",
+            expectError: true,
+            errorMsg:    "directory traversal",
+        },
+        {
+            name:        "invalid extension",
+            path:        "config.txt",
+            expectError: true,
+            errorMsg:    "valid extension",
+        },
+        {
+            name:        "empty path",
+            path:        "",
+            expectError: true,
+            errorMsg:    "cannot be empty",
+        },
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            _, err := validateConfigPath(tt.path)
+            if tt.expectError {
+                assert.Error(t, err)
+                if tt.errorMsg != "" {
+                    assert.Contains(t, err.Error(), tt.errorMsg)
+                }
+            } else {
+                assert.NoError(t, err)
+            }
+        })
+    }
+}
+```
+
+#### Using nosec Comments Properly
+
+When security scanners flag legitimate usage, use justified nosec comments:
+
+```go
+// Justified nosec usage - explains why the usage is safe
+// nosec G304 -- Path is validated by validateConfigPath() which prevents directory traversal
+data, err := os.ReadFile(cleanPath)
+
+// Also acceptable with specific CWE reference
+// nosec G304:CWE-22 -- Input sanitized through comprehensive path validation
+content, err := ioutil.ReadFile(sanitizedPath)
+```
+
+**Guidelines for nosec comments:**
+
+- Always include **justification** explaining why the usage is safe
+- Reference the **validation function** that makes it secure
+- Be **specific** about the protection mechanism
+- **Review regularly** to ensure justification remains valid
+
 ### Input Validation
 
 - Validate **all user inputs** at the controller layer
 - Use **parameterized queries** to prevent SQL injection
 - Implement **input sanitization** for all user-provided data
 - Use **struct tags** for validation rules
+- **Validate file paths** before any file system operations
+- **Sanitize file names** and reject directory traversal attempts
 
 ### Error Handling
 
@@ -1213,6 +1391,7 @@ func TestResourceService_CreateResource(t *testing.T) {
 - **Sanitize sensitive data** in logs and responses
 - Implement **proper error wrapping** with context
 - Provide **meaningful error messages** without exposing internals
+- **Avoid information leakage** in error messages about file system structure
 
 ### Authentication & Authorization
 
@@ -1220,6 +1399,31 @@ func TestResourceService_CreateResource(t *testing.T) {
 - Use **context** to pass user information through request pipeline
 - Validate **permissions** at the service layer
 - Implement **audit logging** for security events
+
+### Database Security
+
+- Use **parameterized queries** exclusively to prevent SQL injection
+- Validate **all database inputs** before query construction
+- Implement **least privilege** database access
+- Use **connection pooling** with proper credential management
+
+```go
+// ✅ GOOD: Parameterized query
+func (r *resourceRepository) GetByID(ctx context.Context, id string) (*models.Resource, error) {
+    query := `SELECT id, type, provider, name, data FROM resources WHERE id = $1`
+    var resource models.Resource
+    err := r.db.QueryRowContext(ctx, query, id).Scan(
+        &resource.ID, &resource.Type, &resource.Provider, &resource.Name, &resource.Data,
+    )
+    return &resource, err
+}
+
+// ❌ BAD: String concatenation (SQL injection risk)
+func (r *resourceRepository) GetByID(ctx context.Context, id string) (*models.Resource, error) {
+    query := fmt.Sprintf("SELECT * FROM resources WHERE id = '%s'", id) // Vulnerable!
+    // ... rest of implementation
+}
+```
 
 ## Development Commands
 
