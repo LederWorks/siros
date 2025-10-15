@@ -80,7 +80,8 @@ done
 
 # Get script directory and project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+SCRIPTS_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$SCRIPTS_DIR")"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 FRONTEND_DIST_DIR="$PROJECT_ROOT/frontend/dist"
 BACKEND_STATIC_DIR="$BACKEND_DIR/static"

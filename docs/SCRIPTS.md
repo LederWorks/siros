@@ -51,7 +51,7 @@ The `/scripts` directory contains build, development, and testing scripts for th
 
 **Requirements**:
 
-- Go 1.21+
+- Go 1.24+
 - Node.js 18+
 - PostgreSQL with pgvector extension
 

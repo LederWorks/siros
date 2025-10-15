@@ -15,7 +15,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "Prerequisites:"
     Write-Host "  - Docker must be installed and running"
-    Write-Host "  - Go 1.21+ must be installed"
+    Write-Host "  - Go 1.24+ must be installed"
     Write-Host "  - Node.js 18+ and npm must be installed"
     Write-Host ""
     Write-Host "Press Ctrl+C to stop all servers"

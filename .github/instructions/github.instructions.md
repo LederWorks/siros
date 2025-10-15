@@ -514,7 +514,7 @@ body:
       description: Please provide information about your environment
       value: |
         - OS: [e.g., Windows 11, macOS 13, Ubuntu 22.04]
-        - Go version: [e.g., 1.21.0]
+        - Go version: [e.g., 1.24.0]
         - Node.js version: [e.g., 18.17.0]
         - Database: [e.g., PostgreSQL 15.3]
         - Cloud Providers: [e.g., AWS, Azure, GCP]

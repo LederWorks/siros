@@ -3,7 +3,7 @@
 
 [CmdletBinding()]
 param(
-    [switch]$Verbose,
+    [switch]$VerboseOutput,
     [switch]$SkipInstall,
     [string]$Config = "",
     [switch]$Help
@@ -16,7 +16,7 @@ if ($Help) {
     Write-Host "  .\scripts\build_frontend.ps1 [options]"
     Write-Host ""
     Write-Host "OPTIONS:" -ForegroundColor Yellow
-    Write-Host "  -Verbose            Enable verbose output"
+    Write-Host "  -VerboseOutput      Enable verbose output"
     Write-Host "  -SkipInstall        Skip automatic dependency installation"
     Write-Host "  -Config <path>      Use custom config file"
     Write-Host "  -Help               Show this help message"
@@ -27,7 +27,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "EXAMPLES:" -ForegroundColor Yellow
     Write-Host "  .\scripts\build_frontend.ps1                    # Build with default settings"
-    Write-Host "  .\scripts\build_frontend.ps1 -Verbose           # Build with verbose output"
+    Write-Host "  .\scripts\build_frontend.ps1 -VerboseOutput     # Build with verbose output"
     Write-Host "  .\scripts\build_frontend.ps1 -SkipInstall       # Build without installing dependencies"
     exit 0
 }
@@ -58,7 +58,8 @@ function Write-Error {
 
 # Get script directory and project root
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ProjectRoot = Split-Path -Parent $ScriptDir
+$ScriptsDir = Split-Path -Parent $ScriptDir
+$ProjectRoot = Split-Path -Parent $ScriptsDir
 $FrontendDir = Join-Path $ProjectRoot "frontend"
 
 Write-Host ""
@@ -84,7 +85,7 @@ try {
         exit 1
     }
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         $nodeVersionOutput = node --version
         Write-Status "Using Node.js version: $nodeVersionOutput"
     }
@@ -96,7 +97,7 @@ try {
         exit 1
     }
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         $npmVersionOutput = npm --version
         Write-Status "Using npm version: $npmVersionOutput"
     }
@@ -113,14 +114,7 @@ try {
             Write-Success "Frontend dependencies installed successfully"
         }
         else {
-            Write-Status "Dependencies already installed, updating if needed..."
-            npm ci --silent
-            if ($LASTEXITCODE -ne 0) {
-                Write-Warning "Failed to update dependencies, continuing with existing ones"
-            }
-            else {
-                Write-Success "Dependencies verified and updated"
-            }
+            Write-Status "Dependencies already installed, using existing ones"
         }
     }
     else {
@@ -142,11 +136,11 @@ try {
     # Build the frontend
     Write-Status "Building React/TypeScript frontend..."
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         npm run build
     }
     else {
-        npm run build --silent
+        npm run build 2>$null
     }
 
     if ($LASTEXITCODE -ne 0) {
@@ -164,7 +158,7 @@ try {
     Write-Success "Frontend build completed successfully!"
     Write-Status "Build output: frontend/dist ($($distFiles.Count) files generated)"
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         Write-Status "Build contents:"
         Get-ChildItem "dist" -Recurse | ForEach-Object {
             Write-Host "  $($_.FullName.Replace($PWD, '.'))" -ForegroundColor Gray

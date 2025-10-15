@@ -5,7 +5,8 @@ Thank you for your interest in contributing to Siros! This document provides gui
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Go 1.21 or higher
+
+- Go 1.24 or higher
 - Node.js 18+ and npm
 - PostgreSQL 15+ with pgvector extension
 - Docker (optional, for database)
@@ -13,25 +14,28 @@ Thank you for your interest in contributing to Siros! This document provides gui
 ### Development Setup
 
 1. **Fork and clone the repository**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/siros.git
    cd siros
    ```
 
 2. **Set up the development environment**
+
    ```bash
    # Start development servers (hot reload)
    ./scripts/dev.sh
-   
+
    # Or build production version
    ./scripts/build_all.sh
    ```
 
 3. **Run tests**
+
    ```bash
    # Backend tests
    cd backend && go test ./...
-   
+
    # Frontend tests
    cd frontend && npm test
    ```
@@ -41,6 +45,7 @@ Thank you for your interest in contributing to Siros! This document provides gui
 ### Reporting Issues
 
 Before creating an issue, please:
+
 1. Search existing issues to avoid duplicates
 2. Use the appropriate issue template
 3. Provide detailed information including:
@@ -52,6 +57,7 @@ Before creating an issue, please:
 ### Submitting Pull Requests
 
 1. **Create a feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -62,20 +68,23 @@ Before creating an issue, please:
    - Update documentation as needed
 
 3. **Test your changes**
+
    ```bash
    # Run all tests
    ./scripts/test.sh
-   
+
    # Build and test integration
    ./scripts/build_all.sh
    ```
 
 4. **Commit your changes**
+
    ```bash
    git commit -m "feat: add your feature description"
    ```
 
 5. **Push and create a PR**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -83,12 +92,14 @@ Before creating an issue, please:
 ## 🎯 Coding Guidelines
 
 ### General Principles
+
 - Write clean, readable, and maintainable code
 - Follow established patterns in the codebase
 - Add appropriate tests for new functionality
 - Update documentation for API changes
 
 ### Backend (Go)
+
 - Follow standard Go conventions and use `gofmt`
 - Use meaningful variable and function names
 - Handle errors appropriately with context
@@ -96,6 +107,7 @@ Before creating an issue, please:
 - Use interfaces for dependency injection
 
 ### Frontend (React + TypeScript)
+
 - Use functional components with hooks
 - Follow TypeScript best practices
 - Create reusable components
@@ -103,6 +115,7 @@ Before creating an issue, please:
 - Add proper error handling
 
 ### Git Commit Messages
+
 We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
@@ -114,6 +127,7 @@ type(scope): description
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -123,6 +137,7 @@ Types:
 - `chore`: Maintenance tasks
 
 Examples:
+
 ```
 feat(api): add semantic search endpoint
 fix(frontend): resolve resource list pagination issue
@@ -132,6 +147,7 @@ docs: update API documentation for new endpoints
 ## 🧪 Testing Guidelines
 
 ### Backend Testing
+
 - Write unit tests for all business logic
 - Use table-driven tests where appropriate
 - Mock external dependencies
@@ -147,7 +163,7 @@ func TestResourceService_CreateResource(t *testing.T) {
     }{
         // Test cases
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             // Test implementation
@@ -157,6 +173,7 @@ func TestResourceService_CreateResource(t *testing.T) {
 ```
 
 ### Frontend Testing
+
 - Test component behavior, not implementation details
 - Use React Testing Library
 - Mock API calls
@@ -166,7 +183,7 @@ func TestResourceService_CreateResource(t *testing.T) {
 test('displays resource information correctly', () => {
   const mockResource = { id: '1', name: 'Test Resource' };
   render(<ResourceCard resource={mockResource} />);
-  
+
   expect(screen.getByRole('heading', { name: 'Test Resource' })).toBeInTheDocument();
 });
 ```
@@ -174,6 +191,7 @@ test('displays resource information correctly', () => {
 ## 📚 Documentation
 
 When contributing, please ensure:
+
 - API changes are documented
 - New features include usage examples
 - README is updated if needed

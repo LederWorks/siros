@@ -79,7 +79,8 @@ done
 
 # Get script directory and project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+SCRIPTS_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$SCRIPTS_DIR")"
 FRONTEND_DIR="$PROJECT_ROOT/frontend"
 
 echo ""
@@ -130,13 +131,7 @@ if [ "$SKIP_INSTALL" = false ]; then
         fi
         print_success "Frontend dependencies installed successfully"
     else
-        print_status "Dependencies already installed, updating if needed..."
-        npm ci --silent
-        if [ $? -ne 0 ]; then
-            print_warning "Failed to update dependencies, continuing with existing ones"
-        else
-            print_success "Dependencies verified and updated"
-        fi
+        print_status "Dependencies already installed, using existing ones"
     fi
 else
     print_status "Skipping dependency installation (skip-install flag set)"

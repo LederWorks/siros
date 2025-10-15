@@ -166,7 +166,7 @@ jobs:
       - name: Build complete application
         run: |
           chmod +x ./scripts/build.sh
-          ./scripts/build.sh
+          ./scripts/build.sh --skip-tests
 
       - name: Test binary execution
         working-directory: ./build

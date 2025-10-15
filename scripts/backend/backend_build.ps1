@@ -3,7 +3,7 @@
 
 [CmdletBinding()]
 param(
-    [switch]$Verbose,
+    [switch]$VerboseOutput,
     [switch]$SkipInstall,
     [string]$Config = "",
     [switch]$Help
@@ -16,7 +16,7 @@ if ($Help) {
     Write-Host "  .\scripts\build_backend.ps1 [options]"
     Write-Host ""
     Write-Host "OPTIONS:" -ForegroundColor Yellow
-    Write-Host "  -Verbose            Enable verbose output"
+    Write-Host "  -VerboseOutput      Enable verbose output"
     Write-Host "  -SkipInstall        Skip automatic dependency installation"
     Write-Host "  -Config <path>      Use custom config file"
     Write-Host "  -Help               Show this help message"
@@ -28,7 +28,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "EXAMPLES:" -ForegroundColor Yellow
     Write-Host "  .\scripts\build_backend.ps1                    # Build with default settings"
-    Write-Host "  .\scripts\build_backend.ps1 -Verbose           # Build with verbose output"
+    Write-Host "  .\scripts\build_backend.ps1 -VerboseOutput       # Build with verbose output"
     Write-Host "  .\scripts\build_backend.ps1 -SkipInstall       # Build without updating dependencies"
     exit 0
 }
@@ -59,7 +59,8 @@ function Write-Error {
 
 # Get script directory and project root
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ProjectRoot = Split-Path -Parent $ScriptDir
+$ScriptsDir = Split-Path -Parent $ScriptDir
+$ProjectRoot = Split-Path -Parent $ScriptsDir
 $BackendDir = Join-Path $ProjectRoot "backend"
 $FrontendDistDir = Join-Path $ProjectRoot "frontend" "dist"
 $BackendStaticDir = Join-Path $BackendDir "static"
@@ -84,7 +85,7 @@ try {
         exit 1
     }
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         $goVersionOutput = go version
         Write-Status "Using Go version: $goVersionOutput"
     }
@@ -125,7 +126,7 @@ try {
         $staticFiles = Get-ChildItem $BackendStaticDir -Recurse | Measure-Object
         Write-Success "Frontend assets copied ($($staticFiles.Count) files)"
 
-        if ($Verbose) {
+        if ($VerboseOutput) {
             Write-Status "Static assets:"
             Get-ChildItem $BackendStaticDir -Recurse | ForEach-Object {
                 Write-Host "  $($_.FullName.Replace($BackendStaticDir, './static'))" -ForegroundColor Gray
@@ -179,7 +180,7 @@ try {
 
     $buildArgs = @("-o", "../build/siros.exe", "./cmd/siros-server")
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         Write-Status "Build command: go build $($buildArgs -join ' ')"
         go build @buildArgs
     }
@@ -204,7 +205,7 @@ try {
     Write-Status "Binary location: $binaryPath"
     Write-Status "Binary size: $([math]::Round($binaryInfo.Length / 1MB, 2)) MB"
 
-    if ($Verbose) {
+    if ($VerboseOutput) {
         Write-Status "Binary details:"
         Write-Host "  Path: $($binaryInfo.FullName)" -ForegroundColor Gray
         Write-Host "  Size: $($binaryInfo.Length) bytes" -ForegroundColor Gray

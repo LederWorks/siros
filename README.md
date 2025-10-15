@@ -447,7 +447,7 @@ func NewResourceController(
 
 ### Prerequisites
 
-- Go 1.21 or higher
+- Go 1.24 or higher
 - Node.js 18+ and npm
 - PostgreSQL 15+ with pgvector extension
 - Docker (optional, for database)

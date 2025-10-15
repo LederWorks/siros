@@ -81,7 +81,7 @@ AGENTS.md (root)                            ← Master tracking & entry point
 ### Backend Development
 
 **Status**: ✅ **ACTIVE DEVELOPMENT**
-**Lead Technology**: Go 1.21+, PostgreSQL + pgvector, MVC Architecture
+**Lead Technology**: Go 1.24+, PostgreSQL + pgvector, MVC Architecture
 
 #### Current Implementation
 
