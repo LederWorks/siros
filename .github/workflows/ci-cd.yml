@@ -145,7 +145,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Build complete application
-        run: ./scripts/build_all.sh
+        run: ./scripts/build.sh
 
       - name: Test binary execution
         working-directory: ./backend
