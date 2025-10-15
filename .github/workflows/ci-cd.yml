@@ -191,6 +191,10 @@ jobs:
         working-directory: ./backend
         run: go mod download
 
+      - name: Verify Go modules
+        working-directory: ./backend
+        run: go mod verify
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -207,7 +211,7 @@ jobs:
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: "./backend/..."
+          args: "./..."
 
   # Docker build and push
   docker:
