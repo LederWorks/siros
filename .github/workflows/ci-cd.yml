@@ -166,6 +166,8 @@ jobs:
       - name: Build complete application
         run: |
           chmod +x ./scripts/build.sh
+          chmod +x ./scripts/frontend/frontend_build.sh
+          chmod +x ./scripts/backend/backend_build.sh
           ./scripts/build.sh --skip-tests
 
       - name: Test binary execution
