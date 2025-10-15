@@ -137,7 +137,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Build complete application
-        run: ./scripts/build.sh
+        run: |
+          chmod +x ./scripts/build.sh
+          ./scripts/build.sh
 
       - name: Test binary execution
         working-directory: ./backend
@@ -188,7 +190,9 @@ jobs:
           sarif_file: "trivy-results.sarif"
 
       - name: Run Gosec Security Scanner
-        run: ./scripts/backend/backend_gosec.sh
+        run: |
+          chmod +x ./scripts/backend/backend_gosec.sh
+          ./scripts/backend/backend_gosec.sh
 
   # Docker build and push
   docker:
