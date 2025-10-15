@@ -1,3 +1,7 @@
+---
+applyTo: '.github/**'
+---
+
 # Siros GitHub Configuration & CI/CD Tracking
 
 This document provides comprehensive tracking for GitHub configuration, CI/CD workflows, and repository management for the Siros multi-cloud resource management platform.
