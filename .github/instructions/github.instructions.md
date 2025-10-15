@@ -88,7 +88,7 @@ on:
     types: [published]
 
 env:
-  GO_VERSION: '1.21'
+  GO_VERSION: '1.22'
   NODE_VERSION: '18'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -345,7 +345,7 @@ on:
     types: [published]
 
 env:
-  GO_VERSION: '1.21'
+  GO_VERSION: '1.22'
   NODE_VERSION: '18'
 
 jobs:
