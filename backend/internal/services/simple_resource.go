@@ -111,7 +111,7 @@ func (s *simpleResourceService) UpdateResource(ctx context.Context, id string, r
 	return resource, nil
 }
 
-func (s *simpleResourceService) DeleteResource(ctx context.Context, id string, deletedBy string) error {
+func (s *simpleResourceService) DeleteResource(ctx context.Context, id, deletedBy string) error {
 	if id == "" {
 		return fmt.Errorf("resource ID is required")
 	}
@@ -136,7 +136,7 @@ func (s *simpleResourceService) ListResources(ctx context.Context, query *models
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.List(ctx, *query)
+	resources, err := s.resourceRepo.List(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list resources: %w", err)
 	}
@@ -151,7 +151,7 @@ func (s *simpleResourceService) SearchResources(ctx context.Context, query *mode
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.Search(ctx, *query)
+	resources, err := s.resourceRepo.Search(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search resources: %w", err)
 	}

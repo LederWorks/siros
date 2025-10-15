@@ -16,10 +16,10 @@ type Manager struct {
 }
 
 // NewManager creates a new provider manager
-func NewManager(cfg config.ProvidersConfig) *Manager {
+func NewManager(cfg *config.ProvidersConfig) *Manager {
 	return &Manager{
 		providers: make(map[string]types.Provider),
-		config:    cfg,
+		config:    *cfg,
 	}
 }
 

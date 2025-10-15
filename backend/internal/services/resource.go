@@ -21,7 +21,7 @@ type ResourceService interface {
 
 // VectorService defines the interface for vector operations
 type VectorService interface {
-	GenerateVector(ctx context.Context, data map[string]interface{}, metadata models.ResourceMetadata) ([]float32, error)
+	GenerateVector(ctx context.Context, data map[string]interface{}, metadata *models.ResourceMetadata) ([]float32, error)
 	FindSimilarResources(ctx context.Context, vector []float32, threshold float32, limit int) ([]models.Resource, error)
 	UpdateVector(ctx context.Context, resourceID string, vector []float32) error
 }
@@ -35,16 +35,16 @@ type BlockchainService interface {
 
 // SchemaService defines the interface for schema operations
 type SchemaService interface {
-	CreateSchema(ctx context.Context, schema models.Schema) error
+	CreateSchema(ctx context.Context, schema *models.Schema) error
 	GetSchema(ctx context.Context, name, provider string) (*models.Schema, error)
 	ListSchemas(ctx context.Context, provider string) ([]models.Schema, error)
-	UpdateSchema(ctx context.Context, name, provider string, schema models.Schema) error
+	UpdateSchema(ctx context.Context, name, provider string, schema *models.Schema) error
 	DeleteSchema(ctx context.Context, name, provider string) error
 }
 
 // TerraformService defines the interface for Terraform operations
 type TerraformService interface {
-	StoreKey(ctx context.Context, key models.TerraformKey) error
+	StoreKey(ctx context.Context, key *models.TerraformKey) error
 	GetKey(ctx context.Context, key string) (*models.TerraformKey, error)
 	ListKeysByPath(ctx context.Context, path string) ([]models.TerraformKey, error)
 	DeleteKey(ctx context.Context, key string) error
@@ -56,8 +56,8 @@ type ResourceRepository interface {
 	GetByID(ctx context.Context, id string) (*models.Resource, error)
 	Update(ctx context.Context, resource *models.Resource) error
 	Delete(ctx context.Context, id string) error
-	List(ctx context.Context, query models.SearchQuery) ([]models.Resource, error)
-	Search(ctx context.Context, query models.SearchQuery) ([]models.Resource, error)
+	List(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
+	Search(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
 	GetByParentID(ctx context.Context, parentID string) ([]models.Resource, error)
 	VectorSearch(ctx context.Context, vector []float32, threshold float32, limit int) ([]models.Resource, error)
 }
@@ -133,7 +133,7 @@ func (s *resourceService) CreateResource(ctx context.Context, req *models.Create
 	}
 
 	// Generate vector for the resource
-	vector, err := s.vectorService.GenerateVector(ctx, resource.Data, resource.Metadata)
+	vector, err := s.vectorService.GenerateVector(ctx, resource.Data, &resource.Metadata)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate vector: %w", err)
 	}
@@ -204,7 +204,7 @@ func (s *resourceService) UpdateResource(ctx context.Context, id string, req mod
 
 	// Regenerate vector if data changed
 	if req.Data != nil {
-		vector, err := s.vectorService.GenerateVector(ctx, resource.Data, resource.Metadata)
+		vector, err := s.vectorService.GenerateVector(ctx, resource.Data, &resource.Metadata)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate vector: %w", err)
 		}
@@ -232,7 +232,7 @@ func (s *resourceService) UpdateResource(ctx context.Context, id string, req mod
 	return resource, nil
 }
 
-func (s *resourceService) DeleteResource(ctx context.Context, id string, deletedBy string) error {
+func (s *resourceService) DeleteResource(ctx context.Context, id, deletedBy string) error {
 	if id == "" {
 		return fmt.Errorf("resource ID is required")
 	}
@@ -273,7 +273,7 @@ func (s *resourceService) ListResources(ctx context.Context, query *models.Searc
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.List(ctx, *query)
+	resources, err := s.resourceRepo.List(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list resources: %w", err)
 	}
@@ -288,7 +288,7 @@ func (s *resourceService) SearchResources(ctx context.Context, query *models.Sea
 	}
 	query.SetDefaults()
 
-	resources, err := s.resourceRepo.Search(ctx, *query)
+	resources, err := s.resourceRepo.Search(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search resources: %w", err)
 	}

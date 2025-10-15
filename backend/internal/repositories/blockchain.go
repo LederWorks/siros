@@ -15,7 +15,7 @@ type blockchainRepository struct {
 }
 
 // NewBlockchainRepository creates a new blockchain repository
-func NewBlockchainRepository(db *sql.DB) *blockchainRepository {
+func NewBlockchainRepository(db *sql.DB) BlockchainRepository {
 	return &blockchainRepository{db: db}
 }
 

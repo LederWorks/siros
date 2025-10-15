@@ -6,13 +6,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/LederWorks/siros/backend/internal/api/middleware"
 	"github.com/LederWorks/siros/backend/internal/api/routes"
 	"github.com/LederWorks/siros/backend/internal/config"
 	"github.com/LederWorks/siros/backend/internal/controllers"
 	"github.com/LederWorks/siros/backend/internal/services"
 	"github.com/LederWorks/siros/backend/internal/storage"
-	"github.com/gorilla/mux"
 )
 
 // Server represents the HTTP API server

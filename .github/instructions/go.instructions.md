@@ -89,7 +89,663 @@ type ResourceProcessor interface {
     // actor: user performing the action (for audit trail)
     Process(ctx context.Context, data map[string]interface{}, metadata ResourceMetadata, actor string) error
 }
-```cloud resource management.
+```
+
+### Import Management and Duplicate Import Prevention (dupImport)
+
+The `dupImport` linter warning occurs when the same package is imported multiple times, often with different aliases or as both normal and blank imports.
+
+#### Common Duplicate Import Scenarios
+
+**❌ BAD: Same package imported multiple times**
+```go
+import (
+    "database/sql"
+    "github.com/lib/pq"           // Normal import for using pq.Array()
+    _ "github.com/lib/pq"         // Blank import for driver registration - DUPLICATE!
+)
+```
+
+**❌ BAD: Different aliases for same package**
+```go
+import (
+    pq "github.com/lib/pq"
+    "github.com/lib/pq"          // DUPLICATE with different alias
+)
+```
+
+**✅ GOOD: Single import when package is actively used**
+```go
+import (
+    "database/sql"
+    "github.com/lib/pq"          // Single import - handles both usage and driver registration
+)
+
+func example() {
+    // Use package functions directly
+    rows, err := db.Query("SELECT * FROM table", pq.Array(values))
+    var stringArray pq.StringArray
+}
+```
+
+**✅ GOOD: Blank import when only driver registration is needed**
+```go
+import (
+    "database/sql"
+    _ "github.com/lib/pq"        // Only for side effects (driver registration)
+)
+
+func example() {
+    // Only using standard database/sql, no pq-specific functions
+    db, err := sql.Open("postgres", connectionString)
+}
+```
+
+#### Driver Registration vs Active Usage
+
+**Database Drivers** often need special consideration:
+
+```go
+// When you need pq-specific functions (Array, StringArray, etc.)
+import (
+    "database/sql"
+    "github.com/lib/pq"          // Normal import - covers driver registration too
+)
+
+// When you only need the driver registered
+import (
+    "database/sql"
+    _ "github.com/lib/pq"        // Blank import for driver registration only
+)
+```
+
+#### Import Organization Best Practices
+
+**✅ GOOD: Properly organized imports**
+```go
+import (
+    // Standard library imports first
+    "context"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "log"
+    "time"
+
+    // Third-party imports
+    "github.com/lib/pq"
+
+    // Local project imports
+    "github.com/LederWorks/siros/backend/internal/config"
+    "github.com/LederWorks/siros/backend/pkg/types"
+)
+```
+
+#### Resolving Duplicate Import Issues
+
+**Step 1: Identify the purpose**
+- Is the package used for function calls? → Use normal import
+- Is it only needed for side effects (like driver registration)? → Use blank import
+- Is it used for both? → Normal import handles both cases
+
+**Step 2: Remove duplicates**
+```go
+// Before (duplicate imports)
+import (
+    "github.com/lib/pq"
+    _ "github.com/lib/pq" // PostgreSQL driver
+)
+
+// After (single import for active usage)
+import (
+    "github.com/lib/pq"   // Handles both usage and driver registration
+)
+```
+
+**Step 3: Verify functionality**
+- Ensure driver registration still works
+- Verify package functions are accessible
+- Run tests to confirm no regressions
+
+#### Common Patterns in Siros
+
+**Database Operations:**
+```go
+import (
+    "database/sql"
+    "github.com/lib/pq"  // For pq.Array(), pq.StringArray, and driver registration
+)
+
+func (s *Storage) CreateResource(ctx context.Context, resource *types.Resource) error {
+    query := `INSERT INTO resources (...) VALUES (...)`
+    _, err := s.db.ExecContext(ctx, query,
+        pq.Array(resource.Children),    // Using pq functions
+        pq.Array(resource.Vector),
+    )
+    return err
+}
+```
+
+**AWS SDK Imports:**
+```go
+import (
+    "github.com/aws/aws-sdk-go-v2/service/ec2"
+    ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"  // Alias to avoid conflicts
+)
+```
+
+#### Tools and Automation
+
+**goimports** automatically organizes imports:
+```bash
+# Format imports automatically
+goimports -w .
+
+# Check import formatting
+goimports -d .
+```
+
+**IDE Integration:**
+- Configure VS Code to run goimports on save
+- Use golangci-lint with dupImport rule enabled
+- Set up pre-commit hooks to catch import issues early
+
+This prevents dupImport warnings and maintains clean, organized import sections throughout the codebase.
+
+### API Design Patterns
+
+#### Constructor Functions and Return Types
+
+**Rule**: Exported constructor functions should return **interface types**, not unexported concrete types.
+
+**Problem - unexported-return Warning**:
+```go
+// ❌ BAD: Exported function returning unexported type
+func NewBlockchainRepository(db *sql.DB) *blockchainRepository {
+    return &blockchainRepository{db: db}
+}
+```
+
+**Issues with this pattern**:
+- Users can't effectively work with the returned type
+- Requires type assertions for any meaningful operations
+- Inconsistent API design (public function, private return)
+- Harder to test and mock
+
+**Solution**:
+```go
+// ✅ GOOD: Exported function returning exported interface
+func NewBlockchainRepository(db *sql.DB) BlockchainRepository {
+    return &blockchainRepository{db: db}
+}
+```
+
+**Benefits of interface returns**:
+- **Clean API**: Users work with well-defined interfaces
+- **Testability**: Easy to mock for unit tests
+- **Flexibility**: Implementation can change without breaking callers
+- **Consistency**: Public functions return public types
+
+#### Common Unexported-Return Scenarios
+
+**❌ BAD: Repository constructors returning concrete types**
+```go
+// Violates unexported-return rule
+func NewResourceRepository(db *sql.DB) *resourceRepository {
+    return &resourceRepository{db: db}
+}
+
+func NewSchemaRepository(db *sql.DB) *schemaRepository {
+    return &schemaRepository{db: db}
+}
+
+func NewBlockchainRepository(db *sql.DB) *blockchainRepository {
+    return &blockchainRepository{db: db}
+}
+```
+
+**✅ GOOD: Repository constructors returning interfaces**
+```go
+// Proper API design with interface returns
+func NewResourceRepository(db *sql.DB) ResourceRepository {
+    return &resourceRepository{db: db}
+}
+
+func NewSchemaRepository(db *sql.DB) SchemaRepository {
+    return &schemaRepository{db: db}
+}
+
+func NewBlockchainRepository(db *sql.DB) BlockchainRepository {
+    return &blockchainRepository{db: db}
+}
+```
+
+#### Service Layer API Design
+
+**❌ BAD: Service constructors with inconsistent returns**
+```go
+// Mixing concrete types and interfaces
+func NewResourceService(repo *resourceRepository) *resourceService {
+    return &resourceService{repo: repo}
+}
+
+func NewSearchService(repo ResourceRepository) searchService {
+    return searchService{repo: repo}
+}
+```
+
+**✅ GOOD: Consistent interface-based API**
+```go
+// All service constructors return interfaces
+func NewResourceService(repo ResourceRepository) ResourceService {
+    return &resourceService{repo: repo}
+}
+
+func NewSearchService(repo ResourceRepository) SearchService {
+    return &searchService{repo: repo}
+}
+
+func NewSchemaService(repo SchemaRepository) SchemaService {
+    return &schemaService{repo: repo}
+}
+```
+
+#### Factory Pattern Implementation
+
+**✅ GOOD: Factory functions with proper interface returns**
+```go
+// Services factory returning interfaces
+type Services struct {
+    Resource  ResourceService
+    Search    SearchService
+    Schema    SchemaService
+    Terraform TerraformService
+    MCP       MCPService
+}
+
+func NewServices(repos *Repositories, logger *log.Logger) *Services {
+    return &Services{
+        Resource:  NewResourceService(repos.Resource, logger),      // Interface return
+        Search:    NewSearchService(repos.Resource, logger),       // Interface return
+        Schema:    NewSchemaService(repos.Schema, logger),         // Interface return
+        Terraform: NewTerraformService(repos.Resource, logger),    // Interface return
+        MCP:       NewMCPService(repos.Resource, logger),          // Interface return
+    }
+}
+
+// Repositories factory returning interfaces
+type Repositories struct {
+    Resource   ResourceRepository
+    Schema     SchemaRepository
+    Blockchain BlockchainRepository
+}
+
+func NewRepositories(db *sql.DB, logger *log.Logger) *Repositories {
+    return &Repositories{
+        Resource:   NewResourceRepository(db),      // Interface return
+        Schema:     NewSchemaRepository(db),        // Interface return
+        Blockchain: NewBlockchainRepository(db),    // Interface return
+    }
+}
+```
+
+#### Testing Interface Compatibility
+
+Always verify that your implementations satisfy the interfaces:
+
+```go
+// Compile-time interface compliance checks
+var (
+    _ ResourceRepository   = (*resourceRepository)(nil)
+    _ SchemaRepository     = (*schemaRepository)(nil)
+    _ BlockchainRepository = (*blockchainRepository)(nil)
+    _ ResourceService      = (*resourceService)(nil)
+    _ SearchService        = (*searchService)(nil)
+)
+```
+
+#### Migration Strategy for Existing Code
+
+When fixing unexported-return warnings:
+
+1. **Define the interface** (if it doesn't exist)
+2. **Update the constructor** to return the interface
+3. **Update all call sites** to use interface types
+4. **Add compile-time checks** to verify implementation
+
+```go
+// Step 1: Define interface
+type ExampleService interface {
+    DoSomething(ctx context.Context, data string) error
+}
+
+// Step 2: Update constructor
+func NewExampleService(dep Dependency) ExampleService { // Was: *exampleService
+    return &exampleService{dep: dep}
+}
+
+// Step 3: Update callers
+var service ExampleService = NewExampleService(dep) // Was: *exampleService
+
+// Step 4: Add compile-time check
+var _ ExampleService = (*exampleService)(nil)
+```
+
+#### Repository Pattern Implementation
+
+```go
+// Interface definition (exported)
+type ResourceRepository interface {
+    Create(ctx context.Context, resource *models.Resource) error
+    GetByID(ctx context.Context, id string) (*models.Resource, error)
+    Update(ctx context.Context, resource *models.Resource) error
+    Delete(ctx context.Context, id string) error
+}
+
+// Implementation (unexported)
+type resourceRepository struct {
+    db *sql.DB
+}
+
+// Constructor (exported function returning exported interface)
+func NewResourceRepository(db *sql.DB) ResourceRepository {
+    return &resourceRepository{db: db}
+}
+```
+
+### Heavy Parameter Optimization (hugeParam)
+
+The `hugeParam` linter warning occurs when large structs (typically >96 bytes) are passed by value instead of by pointer, causing expensive copying operations.
+
+#### Identifying Heavy Parameters
+
+Common heavy parameter candidates in Siros:
+- **models.SearchQuery** (104 bytes) - search filters and pagination
+- **models.Schema** (112 bytes) - resource schema definitions
+- **models.ResourceMetadata** (104 bytes) - resource enrichment data
+- **models.TerraformKey** (96 bytes) - Terraform resource keys
+- **config.ProvidersConfig** (176 bytes) - cloud provider configurations
+
+#### Heavy Parameter Best Practices
+
+**❌ BAD: Passing large structs by value**
+```go
+// Heavy parameter - causes expensive copying
+func (s *schemaService) CreateSchema(ctx context.Context, schema models.Schema) error {
+    return s.repo.Create(ctx, &schema) // Converting to pointer anyway
+}
+
+// Heavy parameter in repository
+func (r *resourceRepository) List(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+    // query struct copied on every call
+    return r.performQuery(ctx, query)
+}
+
+// Heavy parameter in provider manager
+func NewManager(cfg config.ProvidersConfig) *Manager {
+    return &Manager{config: cfg} // Large struct copied
+}
+```
+
+**✅ GOOD: Using pointer parameters**
+```go
+// Pointer parameter - no copying overhead
+func (s *schemaService) CreateSchema(ctx context.Context, schema *models.Schema) error {
+    return s.repo.Create(ctx, schema) // Already a pointer
+}
+
+// Pointer parameter in repository
+func (r *resourceRepository) List(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
+    // Only pointer copied, struct shared
+    return r.performQuery(ctx, query)
+}
+
+// Pointer parameter in provider manager
+func NewManager(cfg *config.ProvidersConfig) *Manager {
+    return &Manager{config: *cfg} // Copy only when needed
+}
+```
+
+#### Interface Design for Heavy Parameters
+
+Update interface definitions to use pointers for heavy parameters:
+
+```go
+// Service interfaces with pointer parameters
+type SchemaService interface {
+    CreateSchema(ctx context.Context, schema *models.Schema) error
+    UpdateSchema(ctx context.Context, name, provider string, schema *models.Schema) error
+}
+
+type ResourceRepository interface {
+    List(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
+    Search(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
+}
+
+type VectorService interface {
+    GenerateVector(ctx context.Context, data map[string]interface{}, metadata *models.ResourceMetadata) ([]float32, error)
+}
+```
+
+#### Call Site Updates
+
+When updating function signatures, remember to update all call sites:
+
+```go
+// Before: passing structs by value
+resource, err := service.CreateResource(ctx, createRequest)
+results, err := repo.List(ctx, searchQuery)
+vector, err := vectorSvc.GenerateVector(ctx, data, metadata)
+
+// After: passing pointers
+resource, err := service.CreateResource(ctx, &createRequest)
+results, err := repo.List(ctx, &searchQuery)
+vector, err := vectorSvc.GenerateVector(ctx, data, &metadata)
+```
+
+#### Performance Benefits
+
+- **Memory**: Eliminates large struct copying (104-176 bytes → 8 bytes pointer)
+- **CPU**: Reduces allocation overhead in high-frequency operations
+- **Cache**: Better CPU cache utilization with pointer sharing
+- **Scalability**: Improved performance under load with frequent API calls
+
+#### Nil Safety Considerations
+
+When using pointer parameters, always validate against nil:
+
+```go
+func (s *schemaService) CreateSchema(ctx context.Context, schema *models.Schema) error {
+    if schema == nil {
+        return errors.New("schema cannot be nil")
+    }
+
+    if err := schema.Validate(); err != nil {
+        return fmt.Errorf("schema validation failed: %w", err)
+    }
+
+    return s.repo.Create(ctx, schema)
+}
+```
+
+### Range Value Copy Optimization (rangeValCopy)
+
+The `rangeValCopy` linter warning occurs when range loops copy large structs (typically >256 bytes) on each iteration, causing performance overhead.
+
+#### Identifying Range Value Copy Issues
+
+Common scenarios in Siros that trigger this warning:
+- **models.Resource** (~256 bytes) - core resource struct iterations
+- **AWS SDK types** (688-960 bytes) - EC2 instances, RDS instances
+- **Terraform types** (264 bytes) - terraform resource processing
+
+#### Range Value Copy Best Practices
+
+**❌ BAD: Copying large structs in range loops**
+```go
+// Copies 256 bytes per iteration
+for i, resource := range resources {
+    results[i] = SearchResult{
+        "id":   resource.ID,     // resource copied from slice
+        "name": resource.Name,
+        "data": resource.Data,
+    }
+}
+
+// Copies 688 bytes per AWS instance iteration
+for _, instance := range reservation.Instances {
+    resource := convertEC2Instance(instance) // instance copied
+    resources = append(resources, resource)
+}
+
+// Copies 264 bytes per terraform resource iteration
+for _, resource := range terraformResources {
+    converted := convertTerraformResource(resource) // resource copied
+    results = append(results, converted)
+}
+```
+
+**✅ GOOD: Using pointer iteration or indexing**
+
+**Option 1: Pointer Iteration (recommended for modification)**
+```go
+// Zero-copy iteration with pointers
+for i := range resources {
+    resource := &resources[i] // Point to original, no copy
+    results[i] = SearchResult{
+        "id":   resource.ID,
+        "name": resource.Name,
+        "data": resource.Data,
+    }
+}
+
+// Zero-copy AWS instance processing
+for i := range reservation.Instances {
+    instance := &reservation.Instances[i] // Point to original
+    resource := convertEC2Instance(instance)
+    resources = append(resources, resource)
+}
+```
+
+**Option 2: Index-Based Access (recommended for read-only)**
+```go
+// Index-based access, no copying
+for i := 0; i < len(resources); i++ {
+    results[i] = SearchResult{
+        "id":   resources[i].ID,    // Direct slice access
+        "name": resources[i].Name,
+        "data": resources[i].Data,
+    }
+}
+
+// Index-based terraform processing
+for i := 0; i < len(terraformResources); i++ {
+    converted := convertTerraformResource(&terraformResources[i])
+    results = append(results, converted)
+}
+```
+
+**Option 3: Range with Pointer (Go 1.22+)**
+```go
+// Modern Go pointer range (requires Go 1.22+)
+for _, resource := range &resources {
+    results = append(results, SearchResult{
+        "id":   resource.ID,
+        "name": resource.Name,
+        "data": resource.Data,
+    })
+}
+```
+
+#### Performance Comparison
+
+```go
+// SLOW: 256 bytes × 1000 resources = 256KB copied
+for _, resource := range resources {
+    processResource(resource) // Expensive copy
+}
+
+// FAST: 8 bytes × 1000 resources = 8KB (pointer overhead only)
+for i := range resources {
+    processResource(&resources[i]) // Pointer passing
+}
+```
+
+#### When to Use Each Pattern
+
+**Use Pointer Iteration (`&slice[i]`) when:**
+- Modifying struct fields during iteration
+- Passing structs to functions expecting pointers
+- Working with large structs (>100 bytes)
+- Performance is critical
+
+**Use Index-Based Access (`slice[i]`) when:**
+- Read-only operations on struct fields
+- Simple field access without function calls
+- Backward compatibility with older Go versions
+
+**Use Traditional Range when:**
+- Working with small structs (<50 bytes)
+- Copying is intentional (avoiding shared state)
+- Iterating primitive types (int, string, etc.)
+
+#### Real-World Siros Examples
+
+```go
+// Search service optimization
+func (s *searchService) convertToSearchResults(resources []models.Resource) []SearchResult {
+    results := make([]SearchResult, len(resources))
+
+    // OPTIMIZED: Pointer iteration to avoid 256-byte copies
+    for i := range resources {
+        resource := &resources[i]
+        results[i] = SearchResult{
+            "id":          resource.ID,
+            "type":        resource.Type,
+            "provider":    resource.Provider,
+            "name":        resource.Name,
+            "created_at":  resource.CreatedAt,
+            "modified_at": resource.ModifiedAt,
+        }
+    }
+
+    return results
+}
+
+// AWS provider optimization
+func (p *AWSProvider) processEC2Instances(reservation *ec2.Reservation) []models.Resource {
+    var resources []models.Resource
+
+    // OPTIMIZED: Index-based iteration for large AWS structs
+    for i := 0; i < len(reservation.Instances); i++ {
+        instance := &reservation.Instances[i]
+        resource := p.convertEC2Instance(instance)
+        resources = append(resources, resource)
+    }
+
+    return resources
+}
+
+// Terraform importer optimization
+func (si *StateImporter) processResources(tfResources []types.TerraformResource) []types.Resource {
+    var resources []types.Resource
+
+    // OPTIMIZED: Range with pointer access
+    for i := range tfResources {
+        tfResource := &tfResources[i]
+        for j := range tfResource.Instances {
+            instance := &tfResource.Instances[j]
+            resource, err := si.convertTerraformResource(tfResource, instance)
+            if err != nil {
+                continue
+            }
+            resources = append(resources, *resource)
+        }
+    }
+
+    return resources
+}
+```
 
 ## Architecture Guidelines
 

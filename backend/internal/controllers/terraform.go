@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/LederWorks/siros/backend/internal/views"
 	"github.com/gorilla/mux"
+
+	"github.com/LederWorks/siros/backend/internal/views"
 )
 
 // TerraformController handles Terraform integration related HTTP requests

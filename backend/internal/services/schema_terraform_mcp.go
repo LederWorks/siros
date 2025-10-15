@@ -22,12 +22,12 @@ func NewSchemaService(schemaRepo repositories.SchemaRepository, logger *log.Logg
 	}
 }
 
-func (s *schemaService) CreateSchema(ctx context.Context, schema models.Schema) error {
+func (s *schemaService) CreateSchema(ctx context.Context, schema *models.Schema) error {
 	if err := schema.Validate(); err != nil {
 		return err
 	}
 
-	return s.schemaRepo.Create(ctx, &schema)
+	return s.schemaRepo.Create(ctx, schema)
 }
 
 func (s *schemaService) GetSchema(ctx context.Context, name, _ string) (*models.Schema, error) {
@@ -38,12 +38,12 @@ func (s *schemaService) ListSchemas(ctx context.Context, _ string) ([]models.Sch
 	return s.schemaRepo.List(ctx)
 }
 
-func (s *schemaService) UpdateSchema(ctx context.Context, _, _ string, schema models.Schema) error {
+func (s *schemaService) UpdateSchema(ctx context.Context, _, _ string, schema *models.Schema) error {
 	if err := schema.Validate(); err != nil {
 		return err
 	}
 
-	return s.schemaRepo.Update(ctx, &schema)
+	return s.schemaRepo.Update(ctx, schema)
 }
 
 func (s *schemaService) DeleteSchema(ctx context.Context, name, _ string) error {
@@ -64,7 +64,7 @@ func NewTerraformService(resourceRepo repositories.ResourceRepository, logger *l
 	}
 }
 
-func (s *terraformService) StoreKey(_ context.Context, key models.TerraformKey) error {
+func (s *terraformService) StoreKey(_ context.Context, key *models.TerraformKey) error {
 	if err := key.Validate(); err != nil {
 		return err
 	}

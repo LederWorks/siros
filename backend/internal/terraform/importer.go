@@ -26,8 +26,10 @@ func NewStateImporter(storage *storage.Storage) *StateImporter {
 func (si *StateImporter) ImportState(ctx context.Context, state *types.TerraformState) ([]types.Resource, error) {
 	var resources []types.Resource
 
-	for _, tfResource := range state.Resources {
-		for _, instance := range tfResource.Instances {
+	for i := range state.Resources {
+		tfResource := &state.Resources[i]
+		for j := range tfResource.Instances {
+			instance := &tfResource.Instances[j]
 			resource, err := si.convertTerraformResource(tfResource, instance)
 			if err != nil {
 				log.Printf("Failed to convert Terraform resource %s: %v", tfResource.Name, err)
@@ -38,8 +40,9 @@ func (si *StateImporter) ImportState(ctx context.Context, state *types.Terraform
 	}
 
 	// Store resources in database
-	for _, resource := range resources {
-		if err := si.storage.CreateResource(ctx, &resource); err != nil {
+	for i := range resources {
+		resource := &resources[i] // Pointer iteration to avoid 264-byte copy
+		if err := si.storage.CreateResource(ctx, resource); err != nil {
 			log.Printf("Failed to store resource %s: %v", resource.ID, err)
 		}
 	}
@@ -48,7 +51,7 @@ func (si *StateImporter) ImportState(ctx context.Context, state *types.Terraform
 }
 
 // convertTerraformResource converts a Terraform resource to Siros resource
-func (si *StateImporter) convertTerraformResource(tfResource types.TerraformResource, instance types.TerraformInstance) (*types.Resource, error) {
+func (si *StateImporter) convertTerraformResource(tfResource *types.TerraformResource, instance *types.TerraformInstance) (*types.Resource, error) {
 	// Extract common attributes
 	id, ok := instance.Attributes["id"].(string)
 	if !ok {

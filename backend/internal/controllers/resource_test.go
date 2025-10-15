@@ -11,8 +11,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/LederWorks/siros/backend/internal/models"
 	"github.com/gorilla/mux"
+
+	"github.com/LederWorks/siros/backend/internal/models"
 )
 
 // Mock ResourceService for testing

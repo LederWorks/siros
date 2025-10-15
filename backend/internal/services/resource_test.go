@@ -51,7 +51,7 @@ func (m *mockResourceRepository) Delete(_ context.Context, id string) error {
 	return nil
 }
 
-func (m *mockResourceRepository) List(_ context.Context, _ models.SearchQuery) ([]models.Resource, error) {
+func (m *mockResourceRepository) List(_ context.Context, _ *models.SearchQuery) ([]models.Resource, error) {
 	var result []models.Resource
 	for _, resource := range m.resources {
 		result = append(result, *resource)
@@ -59,8 +59,8 @@ func (m *mockResourceRepository) List(_ context.Context, _ models.SearchQuery) (
 	return result, nil
 }
 
-func (m *mockResourceRepository) Search(_ context.Context, _ models.SearchQuery) ([]models.Resource, error) {
-	return m.List(context.Background(), models.SearchQuery{})
+func (m *mockResourceRepository) Search(_ context.Context, _ *models.SearchQuery) ([]models.Resource, error) {
+	return m.List(context.Background(), &models.SearchQuery{})
 }
 
 func (m *mockResourceRepository) GetByParentID(_ context.Context, parentID string) ([]models.Resource, error) {
@@ -79,7 +79,7 @@ func (m *mockResourceRepository) VectorSearch(_ context.Context, _ []float32, _ 
 
 type mockVectorService struct{}
 
-func (m *mockVectorService) GenerateVector(_ context.Context, _ map[string]interface{}, _ models.ResourceMetadata) ([]float32, error) {
+func (m *mockVectorService) GenerateVector(_ context.Context, _ map[string]interface{}, _ *models.ResourceMetadata) ([]float32, error) {
 	return []float32{1.0, 2.0, 3.0}, nil
 }
 

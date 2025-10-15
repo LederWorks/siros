@@ -49,14 +49,15 @@ func (s *searchService) SemanticSearch(ctx context.Context, query string, filter
 		searchQuery.Filters["environment"] = environment
 	}
 
-	resources, err := s.resourceRepo.Search(ctx, searchQuery)
+	resources, err := s.resourceRepo.Search(ctx, &searchQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to perform search: %w", err)
 	}
 
 	// Convert resources to search results
 	results := make([]SearchResult, len(resources))
-	for i, resource := range resources {
+	for i := range resources {
+		resource := &resources[i] // Pointer iteration to avoid 256-byte copy
 		results[i] = SearchResult{
 			"id":          resource.ID,
 			"type":        resource.Type,
@@ -98,14 +99,15 @@ func (s *searchService) TextSearch(ctx context.Context, query string, filters Se
 		searchQuery.Filters["environment"] = environment
 	}
 
-	resources, err := s.resourceRepo.Search(ctx, searchQuery)
+	resources, err := s.resourceRepo.Search(ctx, &searchQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to perform text search: %w", err)
 	}
 
 	// Convert resources to search results
 	results := make([]SearchResult, len(resources))
-	for i, resource := range resources {
+	for i := range resources {
+		resource := &resources[i] // Pointer iteration to avoid 256-byte copy
 		results[i] = SearchResult{
 			"id":          resource.ID,
 			"type":        resource.Type,
@@ -140,14 +142,15 @@ func (s *searchService) SimilaritySearch(ctx context.Context, resourceID string,
 		Offset: 0,
 	}
 
-	resources, err := s.resourceRepo.List(ctx, searchQuery)
+	resources, err := s.resourceRepo.List(ctx, &searchQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find similar resources: %w", err)
 	}
 
 	// Filter out the source resource and convert to search results
 	results := make([]SearchResult, 0, len(resources))
-	for _, res := range resources {
+	for i := range resources {
+		res := &resources[i] // Pointer iteration to avoid 256-byte copy
 		if res.ID != resourceID {
 			results = append(results, SearchResult{
 				"id":          res.ID,
@@ -238,14 +241,15 @@ func (s *searchService) DiscoverRelationships(ctx context.Context, resourceID st
 		},
 	}
 
-	relatedResources, err := s.resourceRepo.List(ctx, searchQuery)
+	relatedResources, err := s.resourceRepo.List(ctx, &searchQuery)
 	if err != nil {
 		s.logger.Printf("Warning: Failed to find related resources: %v", err)
 		return relationships, nil
 	}
 
 	// Create relationships with resources in the same environment
-	for _, related := range relatedResources {
+	for i := range relatedResources {
+		related := &relatedResources[i] // Pointer iteration to avoid 256-byte copy
 		if related.ID != resourceID {
 			relationship := ResourceRelationship{
 				ID:         generateID(),

@@ -7,10 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"github.com/LederWorks/siros/backend/internal/models"
 	"github.com/LederWorks/siros/backend/internal/services"
 	"github.com/LederWorks/siros/backend/internal/views"
-	"github.com/gorilla/mux"
 )
 
 // ResourceController handles HTTP requests for resources

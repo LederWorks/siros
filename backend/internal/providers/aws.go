@@ -6,14 +6,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LederWorks/siros/backend/internal/config"
-	"github.com/LederWorks/siros/backend/pkg/types"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	"github.com/LederWorks/siros/backend/internal/config"
+	"github.com/LederWorks/siros/backend/pkg/types"
 )
 
 // AWSProvider implements the Provider interface for AWS
@@ -93,7 +94,8 @@ func (p *AWSProvider) scanEC2Instances(ctx context.Context) ([]types.Resource, e
 
 	var resources []types.Resource
 	for _, reservation := range result.Reservations {
-		for _, instance := range reservation.Instances {
+		for i := range reservation.Instances {
+			instance := &reservation.Instances[i] // Pointer iteration to avoid 688-byte copy
 			resource := types.Resource{
 				ID:       aws.ToString(instance.InstanceId),
 				Type:     "ec2.instance",
@@ -176,7 +178,8 @@ func (p *AWSProvider) scanRDSInstances(ctx context.Context) ([]types.Resource, e
 	}
 
 	var resources []types.Resource
-	for _, instance := range result.DBInstances {
+	for i := range result.DBInstances {
+		instance := &result.DBInstances[i] // Pointer iteration to avoid 960-byte copy
 		resource := types.Resource{
 			ID:       aws.ToString(instance.DBInstanceIdentifier),
 			Type:     "rds.instance",

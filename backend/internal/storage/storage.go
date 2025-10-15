@@ -8,10 +8,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/lib/pq"
+
 	"github.com/LederWorks/siros/backend/internal/config"
 	"github.com/LederWorks/siros/backend/pkg/types"
-	"github.com/lib/pq"
-	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 // Storage provides database operations.

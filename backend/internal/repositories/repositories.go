@@ -21,8 +21,8 @@ type ResourceRepository interface {
 	GetByID(ctx context.Context, id string) (*models.Resource, error)
 	Update(ctx context.Context, resource *models.Resource) error
 	Delete(ctx context.Context, id string) error
-	List(ctx context.Context, query models.SearchQuery) ([]models.Resource, error)
-	Search(ctx context.Context, query models.SearchQuery) ([]models.Resource, error)
+	List(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
+	Search(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error)
 	GetByParentID(ctx context.Context, parentID string) ([]models.Resource, error)
 	VectorSearch(ctx context.Context, vector []float32, threshold float32, limit int) ([]models.Resource, error)
 }

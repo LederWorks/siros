@@ -7,8 +7,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/LederWorks/siros/backend/internal/models"
 	"github.com/lib/pq"
+
+	"github.com/LederWorks/siros/backend/internal/models"
 )
 
 // resourceRepository implements ResourceRepository
@@ -17,7 +18,7 @@ type resourceRepository struct {
 }
 
 // NewResourceRepository creates a new resource repository
-func NewResourceRepository(db *sql.DB) *resourceRepository {
+func NewResourceRepository(db *sql.DB) ResourceRepository {
 	return &resourceRepository{db: db}
 }
 
@@ -107,8 +108,8 @@ func (r *resourceRepository) Update(ctx context.Context, resource *models.Resour
 	}
 
 	query := `
-		UPDATE resources 
-		SET type = $2, provider = $3, name = $4, data = $5, metadata = $6, 
+		UPDATE resources
+		SET type = $2, provider = $3, name = $4, data = $5, metadata = $6,
 		    vector = $7, parent_id = $8, modified_at = $9
 		WHERE id = $1
 	`
@@ -155,7 +156,7 @@ func (r *resourceRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *resourceRepository) List(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (r *resourceRepository) List(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
 	// Build the SQL query with filters
 	sqlQuery := `
 		SELECT id, type, provider, name, data, metadata, vector, parent_id, created_at, modified_at
@@ -211,7 +212,7 @@ func (r *resourceRepository) List(ctx context.Context, query models.SearchQuery)
 	return r.scanResources(rows)
 }
 
-func (r *resourceRepository) Search(ctx context.Context, query models.SearchQuery) ([]models.Resource, error) {
+func (r *resourceRepository) Search(ctx context.Context, query *models.SearchQuery) ([]models.Resource, error) {
 	// For semantic search, we'll use vector similarity when available
 	// For now, implement text search on name and data fields
 	sqlQuery := `

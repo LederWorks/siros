@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/LederWorks/siros/backend/internal/controllers"
 	"github.com/gorilla/mux"
+
+	"github.com/LederWorks/siros/backend/internal/controllers"
 )
 
 // SetupAPIRoutes configures all API routes

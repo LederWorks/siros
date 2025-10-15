@@ -15,7 +15,7 @@ type schemaRepository struct {
 }
 
 // NewSchemaRepository creates a new schema repository
-func NewSchemaRepository(db *sql.DB) *schemaRepository {
+func NewSchemaRepository(db *sql.DB) SchemaRepository {
 	return &schemaRepository{db: db}
 }
 
