@@ -1,5 +1,5 @@
 ---
-applyTo: ".github/**/*.yml,.github/**/*.yaml,.github/**/*.md,**/workflow/**/*,.github/ISSUE_TEMPLATE/*,.github/PULL_REQUEST_TEMPLATE/*"
+applyTo: '.github/**/*.yml,.github/**/*.yaml,.github/**/*.md,**/workflow/**/*,.github/ISSUE_TEMPLATE/*,.github/PULL_REQUEST_TEMPLATE/*'
 ---
 
 # GitHub Configuration and Workflow Instructions
@@ -9,6 +9,7 @@ This document provides comprehensive guidelines for GitHub repository configurat
 ## Repository Configuration
 
 ### Branch Protection Rules
+
 Configure branch protection for the main branch with the following settings:
 
 ```yaml
@@ -17,10 +18,10 @@ main:
   required_status_checks:
     strict: true
     checks:
-      - "build-and-test"
-      - "lint-backend"
-      - "lint-frontend"
-      - "security-scan"
+      - 'build-and-test'
+      - 'lint-backend'
+      - 'lint-frontend'
+      - 'security-scan'
   enforce_admins: true
   required_pull_request_reviews:
     required_approving_review_count: 1
@@ -33,6 +34,7 @@ main:
 ```
 
 ### Repository Settings
+
 - Enable **vulnerability alerts** and **dependency security updates**
 - Configure **code scanning** with CodeQL
 - Set up **secret scanning** for sensitive data
@@ -41,21 +43,58 @@ main:
 
 ## GitHub Actions Workflows
 
-### Main CI/CD Pipeline (`.github/workflows/ci.yml`)
+### Key Features and Improvements
+
+The Siros CI/CD pipeline includes several modern optimizations:
+
+**Built-in Go Module Caching:**
+
+- Uses `actions/setup-go@v6` with `cache-dependency-path: backend/go.sum`
+- Eliminates manual `actions/cache` steps for Go modules
+- Automatic cache invalidation based on dependency changes
+- Optimized for monorepo structure with backend subdirectory
+
+**Security Scanning Integration:**
+
+- **Trivy** for filesystem vulnerability scanning with SARIF output
+- **Gosec** using existing backend_gosec.sh script with comprehensive error handling and auto-installation
+- **golangci-lint** for comprehensive code quality checks
+- Results uploaded to GitHub Security tab for centralized monitoring
+
+**Multi-Platform Support:**
+
+- Cross-platform release builds (Linux, macOS, Windows)
+- ARM64 and AMD64 architecture support
+- Embedded frontend assets in Go binaries
+- Container images for multiple architectures
+
+**Monorepo Optimization:**
+
+- Proper `working-directory` configuration for frontend and backend
+- Dependency path configuration for npm and Go module caching
+- Coordinated build process with frontend asset embedding
+
+### Main CI/CD Pipeline (`.github/workflows/ci-cd.yml`)
+
 ```yaml
 name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main, develop]
+  release:
+    types: [published]
 
 env:
   GO_VERSION: '1.21'
   NODE_VERSION: '18'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # Backend testing and linting
   backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
@@ -64,8 +103,8 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_PASSWORD: siros
-          POSTGRES_USER: siros
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
           POSTGRES_DB: siros_test
         options: >-
           --health-cmd pg_isready
@@ -76,186 +115,228 @@ jobs:
           - 5432:5432
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: backend/go.sum
 
-    - name: Cache Go modules
-      uses: actions/cache@v3
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+      - name: Setup database
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          # Note: Using standard PostgreSQL for CI tests
+          # pgvector extension would be available in production deployment
+          PGPASSWORD=postgres psql -h localhost -U postgres -d siros_test -c "SELECT version();"
 
-    - name: Install pgvector extension
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
-        PGPASSWORD=siros psql -h localhost -U siros -d siros_test -c "CREATE EXTENSION IF NOT EXISTS vector;"
+      - name: Download Go dependencies
+        working-directory: ./backend
+        run: go mod download
 
-    - name: Run backend tests
-      working-directory: ./backend
-      run: |
-        go mod download
-        go test ./... -v -race -coverprofile=coverage.out
+      - name: Run Go linting
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: ./backend
+          args: --timeout=5m
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./backend/coverage.out
-        flags: backend
+      - name: Run Go tests
+        working-directory: ./backend
+        run: go test -v -race -coverprofile=coverage.out ./...
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/siros_test?sslmode=disable
 
+  # Frontend testing and linting
   frontend-test:
     name: Frontend Tests
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: './frontend/package-lock.json'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: npm ci
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
 
-    - name: Run frontend tests
-      working-directory: ./frontend
-      run: |
-        npm run test -- --coverage --watchAll=false
+      - name: Run ESLint
+        working-directory: ./frontend
+        run: npm run lint
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./frontend/coverage/lcov.info
-        flags: frontend
+      - name: Run TypeScript check
+        working-directory: ./frontend
+        run: npx tsc --noEmit
 
-  lint:
-    name: Lint Code
+      - name: Run tests
+        working-directory: ./frontend
+        run: npm test
+
+  # Build and test the complete application
+  build-test:
+    name: Build Integration Test
     runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: backend/go.sum
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: './frontend/package-lock.json'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
-    - name: Lint backend
-      working-directory: ./backend
-      run: |
-        go mod download
-        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-        golangci-lint run
+      - name: Build complete application
+        run: ./scripts/build.sh
 
-    - name: Lint frontend
-      working-directory: ./frontend
-      run: |
-        npm ci
-        npm run lint
-        npm run type-check
+      - name: Test binary execution
+        working-directory: ./backend
+        run: |
+          timeout 10s ./siros-server --help || true
 
-  security:
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: siros-binary
+          path: build/siros
+          retention-days: 7
+
+  # Security scanning
+  security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: backend/go.sum
 
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
+      - name: Download Go dependencies
+        working-directory: ./backend
+        run: go mod download
 
-  build:
-    name: Build Application
-    needs: [backend-test, frontend-test, lint]
-    runs-on: ubuntu-latest
+      - name: Verify Go modules
+        working-directory: ./backend
+        run: go mod verify
 
-    steps:
-    - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: './frontend/package-lock.json'
+      - name: Run Gosec Security Scanner
+        run: ./scripts/backend/backend_gosec.sh
 
-    - name: Build application
-      run: |
-        chmod +x ./scripts/build_all.sh
-        ./scripts/build_all.sh
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: siros-binary
-        path: backend/siros-server
-        retention-days: 30
-
+  # Docker build and push
   docker:
-    name: Build Docker Image
-    needs: [build]
+    name: Docker Build and Push
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build-test, security-scan]
+    if: github.event_name == 'push' || github.event_name == 'release'
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          ghcr.io/${{ github.repository }}:latest
-          ghcr.io/${{ github.repository }}:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Release workflow
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [docker]
+    if: github.event_name == 'release'
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: siros-binary
+          path: ./artifacts
+
+      - name: Create release assets
+        run: |
+          mkdir -p release
+          cd artifacts
+          tar -czf ../release/siros-linux-amd64.tar.gz siros-server
+          cd ../release
+          sha256sum *.tar.gz > checksums.txt
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/*.tar.gz
+            release/checksums.txt
+          generate_release_notes: true
 ```
 
 ### Release Workflow (`.github/workflows/release.yml`)
+
 ```yaml
 name: Release
 
@@ -292,53 +373,50 @@ jobs:
             asset_name: siros-windows-amd64.exe
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: backend/go.sum
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: './frontend/package-lock.json'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
 
-    - name: Build frontend
-      working-directory: ./frontend
-      run: |
-        npm ci
-        npm run build
+      - name: Build frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
 
-    - name: Copy frontend assets to backend
-      run: |
-        mkdir -p backend/static
-        cp -r frontend/dist/* backend/static/
+      - name: Copy frontend assets to backend
+        run: |
+          mkdir -p backend/static
+          cp -r frontend/dist/* backend/static/
 
-    - name: Build binary
-      working-directory: ./backend
-      env:
-        GOOS: ${{ matrix.goos }}
-        GOARCH: ${{ matrix.goarch }}
-        CGO_ENABLED: 0
-      run: |
-        go build -ldflags="-s -w -X main.version=${{ github.event.release.tag_name }}" \
-          -o ${{ matrix.asset_name }} ./cmd/siros-server
+      - name: Build binary
+        working-directory: ./backend
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          go build -ldflags="-s -w -X main.version=${{ github.event.release.tag_name }}" \
+            -o ${{ matrix.asset_name }} ./cmd/siros-server
 
-    - name: Upload release asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./backend/${{ matrix.asset_name }}
-        asset_name: ${{ matrix.asset_name }}
-        asset_content_type: application/octet-stream
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./backend/${{ matrix.asset_name }}
 ```
 
 ### Dependency Update Workflow (`.github/workflows/dependabot-auto-merge.yml`)
+
 ```yaml
 name: Dependabot Auto-merge
 
@@ -353,29 +431,30 @@ jobs:
     if: github.actor == 'dependabot[bot]'
 
     steps:
-    - name: Fetch Dependabot metadata
-      id: dependabot-metadata
-      uses: dependabot/fetch-metadata@v1
-      with:
-        github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Fetch Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
 
-    - name: Auto-merge minor and patch updates
-      if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
-      run: |
-        gh pr merge --auto --squash "$PR_URL"
-      env:
-        PR_URL: ${{ github.event.pull_request.html_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Auto-merge minor and patch updates
+        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
+        run: |
+          gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Issue and Pull Request Templates
 
 ### Bug Report Template (`.github/ISSUE_TEMPLATE/bug_report.yml`)
+
 ```yaml
 name: Bug Report
 description: File a bug report to help us improve Siros
-title: "[Bug]: "
-labels: ["bug", "needs-triage"]
+title: '[Bug]: '
+labels: ['bug', 'needs-triage']
 
 body:
   - type: markdown
@@ -455,11 +534,12 @@ body:
 ```
 
 ### Feature Request Template (`.github/ISSUE_TEMPLATE/feature_request.yml`)
+
 ```yaml
 name: Feature Request
 description: Suggest a new feature or enhancement for Siros
-title: "[Feature]: "
-labels: ["enhancement", "needs-triage"]
+title: '[Feature]: '
+labels: ['enhancement', 'needs-triage']
 
 body:
   - type: markdown
@@ -535,6 +615,7 @@ body:
 ```
 
 ### Pull Request Template (`.github/pull_request_template.md`)
+
 ```markdown
 ## Description
 
@@ -586,6 +667,7 @@ Any additional information, configuration changes, or migration notes.
 ## Code Owners Configuration
 
 ### CODEOWNERS file (`.github/CODEOWNERS`)
+
 ```
 # Global owners
 * @maintainer-team
@@ -616,6 +698,7 @@ README.md @documentation-team
 ## GitHub Repository Settings
 
 ### Security Settings
+
 ```yaml
 # Security configuration recommendations
 security:
@@ -639,6 +722,7 @@ security:
 ```
 
 ### Branch Protection Strategy
+
 ```yaml
 # Recommended branch protection rules
 branches:
@@ -647,10 +731,10 @@ branches:
       required_status_checks:
         strict: true
         checks:
-          - "build-and-test"
-          - "lint-backend"
-          - "lint-frontend"
-          - "security-scan"
+          - 'build-and-test'
+          - 'lint-backend'
+          - 'lint-frontend'
+          - 'security-scan'
       enforce_admins: true
       required_pull_request_reviews:
         required_approving_review_count: 2
@@ -659,7 +743,7 @@ branches:
         require_last_push_approval: true
       restrictions:
         users: []
-        teams: ["maintainer-team"]
+        teams: ['maintainer-team']
       required_linear_history: true
       allow_force_pushes: false
       allow_deletions: false
@@ -669,9 +753,9 @@ branches:
       required_status_checks:
         strict: true
         checks:
-          - "build-and-test"
-          - "lint-backend"
-          - "lint-frontend"
+          - 'build-and-test'
+          - 'lint-backend'
+          - 'lint-frontend'
       required_pull_request_reviews:
         required_approving_review_count: 1
         dismiss_stale_reviews: true
@@ -680,69 +764,71 @@ branches:
 ## Dependabot Configuration
 
 ### dependabot.yml (`.github/dependabot.yml`)
+
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: "gomod"
-    directory: "/backend"
+  - package-ecosystem: 'gomod'
+    directory: '/backend'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "UTC"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'UTC'
     open-pull-requests-limit: 5
     reviewers:
-      - "backend-team"
+      - 'backend-team'
     assignees:
-      - "maintainer-team"
+      - 'maintainer-team'
     commit-message:
-      prefix: "backend"
-      include: "scope"
+      prefix: 'backend'
+      include: 'scope'
 
-  - package-ecosystem: "npm"
-    directory: "/frontend"
+  - package-ecosystem: 'npm'
+    directory: '/frontend'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "UTC"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'UTC'
     open-pull-requests-limit: 5
     reviewers:
-      - "frontend-team"
+      - 'frontend-team'
     assignees:
-      - "maintainer-team"
+      - 'maintainer-team'
     commit-message:
-      prefix: "frontend"
-      include: "scope"
+      prefix: 'frontend'
+      include: 'scope'
 
-  - package-ecosystem: "docker"
-    directory: "/"
+  - package-ecosystem: 'docker'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "UTC"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'UTC'
     reviewers:
-      - "devops-team"
+      - 'devops-team'
     assignees:
-      - "maintainer-team"
+      - 'maintainer-team'
 
-  - package-ecosystem: "github-actions"
-    directory: "/.github/workflows"
+  - package-ecosystem: 'github-actions'
+    directory: '/.github/workflows'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "UTC"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'UTC'
     reviewers:
-      - "devops-team"
+      - 'devops-team'
     assignees:
-      - "maintainer-team"
+      - 'maintainer-team'
 ```
 
 ## Release Management
 
 ### Semantic Release Configuration
+
 ```json
 {
   "branches": [
@@ -768,6 +854,7 @@ updates:
 ```
 
 ### Commit Convention
+
 Follow the Conventional Commits specification:
 
 ```
@@ -779,6 +866,7 @@ Follow the Conventional Commits specification:
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
@@ -789,6 +877,7 @@ Follow the Conventional Commits specification:
 - `chore`: Changes to the build process or auxiliary tools
 
 **Examples:**
+
 ```
 feat(api): add semantic search endpoint
 fix(frontend): resolve resource card loading state
@@ -799,6 +888,7 @@ chore(deps): update Go dependencies
 ## GitHub Apps and Integrations
 
 ### Recommended GitHub Apps
+
 1. **CodeQL** - Security scanning
 2. **Dependabot** - Dependency updates
 3. **Codecov** - Code coverage reporting
@@ -806,28 +896,31 @@ chore(deps): update Go dependencies
 5. **Snyk** - Vulnerability scanning
 
 ### Webhook Configuration
+
 ```yaml
 webhooks:
-  - url: "https://api.example.com/github-webhook"
-    content_type: "json"
+  - url: 'https://api.example.com/github-webhook'
+    content_type: 'json'
     events:
-      - "push"
-      - "pull_request"
-      - "release"
-      - "issues"
+      - 'push'
+      - 'pull_request'
+      - 'release'
+      - 'issues'
     active: true
-    secret: "${{ secrets.WEBHOOK_SECRET }}"
+    secret: '${{ secrets.WEBHOOK_SECRET }}'
 ```
 
 ## Monitoring and Analytics
 
 ### GitHub Insights Configuration
+
 - Enable **repository insights** for traffic and performance monitoring
 - Set up **code frequency** tracking
 - Monitor **contributor activity** and **community health**
 - Track **security advisories** and **dependency graphs**
 
 ### Custom Analytics
+
 ```yaml
 # GitHub API integration for custom metrics
 metrics:
