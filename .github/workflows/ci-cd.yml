@@ -158,6 +158,8 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     needs: [backend-test, frontend-test]
+    env:
+      GO111MODULE: on
 
     steps:
       - uses: actions/checkout@v5
@@ -195,7 +197,7 @@ jobs:
         #   ./scripts/backend/backend_gosec.sh
         run: |
           go install github.com/securego/gosec/v2/cmd/gosec@latest
-          gosec -fmt sarif -out gosec-report.sarif ./...
+          gosec ./...
 
   # Docker build and push
   docker:
