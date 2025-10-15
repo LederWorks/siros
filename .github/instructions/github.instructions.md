@@ -43,626 +43,279 @@ main:
 
 ## GitHub Actions Workflows
 
-### Key Features and Improvements
+### Workflow Files
 
-The Siros CI/CD pipeline includes several modern optimizations:
+| File                                                       | Purpose                 | Triggers                     | Description                                                                                                                               |
+| ---------------------------------------------------------- | ----------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [📋 CI/CD Pipeline](../workflows/ci-cd.yml)                | `ci-cd.yml`             | push, pull_request, release  | Main CI/CD pipeline with 6 jobs: backend tests, frontend tests, build integration, security scan, Docker build/push, and release creation |
+| [🔒 CodeQL Analysis](../workflows/codeql.yml)              | `codeql.yml`            | push, pull_request, schedule | Advanced security analysis with Go autobuild and TypeScript manual build modes, enhanced security queries                                 |
+| [🏷️ Auto Label](../workflows/auto-label.yml)               | `auto-label.yml`        | pull_request                 | Automatic PR labeling based on file changes using labeler configuration                                                                   |
+| [📦 Dependency Review](../workflows/dependency-review.yml) | `dependency-review.yml` | pull_request                 | Security review of dependency changes in PRs with vulnerability detection                                                                 |
+| [🗂️ Stale Management](../workflows/stale.yml)              | `stale.yml`             | schedule (daily)             | Automatic stale issue/PR management with configurable timeouts and exempt labels                                                          |
 
-**Built-in Go Module Caching:**
+### Pipeline Overview
 
-- Uses `actions/setup-go@v6` with `cache-dependency-path: backend/go.sum`
-- Eliminates manual `actions/cache` steps for Go modules
-- Automatic cache invalidation based on dependency changes
-- Optimized for monorepo structure with backend subdirectory
+**CI/CD Pipeline Features:**
 
-**Security Scanning Integration:**
+- **Built-in Go Module Caching**: Uses `actions/setup-go@v6` with `cache-dependency-path: backend/go.sum`
+- **Security Integration**: Trivy vulnerability scanning, Gosec security analysis, golangci-lint quality checks
+- **Multi-Platform Support**: Cross-platform builds (Linux, macOS, Windows) with ARM64/AMD64 architecture support
+- **Monorepo Optimization**: Coordinated frontend/backend builds with embedded assets and proper working directories
+- **Container Publishing**: Multi-architecture Docker images pushed to GitHub Container Registry
+- **Release Automation**: Automatic binary creation and GitHub release publishing
 
-- **Trivy** for filesystem vulnerability scanning with SARIF output
-- **Gosec** using existing backend_gosec.sh script with comprehensive error handling and auto-installation
-- **golangci-lint** for comprehensive code quality checks
-- Results uploaded to GitHub Security tab for centralized monitoring
+## GitHub Tasks and Actions
 
-**Multi-Platform Support:**
+### Core Actions Used in Workflows
 
-- Cross-platform release builds (Linux, macOS, Windows)
-- ARM64 and AMD64 architecture support
-- Embedded frontend assets in Go binaries
-- Container images for multiple architectures
+#### Repository and Environment Setup
 
-**Monorepo Optimization:**
-
-- Proper `working-directory` configuration for frontend and backend
-- Dependency path configuration for npm and Go module caching
-- Coordinated build process with frontend asset embedding
-
-### Main CI/CD Pipeline (`.github/workflows/ci-cd.yml`)
+**actions/checkout@v5** - Checkout repository code
 
 ```yaml
-name: CI/CD Pipeline
+- uses: actions/checkout@v5
+```
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-  release:
-    types: [published]
+**actions/setup-go@v6** - Set up Go environment with built-in caching
 
+```yaml
+- name: Set up Go
+  uses: actions/setup-go@v6
+  with:
+    go-version: ${{ env.GO_VERSION }}
+    cache-dependency-path: backend/go.sum
+```
+
+**actions/setup-node@v6** - Set up Node.js environment with npm caching
+
+```yaml
+- name: Set up Node.js
+  uses: actions/setup-node@v6
+  with:
+    node-version: ${{ env.NODE_VERSION }}
+    cache: 'npm'
+    cache-dependency-path: frontend/package-lock.json
+```
+
+#### Artifact Management
+
+**actions/upload-artifact@v4** - Upload build artifacts
+
+```yaml
+- name: Upload build artifacts
+  uses: actions/upload-artifact@v4
+  with:
+    name: siros-binary
+    path: build/siros
+    retention-days: 7
+```
+
+**actions/download-artifact@v4** - Download build artifacts
+
+```yaml
+- name: Download build artifacts
+  uses: actions/download-artifact@v4
+  with:
+    name: siros-binary
+    path: ./artifacts
+```
+
+#### Code Quality and Security
+
+**golangci/golangci-lint-action@v3** - Run Go linting with golangci-lint
+
+```yaml
+- name: Run Go linting
+  uses: golangci/golangci-lint-action@v3
+  with:
+    version: latest
+    working-directory: ./backend
+    args: --timeout=5m
+```
+
+**aquasecurity/trivy-action@master** - Security vulnerability scanning
+
+```yaml
+- name: Run Trivy vulnerability scanner
+  uses: aquasecurity/trivy-action@master
+  with:
+    scan-type: 'fs'
+    scan-ref: '.'
+    format: 'sarif'
+    output: 'trivy-results.sarif'
+```
+
+**github/codeql-action/init@v4** - Initialize CodeQL security analysis
+
+```yaml
+- name: Initialize CodeQL
+  uses: github/codeql-action/init@v4
+  with:
+    languages: ${{ matrix.language }}
+    build-mode: ${{ matrix.build-mode }}
+    queries: security-and-quality
+```
+
+**github/codeql-action/analyze@v4** - Perform CodeQL security analysis
+
+```yaml
+- name: Perform CodeQL Analysis
+  uses: github/codeql-action/analyze@v4
+  with:
+    category: '/language:${{matrix.language}}'
+    upload: true
+```
+
+**github/codeql-action/upload-sarif@v2** - Upload security analysis results
+
+```yaml
+- name: Upload Trivy scan results
+  uses: github/codeql-action/upload-sarif@v2
+  with:
+    sarif_file: 'trivy-results.sarif'
+```
+
+#### Docker and Container Management
+
+**docker/setup-buildx-action@v3** - Set up Docker Buildx for multi-platform builds
+
+```yaml
+- name: Set up Docker Buildx
+  uses: docker/setup-buildx-action@v3
+```
+
+**docker/login-action@v3** - Log in to container registry
+
+```yaml
+- name: Log in to Container Registry
+  uses: docker/login-action@v3
+  with:
+    registry: ${{ env.REGISTRY }}
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**docker/metadata-action@v5** - Extract metadata for Docker images
+
+```yaml
+- name: Extract metadata
+  id: meta
+  uses: docker/metadata-action@v5
+  with:
+    images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+    tags: |
+      type=ref,event=branch
+      type=ref,event=pr
+      type=semver,pattern={{version}}
+      type=semver,pattern={{major}}.{{minor}}
+      type=sha,prefix={{branch}}-
+```
+
+**docker/build-push-action@v5** - Build and push Docker images
+
+```yaml
+- name: Build and push Docker image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    platforms: linux/amd64,linux/arm64
+    push: true
+    tags: ${{ steps.meta.outputs.tags }}
+    labels: ${{ steps.meta.outputs.labels }}
+    cache-from: type=gha
+    cache-to: type=gha,mode=max
+```
+
+#### Release and Repository Management
+
+**softprops/action-gh-release@v1** - Create GitHub releases
+
+```yaml
+- name: Upload release assets
+  uses: softprops/action-gh-release@v1
+  with:
+    files: |
+      release/*.tar.gz
+      release/checksums.txt
+    generate_release_notes: true
+```
+
+**actions/labeler@v4** - Automatic PR labeling
+
+```yaml
+- name: Label based on file changes
+  uses: actions/labeler@v4
+  with:
+    repo-token: ${{ secrets.GITHUB_TOKEN }}
+    configuration-path: .github/labeler.yml
+    sync-labels: true
+```
+
+**actions/dependency-review-action@v4** - Review dependency changes
+
+```yaml
+- name: Dependency Review
+  uses: actions/dependency-review-action@v4
+  with:
+    config-file: '.github/dependency-review-config.yml'
+```
+
+**actions/stale@v8** - Manage stale issues and PRs
+
+```yaml
+- uses: actions/stale@v8
+  with:
+    repo-token: ${{ secrets.GITHUB_TOKEN }}
+    stale-issue-message: |
+      This issue has been automatically marked as stale because it has not had recent activity.
+    days-before-issue-stale: 60
+    days-before-issue-close: 7
+    stale-issue-label: 'stale'
+    exempt-issue-labels: 'pinned,security,critical'
+```
+
+### Service Containers
+
+**PostgreSQL** - Database for backend tests
+
+```yaml
+services:
+  postgres:
+    image: postgres:15-alpine
+    env:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: siros_test
+    options: >-
+      --health-cmd pg_isready
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 5
+    ports:
+      - 5432:5432
+```
+
+### Environment Variables
+
+```yaml
 env:
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.24'
   NODE_VERSION: '18'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-
-jobs:
-  # Backend testing and linting
-  backend-test:
-    name: Backend Tests
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15-alpine
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: siros_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: backend/go.sum
-
-      - name: Setup database
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-          # Note: Using standard PostgreSQL for CI tests
-          # pgvector extension would be available in production deployment
-          PGPASSWORD=postgres psql -h localhost -U postgres -d siros_test -c "SELECT version();"
-
-      - name: Download Go dependencies
-        working-directory: ./backend
-        run: go mod download
-
-      - name: Run Go linting
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          working-directory: ./backend
-          args: --timeout=5m
-
-      - name: Run Go tests
-        working-directory: ./backend
-        run: go test -v -race -coverprofile=coverage.out ./...
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/siros_test?sslmode=disable
-
-  # Frontend testing and linting
-  frontend-test:
-    name: Frontend Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
-
-      - name: Run ESLint
-        working-directory: ./frontend
-        run: npm run lint
-
-      - name: Run TypeScript check
-        working-directory: ./frontend
-        run: npx tsc --noEmit
-
-      - name: Run tests
-        working-directory: ./frontend
-        run: npm test
-
-  # Build and test the complete application
-  build-test:
-    name: Build Integration Test
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test]
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: backend/go.sum
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build complete application
-        run: ./scripts/build.sh
-
-      - name: Test binary execution
-        working-directory: ./backend
-        run: |
-          timeout 10s ./siros-server --help || true
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: siros-binary
-          path: build/siros
-          retention-days: 7
-
-  # Security scanning
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test]
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: backend/go.sum
-
-      - name: Download Go dependencies
-        working-directory: ./backend
-        run: go mod download
-
-      - name: Verify Go modules
-        working-directory: ./backend
-        run: go mod verify
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-      - name: Run Gosec Security Scanner
-        run: ./scripts/backend/backend_gosec.sh
-
-  # Docker build and push
-  docker:
-    name: Docker Build and Push
-    runs-on: ubuntu-latest
-    needs: [build-test, security-scan]
-    if: github.event_name == 'push' || github.event_name == 'release'
-
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  # Release workflow
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: [docker]
-    if: github.event_name == 'release'
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: siros-binary
-          path: ./artifacts
-
-      - name: Create release assets
-        run: |
-          mkdir -p release
-          cd artifacts
-          tar -czf ../release/siros-linux-amd64.tar.gz siros-server
-          cd ../release
-          sha256sum *.tar.gz > checksums.txt
-
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            release/*.tar.gz
-            release/checksums.txt
-          generate_release_notes: true
-```
-
-### Release Workflow (`.github/workflows/release.yml`)
-
-```yaml
-name: Release
-
-on:
-  release:
-    types: [published]
-
-env:
-  GO_VERSION: '1.22'
-  NODE_VERSION: '18'
-
-jobs:
-  build-release:
-    name: Build Release Binaries
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        include:
-          - goos: linux
-            goarch: amd64
-            asset_name: siros-linux-amd64
-          - goos: linux
-            goarch: arm64
-            asset_name: siros-linux-arm64
-          - goos: darwin
-            goarch: amd64
-            asset_name: siros-darwin-amd64
-          - goos: darwin
-            goarch: arm64
-            asset_name: siros-darwin-arm64
-          - goos: windows
-            goarch: amd64
-            asset_name: siros-windows-amd64.exe
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: backend/go.sum
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
-
-      - name: Build frontend
-        working-directory: ./frontend
-        run: |
-          npm ci
-          npm run build
-
-      - name: Copy frontend assets to backend
-        run: |
-          mkdir -p backend/static
-          cp -r frontend/dist/* backend/static/
-
-      - name: Build binary
-        working-directory: ./backend
-        env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0
-        run: |
-          go build -ldflags="-s -w -X main.version=${{ github.event.release.tag_name }}" \
-            -o ${{ matrix.asset_name }} ./cmd/siros-server
-
-      - name: Upload release asset
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./backend/${{ matrix.asset_name }}
-```
-
-### Dependency Update Workflow (`.github/workflows/dependabot-auto-merge.yml`)
-
-```yaml
-name: Dependabot Auto-merge
-
-on:
-  pull_request:
-    types: [opened, synchronize]
-
-jobs:
-  auto-merge:
-    name: Auto-merge Dependabot PRs
-    runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
-
-    steps:
-      - name: Fetch Dependabot metadata
-        id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v1
-        with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
-
-      - name: Auto-merge minor and patch updates
-        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
-        run: |
-          gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Issue and Pull Request Templates
 
-### Bug Report Template (`.github/ISSUE_TEMPLATE/bug_report.yml`)
+### Template Files
 
-```yaml
-name: Bug Report
-description: File a bug report to help us improve Siros
-title: '[Bug]: '
-labels: ['bug', 'needs-triage']
-
-body:
-  - type: markdown
-    attributes:
-      value: |
-        Thank you for taking the time to file a bug report! Please fill out this form as completely as possible.
-
-  - type: checkboxes
-    attributes:
-      label: Prerequisites
-      description: Please confirm these before submitting your issue
-      options:
-        - label: I have searched existing issues to avoid duplicates
-          required: true
-        - label: I have read the documentation
-          required: true
-        - label: I am using the latest version of Siros
-          required: true
-
-  - type: textarea
-    attributes:
-      label: Description
-      description: A clear and concise description of what the bug is
-      placeholder: Describe the bug...
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Steps to Reproduce
-      description: Steps to reproduce the behavior
-      placeholder: |
-        1. Start the application with '...'
-        2. Navigate to '...'
-        3. Click on '...'
-        4. See error
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Expected Behavior
-      description: A clear and concise description of what you expected to happen
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Actual Behavior
-      description: What actually happened instead
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Environment
-      description: Please provide information about your environment
-      value: |
-        - OS: [e.g., Windows 11, macOS 13, Ubuntu 22.04]
-        - Go version: [e.g., 1.24.0]
-        - Node.js version: [e.g., 18.17.0]
-        - Database: [e.g., PostgreSQL 15.3]
-        - Cloud Providers: [e.g., AWS, Azure, GCP]
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Logs
-      description: If applicable, add logs to help explain your problem
-      render: shell
-
-  - type: textarea
-    attributes:
-      label: Additional Context
-      description: Add any other context about the problem here
-```
-
-### Feature Request Template (`.github/ISSUE_TEMPLATE/feature_request.yml`)
-
-```yaml
-name: Feature Request
-description: Suggest a new feature or enhancement for Siros
-title: '[Feature]: '
-labels: ['enhancement', 'needs-triage']
-
-body:
-  - type: markdown
-    attributes:
-      value: |
-        Thank you for suggesting a new feature! Please provide as much detail as possible.
-
-  - type: checkboxes
-    attributes:
-      label: Prerequisites
-      description: Please confirm these before submitting your request
-      options:
-        - label: I have searched existing issues to avoid duplicates
-          required: true
-        - label: I have read the documentation
-          required: true
-        - label: This feature would benefit other users, not just me
-          required: true
-
-  - type: textarea
-    attributes:
-      label: Feature Description
-      description: A clear and concise description of what you want to happen
-      placeholder: Describe the feature...
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Problem Statement
-      description: What problem does this feature solve?
-      placeholder: This feature would solve...
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Proposed Solution
-      description: Describe the solution you'd like to see implemented
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Alternatives Considered
-      description: Describe any alternative solutions or workarounds you've considered
-
-  - type: dropdown
-    attributes:
-      label: Component
-      description: Which part of Siros would this feature affect?
-      options:
-        - Backend API
-        - Frontend UI
-        - Database/Storage
-        - Cloud Providers
-        - Documentation
-        - CI/CD
-        - Other
-    validations:
-      required: true
-
-  - type: dropdown
-    attributes:
-      label: Priority
-      description: How important is this feature to you?
-      options:
-        - Low - Nice to have
-        - Medium - Would improve my workflow
-        - High - Critical for my use case
-    validations:
-      required: true
-```
-
-### Pull Request Template (`.github/pull_request_template.md`)
-
-```markdown
-## Description
-
-Brief description of what this PR does.
-
-Closes _[issue number]_
-
-## Type of Change
-
-Please delete options that are not relevant.
-
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Performance improvement
-- [ ] Code refactoring
-- [ ] Test improvements
-
-## Testing
-
-Please describe how you tested your changes.
-
-- [ ] Unit tests pass locally
-- [ ] Integration tests pass locally
-- [ ] Manual testing completed
-- [ ] Added new tests for new functionality
-
-## Checklist
-
-- [ ] My code follows the project's coding standards
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings or errors
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published
-
-## Screenshots (if applicable)
-
-Add screenshots to help explain your changes.
-
-## Additional Notes
-
-Any additional information, configuration changes, or migration notes.
-```
+| Template                                                    | Purpose                      | File                       | Description                                                                              |
+| ----------------------------------------------------------- | ---------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- |
+| [🐛 Bug Report](../ISSUE_TEMPLATE/bug_report.yml)           | Bug reports                  | `bug_report.yml`           | Structured bug reporting with environment details, reproduction steps, and validation    |
+| [💡 Feature Request](../ISSUE_TEMPLATE/feature_request.yml) | Feature suggestions          | `feature_request.yml`      | Feature proposals with problem statements, solutions, and priority assessment            |
+| [📚 Documentation](../ISSUE_TEMPLATE/documentation.yml)     | Documentation improvements   | `documentation.yml`        | Documentation requests and improvements                                                  |
+| [⚙️ Template Config](../ISSUE_TEMPLATE/config.yml)          | Issue template configuration | `config.yml`               | Template routing and external link configuration                                         |
+| [🔄 Pull Request](../pull_request_template.md)              | Pull request submissions     | `pull_request_template.md` | PR description template with checklists, testing requirements, and change categorization |
 
 ## Code Owners Configuration
 
