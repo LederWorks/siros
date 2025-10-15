@@ -2,11 +2,15 @@ name: CodeQL Security Analysis
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 2 * * 1'  # Weekly on Mondays at 2 AM
+    - cron: "0 2 * * 1" # Weekly on Mondays at 2 AM
+
+env:
+  GO_VERSION: "1.21"
+  NODE_VERSION: "18"
 
 jobs:
   analyze:
@@ -20,42 +24,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'go', 'javascript' ]
+        language: ["go", "javascript"]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        queries: security-and-quality
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
 
-    - name: Set up Go (for Go analysis)
-      if: matrix.language == 'go'
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21'
+      - name: Set up Go (for Go analysis)
+        if: matrix.language == 'go'
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+        cache-dependency-path: backend/go.sum
 
-    - name: Set up Node.js (for JavaScript analysis)
-      if: matrix.language == 'javascript'
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
+      - name: Set up Node.js (for JavaScript analysis)
+        if: matrix.language == 'javascript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
 
-    - name: Install frontend dependencies
-      if: matrix.language == 'javascript'
-      working-directory: ./frontend
-      run: npm ci
+      - name: Install frontend dependencies
+        if: matrix.language == 'javascript'
+        working-directory: ./frontend
+        run: npm ci
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
-        upload: true
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+          upload: true
