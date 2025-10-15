@@ -1,0 +1,122 @@
+digraph gocallvis {
+    label="";
+    labeljust="l";
+    fontname="Arial";
+    fontsize="14";
+    rankdir="LR";
+    bgcolor="lightgray";
+    style="solid";
+    penwidth="0.5";
+    pad="0.0";
+    nodesep="0.5";
+
+    node [shape="box" style="filled,rounded" fillcolor="honeydew" fontname="Verdana" penwidth="1.0" margin="0.16,0.0"];
+    edge [minlen="3"]
+
+    subgraph "cluster_focus" {
+        bgcolor="#e6ecfa";
+label="api";
+labelloc="t";
+labeljust="c";
+fontsize="18";
+        
+        "github.com/LederWorks/siros/backend/internal/api.NewServer" [ fillcolor="lightblue" label="NewServer" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/api.NewServer | defined in server.go:31\nat server.go:48: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes]\nat server.go:46: calling [github.com/LederWorks/siros/backend/internal/controllers.NewControllers]\nat server.go:35: calling [github.com/gorilla/mux.NewRouter]" ]
+        "(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes" [ fillcolor="lightblue" label="(*Server).setupRoutes" penwidth="0.5" tooltip="(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes | defined in server.go:60\nat server.go:65: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes]\nat server.go:62: calling [github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes]" ]
+        "(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes" [ fillcolor="lightblue" label="(*Server).setupWebRoutes" penwidth="0.5" tooltip="(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes | defined in server.go:69\nat server.go:76: calling [(*github.com/gorilla/mux.Route).HandlerFunc]\nat server.go:73: calling [(*github.com/gorilla/mux.Router).PathPrefix]\nat server.go:76: calling [(*github.com/gorilla/mux.Router).PathPrefix]\nat server.go:73: calling [(*github.com/gorilla/mux.Route).Handler]" ]
+        "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" [ fillcolor="lightblue" label="(*Server).Router" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/api.Server).Router | defined in server.go:53\nat server.go:55: calling [github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig]\nat server.go:56: calling [(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply]" ]
+        
+        subgraph "cluster_github.com/LederWorks/siros/backend/cmd/siros-server" {
+        style="filled";
+fontname="Tahoma bold";
+label="main";
+URL="/?f=github.com/LederWorks/siros/backend/cmd/siros-server";
+penwidth="0.8";
+fontsize="16";
+fillcolor="lightyellow";
+rank="sink";
+tooltip="package: github.com/LederWorks/siros/backend/cmd/siros-server";
+        
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ fillcolor="moccasin" label="run" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run | defined in main.go:47\nat main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]" ]
+        "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" [ fillcolor="moccasin" label="(*App).startServer" penwidth="0.5" tooltip="(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer | defined in main.go:111\nat main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/api/middleware" {
+        label="middleware";
+style="filled";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+URL="/?f=github.com/LederWorks/siros/backend/internal/api/middleware";
+tooltip="package: github.com/LederWorks/siros/backend/internal/api/middleware";
+penwidth="0.8";
+fontsize="16";
+rank="sink";
+        
+        "github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig" [ tooltip="github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig | defined in middleware.go:19" fillcolor="moccasin" label="DefaultConfig" penwidth="1.5" ]
+        "(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply" [ fillcolor="moccasin" label="(*Config).Apply" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply | defined in middleware.go:29" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/api/routes" {
+        penwidth="0.8";
+style="filled";
+fillcolor="lightyellow";
+rank="sink";
+fontsize="16";
+fontname="Tahoma bold";
+label="routes";
+URL="/?f=github.com/LederWorks/siros/backend/internal/api/routes";
+tooltip="package: github.com/LederWorks/siros/backend/internal/api/routes";
+        
+        "github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes" [ fillcolor="moccasin" label="SetupAPIRoutes" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes | defined in api.go:10" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/controllers" {
+        fillcolor="lightyellow";
+fontname="Tahoma bold";
+penwidth="0.8";
+fontsize="16";
+style="filled";
+rank="sink";
+label="controllers";
+URL="/?f=github.com/LederWorks/siros/backend/internal/controllers";
+tooltip="package: github.com/LederWorks/siros/backend/internal/controllers";
+        
+        "github.com/LederWorks/siros/backend/internal/controllers.NewControllers" [ fillcolor="moccasin" label="NewControllers" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/controllers.NewControllers | defined in controllers.go:21" ]
+        
+    }
+
+        subgraph "cluster_github.com/gorilla/mux" {
+        fontsize="16";
+style="filled";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+rank="sink";
+tooltip="package: github.com/gorilla/mux";
+penwidth="0.8";
+label="mux";
+URL="/?f=github.com/gorilla/mux";
+        
+        "github.com/gorilla/mux.NewRouter" [ fillcolor="moccasin" label="NewRouter" penwidth="1.5" tooltip="github.com/gorilla/mux.NewRouter | defined in mux.go:25" ]
+        "(*github.com/gorilla/mux.Router).PathPrefix" [ tooltip="(*github.com/gorilla/mux.Router).PathPrefix | defined in mux.go:335" fillcolor="moccasin" label="(*Router).PathPrefix" penwidth="1.5" ]
+        "(*github.com/gorilla/mux.Route).Handler" [ fillcolor="moccasin" label="(*Route).Handler" penwidth="1.5" tooltip="(*github.com/gorilla/mux.Route).Handler | defined in route.go:118" ]
+        "(*github.com/gorilla/mux.Route).HandlerFunc" [ penwidth="1.5" tooltip="(*github.com/gorilla/mux.Route).HandlerFunc | defined in route.go:126" fillcolor="moccasin" label="(*Route).HandlerFunc" ]
+        
+    }
+
+    }
+
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes" -> "(*github.com/gorilla/mux.Route).HandlerFunc" [ color="saddlebrown" tooltip="at server.go:76: calling [(*github.com/gorilla/mux.Route).HandlerFunc]" ]
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes" -> "(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes" [ tooltip="at server.go:65: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes]" ]
+    "github.com/LederWorks/siros/backend/internal/api.NewServer" -> "(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes" [ tooltip="at server.go:48: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" [ color="saddlebrown" tooltip="at main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]" ]
+    "github.com/LederWorks/siros/backend/internal/api.NewServer" -> "github.com/LederWorks/siros/backend/internal/controllers.NewControllers" [ color="saddlebrown" tooltip="at server.go:46: calling [github.com/LederWorks/siros/backend/internal/controllers.NewControllers]" ]
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes" -> "(*github.com/gorilla/mux.Router).PathPrefix" [ color="saddlebrown" tooltip="at server.go:73: calling [(*github.com/gorilla/mux.Router).PathPrefix]\nat server.go:76: calling [(*github.com/gorilla/mux.Router).PathPrefix]" ]
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).setupWebRoutes" -> "(*github.com/gorilla/mux.Route).Handler" [ color="saddlebrown" tooltip="at server.go:73: calling [(*github.com/gorilla/mux.Route).Handler]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/api.NewServer" [ color="saddlebrown" tooltip="at main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]" ]
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" -> "github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig" [ color="saddlebrown" tooltip="at server.go:55: calling [github.com/LederWorks/siros/backend/internal/api/middleware.DefaultConfig]" ]
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" -> "(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply" [ tooltip="at server.go:56: calling [(*github.com/LederWorks/siros/backend/internal/api/middleware.Config).Apply]" color="saddlebrown" ]
+    "github.com/LederWorks/siros/backend/internal/api.NewServer" -> "github.com/gorilla/mux.NewRouter" [ color="saddlebrown" tooltip="at server.go:35: calling [github.com/gorilla/mux.NewRouter]" ]
+    "(*github.com/LederWorks/siros/backend/internal/api.Server).setupRoutes" -> "github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes" [ color="saddlebrown" tooltip="at server.go:62: calling [github.com/LederWorks/siros/backend/internal/api/routes.SetupAPIRoutes]" ]
+}

@@ -1,0 +1,433 @@
+{
+  "mcpServers": {
+    // GitHub integration for repository operations
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    // Memory server for persistent context across sessions
+    "memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory@latest"
+      ],
+      "env": {
+        "MEMORY_FILE_PATH": "${input:memory_file_path}"
+      }
+    },
+    // Sequential thinking for complex problem solving
+    "sequentialthinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking@latest"
+      ]
+    },
+    // Document conversion and processing
+    "markitdown": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "markitdown-mcp"
+      ]
+    },
+    // Deep wiki and knowledge base search
+    "deepwiki": {
+      "type": "http",
+      "url": "https://api.deepwiki.com/mcp/sse"
+    },
+    // Context7 for library documentation
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    // Siros MCP server configuration
+    "siros-mcp": {
+      "command": "siros-server",
+      "args": [
+        "--mode=mcp"
+      ],
+      "env": {
+        "SIROS_ENV": "development",
+        "SIROS_LOG_LEVEL": "debug",
+        "SIROS_MCP_MODE": "true"
+      },
+      "description": "Siros MCP Server for AI-powered cloud resource management",
+      "capabilities": {
+        "resources": {
+          "listResources": true,
+          "readResource": true,
+          "subscribeToResource": false
+        },
+        "tools": {
+          "listTools": true,
+          "callTool": true
+        },
+        "prompts": {
+          "listPrompts": true,
+          "getPrompt": true
+        },
+        "completion": {
+          "complete": false
+        },
+        "logging": {
+          "level": "debug"
+        }
+      },
+      "tools": [
+        {
+          "name": "list_resources",
+          "description": "List cloud resources across all providers with optional filtering",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "aws",
+                  "azure",
+                  "gcp",
+                  "oci"
+                ],
+                "description": "Filter by cloud provider"
+              },
+              "type": {
+                "type": "string",
+                "description": "Filter by resource type (e.g., aws_instance, azure_vm)"
+              },
+              "environment": {
+                "type": "string",
+                "description": "Filter by environment tag"
+              },
+              "region": {
+                "type": "string",
+                "description": "Filter by cloud region"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000,
+                "default": 50,
+                "description": "Maximum number of resources to return"
+              }
+            }
+          }
+        },
+        {
+          "name": "get_resource",
+          "description": "Get detailed information about a specific resource",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Resource ID"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "search_resources",
+          "description": "Perform semantic search across cloud resources using vector embeddings",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Natural language search query"
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "aws",
+                  "azure",
+                  "gcp",
+                  "oci"
+                ],
+                "description": "Optional provider filter"
+              },
+              "similarity_threshold": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7,
+                "description": "Minimum similarity score for results"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 10,
+                "description": "Maximum number of results"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          }
+        },
+        {
+          "name": "discover_relationships",
+          "description": "Discover relationships between cloud resources",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "resource_id": {
+                "type": "string",
+                "description": "Resource ID to find relationships for"
+              },
+              "relationship_types": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "parent",
+                    "child",
+                    "peer",
+                    "dependency",
+                    "network"
+                  ]
+                },
+                "description": "Types of relationships to discover"
+              },
+              "depth": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5,
+                "default": 2,
+                "description": "Relationship discovery depth"
+              }
+            },
+            "required": [
+              "resource_id"
+            ]
+          }
+        },
+        {
+          "name": "analyze_coverage",
+          "description": "Analyze Terraform coverage vs discovered resources",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "aws",
+                  "azure",
+                  "gcp",
+                  "oci"
+                ],
+                "description": "Provider to analyze coverage for"
+              },
+              "environment": {
+                "type": "string",
+                "description": "Environment to analyze"
+              },
+              "include_recommendations": {
+                "type": "boolean",
+                "default": true,
+                "description": "Include recommendations for improving coverage"
+              }
+            }
+          }
+        },
+        {
+          "name": "get_audit_trail",
+          "description": "Get blockchain-based audit trail for a resource",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "resource_id": {
+                "type": "string",
+                "description": "Resource ID to get audit trail for"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 20,
+                "description": "Maximum number of audit entries"
+              }
+            },
+            "required": [
+              "resource_id"
+            ]
+          }
+        },
+        {
+          "name": "import_terraform_state",
+          "description": "Import Terraform state file for resource mapping",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "state_file_path": {
+                "type": "string",
+                "description": "Path to Terraform state file"
+              },
+              "workspace": {
+                "type": "string",
+                "description": "Terraform workspace name"
+              },
+              "environment": {
+                "type": "string",
+                "description": "Environment tag for imported resources"
+              }
+            },
+            "required": [
+              "state_file_path"
+            ]
+          }
+        },
+        {
+          "name": "scan_cloud_provider",
+          "description": "Trigger cloud provider resource discovery scan",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "aws",
+                  "azure",
+                  "gcp",
+                  "oci"
+                ],
+                "description": "Cloud provider to scan"
+              },
+              "regions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Specific regions to scan (optional)"
+              },
+              "resource_types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Specific resource types to scan (optional)"
+              },
+              "incremental": {
+                "type": "boolean",
+                "default": true,
+                "description": "Perform incremental scan (only new/changed resources)"
+              }
+            },
+            "required": [
+              "provider"
+            ]
+          }
+        }
+      ],
+      "prompts": [
+        {
+          "name": "resource_summary",
+          "description": "Generate a comprehensive summary of cloud resources",
+          "arguments": [
+            {
+              "name": "provider",
+              "description": "Cloud provider filter",
+              "required": false
+            },
+            {
+              "name": "environment",
+              "description": "Environment filter",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "security_analysis",
+          "description": "Analyze security posture of cloud resources",
+          "arguments": [
+            {
+              "name": "resource_id",
+              "description": "Specific resource to analyze",
+              "required": false
+            },
+            {
+              "name": "severity",
+              "description": "Minimum severity level (low, medium, high, critical)",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "cost_optimization",
+          "description": "Provide cost optimization recommendations",
+          "arguments": [
+            {
+              "name": "provider",
+              "description": "Cloud provider to analyze",
+              "required": false
+            },
+            {
+              "name": "resource_type",
+              "description": "Specific resource type to analyze",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "compliance_check",
+          "description": "Check resources for compliance violations",
+          "arguments": [
+            {
+              "name": "framework",
+              "description": "Compliance framework (SOC2, ISO27001, GDPR, etc.)",
+              "required": true
+            },
+            {
+              "name": "provider",
+              "description": "Cloud provider filter",
+              "required": false
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "siros://resources",
+          "name": "Cloud Resources",
+          "description": "Access to all cloud resources across providers",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "siros://relationships",
+          "name": "Resource Relationships",
+          "description": "Resource relationship graph and dependencies",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "siros://audit",
+          "name": "Audit Trail",
+          "description": "Blockchain-based resource change audit trail",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "siros://terraform",
+          "name": "Terraform State",
+          "description": "Terraform-managed resource mappings",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "siros://schemas",
+          "name": "Resource Schemas",
+          "description": "Available resource schemas and custom types",
+          "mimeType": "application/json"
+        }
+      ]
+    }
+  }
+}

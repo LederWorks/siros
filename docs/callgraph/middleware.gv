@@ -1,0 +1,105 @@
+digraph gocallvis {
+    label="";
+    labeljust="l";
+    fontname="Arial";
+    fontsize="14";
+    rankdir="LR";
+    bgcolor="lightgray";
+    style="solid";
+    penwidth="0.5";
+    pad="0.0";
+    nodesep="0.5";
+
+    node [shape="box" style="filled,rounded" fillcolor="honeydew" fontname="Verdana" penwidth="1.0" margin="0.16,0.0"];
+    edge [minlen="2"]
+
+    subgraph "cluster_focus" {
+        bgcolor="#e6ecfa";
+label="main";
+labelloc="t";
+labeljust="c";
+fontsize="18";
+        
+        "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" [ fillcolor="lightblue" label="(*App).startServer" penwidth="0.5" tooltip="(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer | defined in main.go:111\nat main.go:113: calling [github.com/rs/cors.New]\nat main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]\nat main.go:137: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1]\nat main.go:121: calling [(*github.com/rs/cors.Cors).Handler]" ]
+        "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" [ fillcolor="lightblue" label="(*App).startServer$1" style="dotted,filled" tooltip="(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1 | defined in main.go:137" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ fillcolor="lightblue" label="run" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run | defined in main.go:47\nat main.go:55: calling [github.com/LederWorks/siros/backend/internal/config.Load]\nat main.go:61: calling [github.com/LederWorks/siros/backend/cmd/siros-server.connectDB]\nat main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]\nat main.go:89: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer]\nat main.go:65: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run$1]\nat main.go:72: calling [github.com/LederWorks/siros/backend/internal/storage.New]" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" [ label="connectDB" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.connectDB | defined in main.go:92" fillcolor="lightblue" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run$1" [ label="run$1" style="dotted,filled" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run$1 | defined in main.go:65" fillcolor="lightblue" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.main" [ fillcolor="lightblue" label="main" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.main | defined in main.go:41\nat main.go:42: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run]" ]
+        
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/api" {
+        penwidth="0.8";
+fontsize="16";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+rank="sink";
+URL="/?f=github.com/LederWorks/siros/backend/internal/api";
+style="filled";
+label="api";
+tooltip="package: github.com/LederWorks/siros/backend/internal/api";
+        
+        "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" [ fillcolor="moccasin" label="(*Server).Router" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/api.Server).Router | defined in server.go:53" ]
+        "github.com/LederWorks/siros/backend/internal/api.NewServer" [ fillcolor="moccasin" label="NewServer" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/api.NewServer | defined in server.go:31" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/config" {
+        penwidth="0.8";
+fontsize="16";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+rank="sink";
+URL="/?f=github.com/LederWorks/siros/backend/internal/config";
+tooltip="package: github.com/LederWorks/siros/backend/internal/config";
+style="filled";
+label="config";
+        
+        "github.com/LederWorks/siros/backend/internal/config.Load" [ label="Load" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/config.Load | defined in config.go:110" fillcolor="moccasin" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/storage" {
+        penwidth="0.8";
+fillcolor="lightyellow";
+rank="sink";
+label="storage";
+URL="/?f=github.com/LederWorks/siros/backend/internal/storage";
+fontsize="16";
+style="filled";
+fontname="Tahoma bold";
+tooltip="package: github.com/LederWorks/siros/backend/internal/storage";
+        
+        "github.com/LederWorks/siros/backend/internal/storage.New" [ fillcolor="moccasin" label="New" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/storage.New | defined in storage.go:24" ]
+        
+    }
+
+        subgraph "cluster_github.com/rs/cors" {
+        rank="sink";
+label="cors";
+URL="/?f=github.com/rs/cors";
+tooltip="package: github.com/rs/cors";
+style="filled";
+fillcolor="lightyellow";
+penwidth="0.8";
+fontsize="16";
+fontname="Tahoma bold";
+        
+        "github.com/rs/cors.New" [ fillcolor="moccasin" label="New" penwidth="1.5" tooltip="github.com/rs/cors.New | defined in cors.go:132" ]
+        "(*github.com/rs/cors.Cors).Handler" [ tooltip="(*github.com/rs/cors.Cors).Handler | defined in cors.go:264" fillcolor="moccasin" label="(*Cors).Handler" penwidth="1.5" ]
+        
+    }
+
+    }
+
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "github.com/rs/cors.New" [ color="saddlebrown" tooltip="at main.go:113: calling [github.com/rs/cors.New]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" [ color="saddlebrown" tooltip="at main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" [ arrowhead="normalnoneodot" tooltip="at main.go:137: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/config.Load" [ color="saddlebrown" tooltip="at main.go:55: calling [github.com/LederWorks/siros/backend/internal/config.Load]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" [ tooltip="at main.go:61: calling [github.com/LederWorks/siros/backend/cmd/siros-server.connectDB]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/api.NewServer" [ color="saddlebrown" tooltip="at main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" [ tooltip="at main.go:89: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/rs/cors.Cors).Handler" [ color="saddlebrown" tooltip="at main.go:121: calling [(*github.com/rs/cors.Cors).Handler]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/cmd/siros-server.run$1" [ arrowhead="normalnoneodiamond" tooltip="at main.go:65: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run$1]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/storage.New" [ color="saddlebrown" tooltip="at main.go:72: calling [github.com/LederWorks/siros/backend/internal/storage.New]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.main" -> "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ tooltip="at main.go:42: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run]" ]
+}

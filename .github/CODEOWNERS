@@ -1,0 +1,27 @@
+# Global owners - These users will be requested for review when someone opens a pull request
+* @Ledermayer
+
+# Backend specific code
+backend/ @Ledermayer
+*.go @Ledermayer
+
+# Frontend specific code  
+frontend/ @Ledermayer
+*.tsx @Ledermayer
+*.ts @Ledermayer
+
+# Configuration and infrastructure
+.github/ @Ledermayer
+scripts/ @Ledermayer
+Dockerfile @Ledermayer
+docker-compose*.yml @Ledermayer
+*.yml @Ledermayer
+*.yaml @Ledermayer
+
+# Documentation
+*.md @Ledermayer
+docs/ @Ledermayer
+
+# Security sensitive files
+.github/workflows/ @Ledermayer
+.github/SECURITY.md @Ledermayer

@@ -1,0 +1,107 @@
+name: ✨ Feature Request
+description: Suggest an idea for Siros
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: A clear and concise description of the feature you'd like to see added.
+      placeholder: Describe the feature in a few sentences
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why do you want this feature? What problem does it solve?
+      placeholder: What's the motivation behind this feature request?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component would this feature affect?
+      options:
+        - Backend API
+        - Frontend UI
+        - Cloud Providers (AWS/Azure/GCP)
+        - Database (PostgreSQL/pgvector)
+        - Build System
+        - Docker/Deployment
+        - Documentation
+        - CLI Tools
+        - Terraform Integration
+        - MCP (Model Context Protocol)
+        - Blockchain Integration
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would be helpful
+        - High - Important for my use case
+        - Critical - Blocking my adoption
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see implemented
+      placeholder: How would you like this feature to work?
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered
+      placeholder: What other approaches could solve this problem?
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: If you have ideas about how this could be implemented, please share them
+      placeholder: Any thoughts on technical implementation?
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples/References
+      description: Are there examples of similar features in other tools?
+      placeholder: Links or references to similar implementations
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be willing to contribute to this feature?
+      options:
+        - label: I would like to implement this feature
+        - label: I would like to help with testing
+        - label: I would like to help with documentation
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples about the feature request here

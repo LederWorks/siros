@@ -1,0 +1,304 @@
+digraph gocallvis {
+    label="";
+    labeljust="l";
+    fontname="Arial";
+    fontsize="14";
+    rankdir="LR";
+    bgcolor="lightgray";
+    style="solid";
+    penwidth="0.5";
+    pad="0.0";
+    nodesep="0.3";
+
+    node [shape="box" style="filled,rounded" fillcolor="honeydew" fontname="Verdana" penwidth="1.0" margin="0.16,0.0"];
+    edge [minlen="1"]
+
+    subgraph "cluster_focus" {
+        bgcolor="#e6ecfa";
+label="main";
+labelloc="t";
+labeljust="c";
+fontsize="18";
+        
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ fillcolor="lightblue" label="run" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run | defined in main.go:47\nat main.go:55: calling [github.com/LederWorks/siros/backend/internal/config.Load]\nat main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]\nat main.go:49: calling [log.New]\nat main.go:89: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer]\nat main.go:61: calling [github.com/LederWorks/siros/backend/cmd/siros-server.connectDB]\nat main.go:65: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run$1]\nat main.go:52: calling [(*log.Logger).Printf]\nat main.go:57: calling [fmt.Errorf]\nat main.go:63: calling [fmt.Errorf]\nat main.go:74: calling [fmt.Errorf]\nat main.go:72: calling [github.com/LederWorks/siros/backend/internal/storage.New]" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" [ fillcolor="lightblue" label="connectDB" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.connectDB | defined in main.go:92\nat main.go:101: calling [context.WithTimeout]\nat main.go:96: calling [database/sql.Open]\nat main.go:101: calling [context.Background]\nat main.go:93: calling [fmt.Sprintf]\nat main.go:104: calling [(*database/sql.DB).PingContext]\nat main.go:98: calling [fmt.Errorf]\nat main.go:105: calling [fmt.Errorf]" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run$1" [ tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run$1 | defined in main.go:65\nat main.go:66: calling [(*database/sql.DB).Close]\nat main.go:67: calling [(*log.Logger).Printf]" fillcolor="lightblue" label="run$1" style="dotted,filled" ]
+        "github.com/LederWorks/siros/backend/cmd/siros-server.main" [ tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.main | defined in main.go:41\nat main.go:43: calling [log.Fatalf]\nat main.go:42: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run]" fillcolor="lightblue" label="main" penwidth="0.5" ]
+        
+        subgraph "cluster_*github.com/LederWorks/siros/backend/cmd/siros-server.App" {
+        label="(*App)";
+tooltip="type: *github.com/LederWorks/siros/backend/cmd/siros-server.App";
+penwidth="0.5";
+fontsize="15";
+fontcolor="#222222";
+labelloc="b";
+style="rounded,filled";
+fillcolor="lightsteelblue";
+        
+        "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" [ tooltip="(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer | defined in main.go:111\nat main.go:134: calling [os/signal.Notify]\nat main.go:153: calling [(*net/http.Server).Shutdown]\nat main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]\nat main.go:121: calling [(*github.com/rs/cors.Cors).Handler]\nat main.go:113: calling [github.com/rs/cors.New]\nat main.go:146: calling [(*log.Logger).Println]\nat main.go:157: calling [(*log.Logger).Println]\nat main.go:154: calling [fmt.Errorf]\nat main.go:125: calling [fmt.Sprintf]\nat main.go:137: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1]\nat main.go:149: calling [context.WithTimeout]\nat main.go:149: calling [context.Background]" fillcolor="lightblue" label="startServer" penwidth="0.5" ]
+        "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" [ tooltip="(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1 | defined in main.go:137\nat main.go:139: calling [(*net/http.Server).ListenAndServe]\nat main.go:140: calling [(*log.Logger).Fatalf]\nat main.go:138: calling [(*log.Logger).Printf]" fillcolor="lightblue" label="startServer$1" style="dotted,filled" ]
+        
+    }
+
+        subgraph "cluster_context" {
+        penwidth="0.8";
+fontsize="16";
+rank="sink";
+URL="/?f=context";
+style="filled";
+fillcolor="#E0FFE1";
+fontname="Tahoma bold";
+label="context";
+tooltip="package: context";
+        
+        "context.Background" [ label="Background" penwidth="1.5" tooltip="context.Background | defined in context.go:215" fillcolor="#adedad" ]
+        "context.WithTimeout" [ penwidth="1.5" tooltip="context.WithTimeout | defined in context.go:703" fillcolor="#adedad" label="WithTimeout" ]
+        
+    }
+
+        subgraph "cluster_database/sql" {
+        fontsize="16";
+style="filled";
+fillcolor="#E0FFE1";
+fontname="Tahoma bold";
+rank="sink";
+URL="/?f=database/sql";
+tooltip="package: database/sql";
+label="database/sql";
+penwidth="0.8";
+        
+        "database/sql.Open" [ label="Open" penwidth="1.5" tooltip="database/sql.Open | defined in sql.go:863" fillcolor="#adedad" ]
+        
+        subgraph "cluster_*database/sql.DB" {
+        style="rounded,filled";
+fillcolor="#c2e3c2";
+label="(*DB)";
+tooltip="type: *database/sql.DB";
+penwidth="0.5";
+fontsize="15";
+fontcolor="#222222";
+labelloc="b";
+        
+        "(*database/sql.DB).PingContext" [ fillcolor="#adedad" label="PingContext" penwidth="1.5" tooltip="(*database/sql.DB).PingContext | defined in sql.go:895" ]
+        "(*database/sql.DB).Close" [ tooltip="(*database/sql.DB).Close | defined in sql.go:926" fillcolor="#adedad" label="Close" penwidth="1.5" ]
+        
+    }
+
+    }
+
+        subgraph "cluster_fmt" {
+        penwidth="0.8";
+fontsize="16";
+fillcolor="#E0FFE1";
+fontname="Tahoma bold";
+rank="sink";
+label="fmt";
+style="filled";
+URL="/?f=fmt";
+tooltip="package: fmt";
+        
+        "fmt.Errorf" [ penwidth="1.5" tooltip="fmt.Errorf | defined in errors.go:22" fillcolor="#adedad" label="Errorf" ]
+        "fmt.Sprintf" [ fillcolor="#adedad" label="Sprintf" penwidth="1.5" tooltip="fmt.Sprintf | defined in print.go:237" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/api" {
+        rank="sink";
+label="api";
+tooltip="package: github.com/LederWorks/siros/backend/internal/api";
+penwidth="0.8";
+fontsize="16";
+style="filled";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+URL="/?f=github.com/LederWorks/siros/backend/internal/api";
+        
+        "github.com/LederWorks/siros/backend/internal/api.NewServer" [ label="NewServer" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/api.NewServer | defined in server.go:31" fillcolor="moccasin" ]
+        
+        subgraph "cluster_*github.com/LederWorks/siros/backend/internal/api.Server" {
+        fontcolor="#222222";
+labelloc="b";
+style="rounded,filled";
+fillcolor="wheat2";
+label="(*Server)";
+tooltip="type: *github.com/LederWorks/siros/backend/internal/api.Server";
+penwidth="0.5";
+fontsize="15";
+        
+        "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" [ label="Router" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/api.Server).Router | defined in server.go:53" fillcolor="moccasin" ]
+        
+    }
+
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/config" {
+        penwidth="0.8";
+rank="sink";
+label="config";
+tooltip="package: github.com/LederWorks/siros/backend/internal/config";
+fontsize="16";
+style="filled";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+URL="/?f=github.com/LederWorks/siros/backend/internal/config";
+        
+        "github.com/LederWorks/siros/backend/internal/config.Load" [ fillcolor="moccasin" label="Load" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/config.Load | defined in config.go:110" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/storage" {
+        label="storage";
+URL="/?f=github.com/LederWorks/siros/backend/internal/storage";
+fontname="Tahoma bold";
+rank="sink";
+tooltip="package: github.com/LederWorks/siros/backend/internal/storage";
+penwidth="0.8";
+fontsize="16";
+style="filled";
+fillcolor="lightyellow";
+        
+        "github.com/LederWorks/siros/backend/internal/storage.New" [ tooltip="github.com/LederWorks/siros/backend/internal/storage.New | defined in storage.go:24" fillcolor="moccasin" label="New" penwidth="1.5" ]
+        
+    }
+
+        subgraph "cluster_github.com/rs/cors" {
+        penwidth="0.8";
+fillcolor="lightyellow";
+label="cors";
+tooltip="package: github.com/rs/cors";
+fontsize="16";
+style="filled";
+fontname="Tahoma bold";
+rank="sink";
+URL="/?f=github.com/rs/cors";
+        
+        "github.com/rs/cors.New" [ fillcolor="moccasin" label="New" penwidth="1.5" tooltip="github.com/rs/cors.New | defined in cors.go:132" ]
+        
+        subgraph "cluster_*github.com/rs/cors.Cors" {
+        fontcolor="#222222";
+labelloc="b";
+style="rounded,filled";
+fillcolor="wheat2";
+label="(*Cors)";
+tooltip="type: *github.com/rs/cors.Cors";
+penwidth="0.5";
+fontsize="15";
+        
+        "(*github.com/rs/cors.Cors).Handler" [ fillcolor="moccasin" label="Handler" penwidth="1.5" tooltip="(*github.com/rs/cors.Cors).Handler | defined in cors.go:264" ]
+        
+    }
+
+    }
+
+        subgraph "cluster_log" {
+        fillcolor="#E0FFE1";
+label="log";
+URL="/?f=log";
+tooltip="package: log";
+style="filled";
+fontname="Tahoma bold";
+rank="sink";
+penwidth="0.8";
+fontsize="16";
+        
+        "log.New" [ fillcolor="#adedad" label="New" penwidth="1.5" tooltip="log.New | defined in log.go:71" ]
+        "log.Fatalf" [ penwidth="1.5" tooltip="log.Fatalf | defined in log.go:430" fillcolor="#adedad" label="Fatalf" ]
+        
+        subgraph "cluster_*log.Logger" {
+        fontsize="15";
+fontcolor="#222222";
+style="rounded,filled";
+label="(*Logger)";
+tooltip="type: *log.Logger";
+penwidth="0.5";
+labelloc="b";
+fillcolor="#c2e3c2";
+        
+        "(*log.Logger).Printf" [ fillcolor="#adedad" label="Printf" penwidth="1.5" tooltip="(*log.Logger).Printf | defined in log.go:266" ]
+        "(*log.Logger).Fatalf" [ label="Fatalf" penwidth="1.5" tooltip="(*log.Logger).Fatalf | defined in log.go:289" fillcolor="#adedad" ]
+        "(*log.Logger).Println" [ fillcolor="#adedad" label="Println" penwidth="1.5" tooltip="(*log.Logger).Println | defined in log.go:274" ]
+        
+    }
+
+    }
+
+        subgraph "cluster_net/http" {
+        URL="/?f=net/http";
+penwidth="0.8";
+fontsize="16";
+style="filled";
+fontname="Tahoma bold";
+rank="sink";
+label="net/http";
+tooltip="package: net/http";
+fillcolor="#E0FFE1";
+        
+        
+        subgraph "cluster_*net/http.Server" {
+        fontcolor="#222222";
+labelloc="b";
+fillcolor="#c2e3c2";
+penwidth="0.5";
+fontsize="15";
+style="rounded,filled";
+label="(*Server)";
+tooltip="type: *net/http.Server";
+        
+        "(*net/http.Server).ListenAndServe" [ fillcolor="#adedad" label="ListenAndServe" penwidth="1.5" tooltip="(*net/http.Server).ListenAndServe | defined in server.go:3377" ]
+        "(*net/http.Server).Shutdown" [ fillcolor="#adedad" label="Shutdown" penwidth="1.5" tooltip="(*net/http.Server).Shutdown | defined in server.go:3179" ]
+        
+    }
+
+    }
+
+        subgraph "cluster_os/signal" {
+        style="filled";
+rank="sink";
+URL="/?f=os/signal";
+tooltip="package: os/signal";
+fontsize="16";
+fillcolor="#E0FFE1";
+fontname="Tahoma bold";
+label="os/signal";
+penwidth="0.8";
+        
+        "os/signal.Notify" [ label="Notify" penwidth="1.5" tooltip="os/signal.Notify | defined in signal.go:122" fillcolor="#adedad" ]
+        
+    }
+
+    }
+
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/config.Load" [ color="saddlebrown" tooltip="at main.go:55: calling [github.com/LederWorks/siros/backend/internal/config.Load]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" -> "context.WithTimeout" [ color="saddlebrown" tooltip="at main.go:101: calling [context.WithTimeout]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "os/signal.Notify" [ color="saddlebrown" tooltip="at main.go:134: calling [os/signal.Notify]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" -> "database/sql.Open" [ color="saddlebrown" tooltip="at main.go:96: calling [database/sql.Open]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/api.NewServer" [ color="saddlebrown" tooltip="at main.go:78: calling [github.com/LederWorks/siros/backend/internal/api.NewServer]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "log.New" [ color="saddlebrown" tooltip="at main.go:49: calling [log.New]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*net/http.Server).Shutdown" [ color="saddlebrown" tooltip="at main.go:153: calling [(*net/http.Server).Shutdown]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.main" -> "log.Fatalf" [ color="saddlebrown" tooltip="at main.go:43: calling [log.Fatalf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" -> "context.Background" [ color="saddlebrown" tooltip="at main.go:101: calling [context.Background]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run$1" -> "(*database/sql.DB).Close" [ color="saddlebrown" tooltip="at main.go:66: calling [(*database/sql.DB).Close]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/LederWorks/siros/backend/internal/api.Server).Router" [ color="saddlebrown" tooltip="at main.go:121: calling [(*github.com/LederWorks/siros/backend/internal/api.Server).Router]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/rs/cors.Cors).Handler" [ color="saddlebrown" tooltip="at main.go:121: calling [(*github.com/rs/cors.Cors).Handler]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" -> "fmt.Sprintf" [ color="saddlebrown" tooltip="at main.go:93: calling [fmt.Sprintf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" -> "(*database/sql.DB).PingContext" [ color="saddlebrown" tooltip="at main.go:104: calling [(*database/sql.DB).PingContext]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "github.com/rs/cors.New" [ color="saddlebrown" tooltip="at main.go:113: calling [github.com/rs/cors.New]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" -> "(*net/http.Server).ListenAndServe" [ color="saddlebrown" tooltip="at main.go:139: calling [(*net/http.Server).ListenAndServe]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" -> "(*log.Logger).Fatalf" [ color="saddlebrown" tooltip="at main.go:140: calling [(*log.Logger).Fatalf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" [ tooltip="at main.go:89: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" -> "fmt.Errorf" [ color="saddlebrown" tooltip="at main.go:98: calling [fmt.Errorf]\nat main.go:105: calling [fmt.Errorf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/cmd/siros-server.connectDB" [ tooltip="at main.go:61: calling [github.com/LederWorks/siros/backend/cmd/siros-server.connectDB]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run$1" -> "(*log.Logger).Printf" [ color="saddlebrown" tooltip="at main.go:67: calling [(*log.Logger).Printf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/cmd/siros-server.run$1" [ tooltip="at main.go:65: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run$1]" arrowhead="normalnoneodiamond" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" -> "(*log.Logger).Printf" [ color="saddlebrown" tooltip="at main.go:138: calling [(*log.Logger).Printf]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*log.Logger).Println" [ color="saddlebrown" tooltip="at main.go:146: calling [(*log.Logger).Println]\nat main.go:157: calling [(*log.Logger).Println]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "fmt.Errorf" [ color="saddlebrown" tooltip="at main.go:154: calling [fmt.Errorf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.main" -> "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ tooltip="at main.go:42: calling [github.com/LederWorks/siros/backend/cmd/siros-server.run]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "(*log.Logger).Printf" [ color="saddlebrown" tooltip="at main.go:52: calling [(*log.Logger).Printf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "fmt.Errorf" [ color="saddlebrown" tooltip="at main.go:57: calling [fmt.Errorf]\nat main.go:63: calling [fmt.Errorf]\nat main.go:74: calling [fmt.Errorf]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/storage.New" [ color="saddlebrown" tooltip="at main.go:72: calling [github.com/LederWorks/siros/backend/internal/storage.New]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "fmt.Sprintf" [ color="saddlebrown" tooltip="at main.go:125: calling [fmt.Sprintf]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1" [ arrowhead="normalnoneodot" tooltip="at main.go:137: calling [(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer$1]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "context.WithTimeout" [ color="saddlebrown" tooltip="at main.go:149: calling [context.WithTimeout]" ]
+    "(*github.com/LederWorks/siros/backend/cmd/siros-server.App).startServer" -> "context.Background" [ color="saddlebrown" tooltip="at main.go:149: calling [context.Background]" ]
+}

@@ -1,0 +1,151 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "siros:build",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/build.ps1"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$go",
+                "$tsc"
+            ],
+            "detail": "Complete production build (frontend + backend)"
+        },
+        {
+            "label": "siros:build_backend",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/backend/backend_build.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/backend/backend_build.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$go",
+            "detail": "Go backend compilation"
+        },
+        {
+            "label": "siros:build_frontend",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/frontend/frontend_build.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/frontend/frontend_build.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ],
+            "detail": "React/TypeScript compilation and bundling"
+        },
+        {
+            "label": "siros:start_dev",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/env_dev.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/env_dev.ps1"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "^.*Starting development server.*$",
+                        "endsPattern": "^.*Server listening on.*$"
+                    }
+                }
+            ],
+            "detail": "Concurrent backend and frontend development servers"
+        },
+        {
+            "label": "siros:test_backend",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/test_backend.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/test_backend.ps1"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$go",
+            "detail": "Comprehensive backend testing (tests, linting, security)"
+        },
+        {
+            "label": "siros:test_frontend",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/test_frontend.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/test_frontend.ps1"
+            },
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ],
+            "detail": "Comprehensive frontend testing (linting, type checking, unit tests)"
+        }
+    ]
+}

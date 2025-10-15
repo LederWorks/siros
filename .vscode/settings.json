@@ -1,0 +1,255 @@
+{
+    // General Editor Settings
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.trimAutoWhitespace": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
+    // File Settings
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.eol": "\n",
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "backend/siros-server": true,
+        "backend/siros-server.exe": true,
+        "**/*.log": true,
+        "**/coverage": true
+    },
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/.git/**": true,
+        "**/coverage/**": true
+    },
+    // Go Language Settings
+    "go.useLanguageServer": true,
+    "go.languageServerExperimentalFeatures": {
+        "diagnostics": true,
+        "documentLink": true
+    },
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fast",
+        "--enable-all",
+        "--disable=exhaustruct,exhaustivestruct,gochecknoglobals,wsl,nlreturn"
+    ],
+    "go.formatTool": "goimports",
+    "go.testFlags": [
+        "-v",
+        "-race"
+    ],
+    "go.testTimeout": "30s",
+    "go.coverOnSave": false,
+    "go.coverOnSingleTest": true,
+    "go.coverOnTestPackage": true,
+    "go.buildOnSave": "off",
+    "go.vetOnSave": "package",
+    "go.lintOnSave": "package",
+    "go.gocodeAutoBuild": true,
+    "go.toolsManagement.autoUpdate": true,
+    "go.alternateTools": {
+        "go": "go",
+        "gofmt": "goimports",
+        "golint": "golangci-lint"
+    },
+    // TypeScript/JavaScript Settings
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.suggest.autoImports": true,
+    "typescript.suggest.completeFunctionCalls": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
+    "javascript.preferences.quoteStyle": "single",
+    "javascript.suggest.autoImports": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    // React/JSX Settings
+    "emmet.includeLanguages": {
+        "typescript": "typescriptreact",
+        "javascript": "javascriptreact"
+    },
+    "emmet.triggerExpansionOnTab": true,
+    // ESLint Settings
+    "eslint.workingDirectories": [
+        "frontend"
+    ],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "eslint.format.enable": true,
+    "eslint.codeActionsOnSave.mode": "all",
+    // Prettier Settings
+    "prettier.requireConfig": false,
+    "prettier.tabWidth": 2,
+    "prettier.useTabs": false,
+    "prettier.semi": true,
+    "prettier.singleQuote": true,
+    "prettier.trailingComma": "es5",
+    // Language-specific Formatting
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.tabSize": 4,
+        "editor.insertSpaces": false,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[typescript]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[typescriptreact]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[javascript]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+        }
+    },
+    "[javascriptreact]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+        }
+    },
+    "[json]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[jsonc]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[yaml]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[markdown]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.wordWrap": "on",
+        "editor.rulers": [
+            80
+        ]
+    },
+    "[sql]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[dockerfile]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[makefile]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4
+    },
+    // Search Settings
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/.git": true,
+        "**/coverage": true,
+        "**/*.log": true,
+        "backend/siros-server": true,
+        "backend/siros-server.exe": true
+    },
+    // Git Settings
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.suggestSmartCommit": true,
+    // Terminal Settings
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash"
+        }
+    },
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    // Extension Settings
+    "extensions.ignoreRecommendations": false,
+    // Testing Settings
+    "go.testExplorer.enable": true,
+    "go.testExplorer.showDynamicSubtestsInEditor": true,
+    // Debugging Settings
+    "debug.onTaskErrors": "showErrors",
+    "debug.showBreakpointsInOverviewRuler": true,
+    "debug.allowBreakpointsEverywhere": false,
+    // IntelliSense Settings
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    // Workspace Trust
+    "security.workspace.trust.untrustedFiles": "open",
+    // HTTP Settings for API testing
+    "rest-client.requestNameAsResponseTabTitle": true,
+    "rest-client.rememberCookiesForSubsequentRequests": true,
+    "rest-client.previewResponseInUntitledDocument": true,
+    // Docker Settings
+    "docker.commands.build": "docker build -t siros:latest .",
+    "docker.commands.run": "docker run -p 8080:8080 siros:latest",
+    // Problem Matchers
+    "problems.decorations.enabled": true,
+    "problems.showCurrentInStatus": true,
+    // Multi-Cloud Provider Settings (Environment Variables)
+    "terminal.integrated.env.windows": {
+        "SIROS_ENV": "development",
+        "SIROS_LOG_LEVEL": "debug"
+    },
+    "terminal.integrated.env.linux": {
+        "SIROS_ENV": "development",
+        "SIROS_LOG_LEVEL": "debug"
+    },
+    "terminal.integrated.env.osx": {
+        "SIROS_ENV": "development",
+        "SIROS_LOG_LEVEL": "debug"
+    }
+}

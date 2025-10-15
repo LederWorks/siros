@@ -1,0 +1,82 @@
+digraph gocallvis {
+    label="";
+    labeljust="l";
+    fontname="Arial";
+    fontsize="14";
+    rankdir="LR";
+    bgcolor="lightgray";
+    style="solid";
+    penwidth="0.5";
+    pad="0.0";
+    nodesep="0.5";
+
+    node [shape="box" style="filled,rounded" fillcolor="honeydew" fontname="Verdana" penwidth="1.0" margin="0.16,0.0"];
+    edge [minlen="2"]
+
+    subgraph "cluster_focus" {
+        label="storage";
+labelloc="t";
+labeljust="c";
+fontsize="18";
+bgcolor="#e6ecfa";
+        
+        "github.com/LederWorks/siros/backend/internal/storage.New" [ penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/storage.New | defined in storage.go:24\nat storage.go:25: calling [(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString]\nat storage.go:46: calling [(*github.com/LederWorks/siros/backend/internal/storage.Storage).migrate]" fillcolor="lightblue" label="New" ]
+        "(*github.com/LederWorks/siros/backend/internal/storage.Storage).migrate" [ fillcolor="lightblue" label="(*Storage).migrate" penwidth="0.5" tooltip="(*github.com/LederWorks/siros/backend/internal/storage.Storage).migrate | defined in storage.go:59" ]
+        "(*github.com/LederWorks/siros/backend/internal/storage.Storage).VectorSearch" [ penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/storage.Storage).VectorSearch | defined in storage.go:325\nat storage.go:335: calling [github.com/lib/pq.Array]" fillcolor="lightblue" label="(*Storage).VectorSearch" ]
+        "(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource" [ fillcolor="lightblue" label="(*Storage).UpdateResource" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource | defined in storage.go:209\nat storage.go:234: calling [github.com/lib/pq.Array]\nat storage.go:234: calling [github.com/lib/pq.Array]" ]
+        "(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource" [ penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource | defined in storage.go:133\nat storage.go:155: calling [github.com/lib/pq.Array]\nat storage.go:155: calling [github.com/lib/pq.Array]" fillcolor="lightblue" label="(*Storage).CreateResource" ]
+        
+        subgraph "cluster_github.com/LederWorks/siros/backend/cmd/siros-server" {
+        fillcolor="lightyellow";
+fontname="Tahoma bold";
+URL="/?f=github.com/LederWorks/siros/backend/cmd/siros-server";
+tooltip="package: github.com/LederWorks/siros/backend/cmd/siros-server";
+penwidth="0.8";
+fontsize="16";
+rank="sink";
+label="main";
+style="filled";
+        
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ fillcolor="moccasin" label="run" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run | defined in main.go:47\nat main.go:72: calling [github.com/LederWorks/siros/backend/internal/storage.New]" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/config" {
+        fontsize="16";
+style="filled";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+rank="sink";
+label="config";
+URL="/?f=github.com/LederWorks/siros/backend/internal/config";
+penwidth="0.8";
+tooltip="package: github.com/LederWorks/siros/backend/internal/config";
+        
+        "(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString" [ label="(*DatabaseConfig).ConnectionString" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString | defined in config.go:228" fillcolor="moccasin" ]
+        
+    }
+
+        subgraph "cluster_github.com/lib/pq" {
+        fontname="Tahoma bold";
+label="pq";
+tooltip="package: github.com/lib/pq";
+fillcolor="lightyellow";
+rank="sink";
+URL="/?f=github.com/lib/pq";
+penwidth="0.8";
+fontsize="16";
+style="filled";
+        
+        "github.com/lib/pq.Array" [ penwidth="1.5" tooltip="github.com/lib/pq.Array | defined in array.go:29" fillcolor="moccasin" label="Array" ]
+        
+    }
+
+    }
+
+    "github.com/LederWorks/siros/backend/internal/storage.New" -> "(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString" [ tooltip="at storage.go:25: calling [(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString]" color="saddlebrown" ]
+    "github.com/LederWorks/siros/backend/internal/storage.New" -> "(*github.com/LederWorks/siros/backend/internal/storage.Storage).migrate" [ tooltip="at storage.go:46: calling [(*github.com/LederWorks/siros/backend/internal/storage.Storage).migrate]" ]
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/storage.New" [ color="saddlebrown" tooltip="at main.go:72: calling [github.com/LederWorks/siros/backend/internal/storage.New]" ]
+    "(*github.com/LederWorks/siros/backend/internal/storage.Storage).VectorSearch" -> "github.com/lib/pq.Array" [ color="saddlebrown" tooltip="at storage.go:335: calling [github.com/lib/pq.Array]" ]
+    "(*github.com/LederWorks/siros/backend/internal/storage.Storage).UpdateResource" -> "github.com/lib/pq.Array" [ tooltip="at storage.go:234: calling [github.com/lib/pq.Array]\nat storage.go:234: calling [github.com/lib/pq.Array]" color="saddlebrown" ]
+    "(*github.com/LederWorks/siros/backend/internal/storage.Storage).CreateResource" -> "github.com/lib/pq.Array" [ color="saddlebrown" tooltip="at storage.go:155: calling [github.com/lib/pq.Array]\nat storage.go:155: calling [github.com/lib/pq.Array]" ]
+}

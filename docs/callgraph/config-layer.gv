@@ -1,0 +1,82 @@
+digraph gocallvis {
+    label="";
+    labeljust="l";
+    fontname="Arial";
+    fontsize="14";
+    rankdir="LR";
+    bgcolor="lightgray";
+    style="solid";
+    penwidth="0.5";
+    pad="0.0";
+    nodesep="0.5";
+
+    node [shape="box" style="filled,rounded" fillcolor="honeydew" fontname="Verdana" penwidth="1.0" margin="0.16,0.0"];
+    edge [minlen="2"]
+
+    subgraph "cluster_focus" {
+        fontsize="18";
+bgcolor="#e6ecfa";
+label="config";
+labelloc="t";
+labeljust="c";
+        
+        "github.com/LederWorks/siros/backend/internal/config.loadConfigFile" [ fillcolor="lightblue" label="loadConfigFile" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/internal/config.loadConfigFile | defined in config.go:144\nat config.go:146: calling [github.com/LederWorks/siros/backend/internal/config.validateConfigPath]\nat config.go:168: calling [gopkg.in/yaml.v3.Unmarshal]" ]
+        "github.com/LederWorks/siros/backend/internal/config.validateConfigPath" [ penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/internal/config.validateConfigPath | defined in config.go:176" fillcolor="lightblue" label="validateConfigPath" ]
+        "github.com/LederWorks/siros/backend/internal/config.Load" [ label="Load" penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/config.Load | defined in config.go:110\nat config.go:133: calling [github.com/LederWorks/siros/backend/internal/config.loadConfigFile]\nat config.go:138: calling [github.com/LederWorks/siros/backend/internal/config.loadEnvVars]" fillcolor="lightblue" ]
+        "github.com/LederWorks/siros/backend/internal/config.loadEnvVars" [ penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/internal/config.loadEnvVars | defined in config.go:214" fillcolor="lightblue" label="loadEnvVars" ]
+        "(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString" [ fillcolor="lightblue" label="(*DatabaseConfig).ConnectionString" penwidth="1.5" tooltip="(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString | defined in config.go:228" ]
+        
+        subgraph "cluster_github.com/LederWorks/siros/backend/cmd/siros-server" {
+        label="main";
+fillcolor="lightyellow";
+fontname="Tahoma bold";
+URL="/?f=github.com/LederWorks/siros/backend/cmd/siros-server";
+tooltip="package: github.com/LederWorks/siros/backend/cmd/siros-server";
+penwidth="0.8";
+fontsize="16";
+style="filled";
+rank="sink";
+        
+        "github.com/LederWorks/siros/backend/cmd/siros-server.run" [ fillcolor="moccasin" label="run" penwidth="0.5" tooltip="github.com/LederWorks/siros/backend/cmd/siros-server.run | defined in main.go:47\nat main.go:55: calling [github.com/LederWorks/siros/backend/internal/config.Load]" ]
+        
+    }
+
+        subgraph "cluster_github.com/LederWorks/siros/backend/internal/storage" {
+        URL="/?f=github.com/LederWorks/siros/backend/internal/storage";
+penwidth="0.8";
+fontsize="16";
+fillcolor="lightyellow";
+rank="sink";
+tooltip="package: github.com/LederWorks/siros/backend/internal/storage";
+style="filled";
+fontname="Tahoma bold";
+label="storage";
+        
+        "github.com/LederWorks/siros/backend/internal/storage.New" [ penwidth="1.5" tooltip="github.com/LederWorks/siros/backend/internal/storage.New | defined in storage.go:24\nat storage.go:25: calling [(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString]" fillcolor="moccasin" label="New" ]
+        
+    }
+
+        subgraph "cluster_gopkg.in/yaml.v3" {
+        fontsize="16";
+fillcolor="lightyellow";
+rank="sink";
+tooltip="package: gopkg.in/yaml.v3";
+style="filled";
+fontname="Tahoma bold";
+label="yaml";
+URL="/?f=gopkg.in/yaml.v3";
+penwidth="0.8";
+        
+        "gopkg.in/yaml.v3.Unmarshal" [ penwidth="1.5" tooltip="gopkg.in/yaml.v3.Unmarshal | defined in yaml.go:88" fillcolor="moccasin" label="Unmarshal" ]
+        
+    }
+
+    }
+
+    "github.com/LederWorks/siros/backend/cmd/siros-server.run" -> "github.com/LederWorks/siros/backend/internal/config.Load" [ color="saddlebrown" tooltip="at main.go:55: calling [github.com/LederWorks/siros/backend/internal/config.Load]" ]
+    "github.com/LederWorks/siros/backend/internal/storage.New" -> "(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString" [ color="saddlebrown" tooltip="at storage.go:25: calling [(*github.com/LederWorks/siros/backend/internal/config.DatabaseConfig).ConnectionString]" ]
+    "github.com/LederWorks/siros/backend/internal/config.loadConfigFile" -> "github.com/LederWorks/siros/backend/internal/config.validateConfigPath" [ tooltip="at config.go:146: calling [github.com/LederWorks/siros/backend/internal/config.validateConfigPath]" ]
+    "github.com/LederWorks/siros/backend/internal/config.loadConfigFile" -> "gopkg.in/yaml.v3.Unmarshal" [ color="saddlebrown" tooltip="at config.go:168: calling [gopkg.in/yaml.v3.Unmarshal]" ]
+    "github.com/LederWorks/siros/backend/internal/config.Load" -> "github.com/LederWorks/siros/backend/internal/config.loadConfigFile" [ tooltip="at config.go:133: calling [github.com/LederWorks/siros/backend/internal/config.loadConfigFile]" ]
+    "github.com/LederWorks/siros/backend/internal/config.Load" -> "github.com/LederWorks/siros/backend/internal/config.loadEnvVars" [ tooltip="at config.go:138: calling [github.com/LederWorks/siros/backend/internal/config.loadEnvVars]" ]
+}

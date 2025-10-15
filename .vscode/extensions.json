@@ -1,0 +1,66 @@
+{
+  "recommendations": [
+    // Go Development
+    "golang.go",
+    "766b.go-outliner",
+    // TypeScript/JavaScript Development
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    // React Development
+    "ms-vscode.vscode-json",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    // Docker & Containers
+    "ms-azuretools.vscode-docker",
+    "ms-vscode-remote.remote-containers",
+    // Git & GitHub
+    "eamodio.gitlens",
+    "GitHub.vscode-pull-request-github",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    // Database & SQL
+    "ms-mssql.mssql",
+    "cweijan.vscode-postgresql-client2",
+    // YAML & Configuration
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
+    // Markdown & Documentation
+    "yzhang.markdown-all-in-one",
+    "DavidAnson.vscode-markdownlint",
+    // Testing & Quality
+    "hbenl.vscode-test-explorer",
+    "ryanluker.vscode-coverage-gutters",
+    "SonarSource.sonarlint-vscode",
+    // Terraform & IaC
+    "hashicorp.terraform",
+    "ms-azuretools.vscode-azureterraform",
+    // Azure Tools
+    "ms-azuretools.vscode-azureresourcegroups",
+    "ms-azuretools.vscode-azurestorage",
+    "ms-azuretools.vscode-azurecontainerapps",
+    "ms-azuretools.vscode-azure-mcp-server",
+    // AWS Tools
+    "AmazonWebServices.aws-toolkit-vscode",
+    // GCP Tools
+    "googlecloudtools.cloudcode",
+    // Productivity & UI
+    "vscode-icons-team.vscode-icons",
+    "alefragnani.Bookmarks",
+    "ms-vscode.PowerShell",
+    "mechatroner.rainbow-csv",
+    // API Development
+    "humao.rest-client",
+    "Postman.postman-for-vscode",
+    // JSON & Schema
+    "quicktype.quicktype",
+    "ZainChen.json"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript",
+    "hookyqr.beautify",
+    "ms-vscode.node-debug",
+    "ms-vscode.node-debug2"
+  ]
+}

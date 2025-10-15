@@ -1,0 +1,67 @@
+# golangci-lint configuration for Siros
+# Multi-cloud resource management platform
+# Compatible with golangci-lint v1.64.8
+
+run:
+  timeout: 5m
+  tests: true
+  go: "1.24"
+
+linters:
+  enable:
+    # Essential linters for code quality
+    - errcheck # Check for unchecked errors
+    - gosimple # Suggest simplifications
+    - govet # Go vet tool
+    - ineffassign # Detect ineffectual assignments
+    - staticcheck # Go static analysis
+    - typecheck # Type checking
+    - unused # Find unused code
+
+    # Style and formatting
+    - gofmt # Check if code was formatted
+    - goimports # Check import formatting
+    - revive # Fast configurable linter
+
+    # Bug prevention
+    - bodyclose # Check for unclosed HTTP response bodies
+    - gosec # Security audit
+    - rowserrcheck # Check for unclosed database rows
+
+    # Maintenance
+    - goconst # Repeated strings that could be constants
+    - gocritic # Comprehensive Go source code linter
+    - misspell # Find commonly misspelled words
+    - unconvert # Remove unnecessary type conversions
+
+    # Error handling
+    - errorlint # Find code that will cause problems with error wrapping
+
+  disable:
+    - exhaustruct # Too strict for this project
+    - gochecknoglobals # We need some globals
+    - gochecknoinits # We use init functions
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    disabled-checks:
+      - whyNoLint
+      - unnamedResult
+
+  goimports:
+    local-prefixes: github.com/LederWorks/siros
+
+  gosec:
+    severity: medium
+    confidence: medium
+
+  misspell:
+    locale: US
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
