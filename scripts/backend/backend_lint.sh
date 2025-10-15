@@ -7,7 +7,6 @@ set -e
 
 # Parse command line arguments
 VERBOSE=false
-SKIP_SECURITY=false
 SKIP_INSTALL=false
 CONFIG=""
 
@@ -15,10 +14,6 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --verbose|-v)
             VERBOSE=true
-            shift
-            ;;
-        --skip-security)
-            SKIP_SECURITY=true
             shift
             ;;
         --skip-install)
@@ -33,10 +28,7 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: $0 [OPTIONS]"
             echo "Options:"
             echo "  --verbose, -v         Enable verbose output"
-            echo "  --skip-security       Skip security scanning"
             echo "  --skip-install        Skip automatic tool installation/updates"
-            echo "  --config, -c PATH     Use custom golangci-lint config"
-            echo "  --help, -h            Show this help message"
             echo "  --config, -c PATH     Use custom golangci-lint config"
             echo "  --help, -h            Show this help message"
             exit 0
@@ -145,61 +137,6 @@ else
         print_error "golangci-lint not found and skip-install flag is set!"
         print_warning "Please install manually: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
         exit 1
-    fi
-fi
-
-# Security scanning (optional)
-if [ "$SKIP_SECURITY" = false ]; then
-    print_status "Running security scan (gosec)..."
-
-    if command -v gosec &> /dev/null; then
-        if [ "$SKIP_INSTALL" = false ]; then
-            print_status "gosec found, updating to latest version..."
-            go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
-            if [ $? -eq 0 ]; then
-                print_success "gosec updated to latest version"
-            else
-                print_warning "Failed to update gosec, using existing version"
-            fi
-        else
-            print_status "gosec found, skipping update (skip-install flag set)"
-        fi
-
-        echo "  Running: gosec ./..."
-        echo ""  # Add spacing for better readability
-
-        if gosec ./...; then
-            echo ""  # Add spacing after output
-            print_success "Security scan passed!"
-        else
-            echo ""  # Add spacing after output
-            print_warning "Security scan found issues"
-            print_warning "Run 'gosec ./...' for details"
-        fi
-    else
-        if [ "$SKIP_INSTALL" = false ]; then
-            print_status "gosec not found, installing..."
-            go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
-            if [ $? -eq 0 ]; then
-                print_success "gosec installed successfully"
-                echo "  Running: gosec ./..."
-                echo ""  # Add spacing for better readability
-
-                if gosec ./...; then
-                    echo ""  # Add spacing after output
-                    print_success "Security scan passed!"
-                else
-                    echo ""  # Add spacing after output
-                    print_warning "Security scan found issues"
-                    print_warning "Run 'gosec ./...' for details"
-                fi
-            else
-                print_warning "Failed to install gosec, skipping security scan"
-            fi
-        else
-            print_warning "gosec not found and skip-install flag is set, skipping security scan"
-            print_warning "To install manually: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest"
-        fi
     fi
 fi
 

@@ -2,11 +2,11 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build All (Production)",
+            "label": "siros:build",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/build_all.sh",
+            "command": "${workspaceFolder}/scripts/build.sh",
             "windows": {
-                "command": "${workspaceFolder}/scripts/build_all.ps1"
+                "command": "${workspaceFolder}/scripts/build.ps1"
             },
             "group": {
                 "kind": "build",
@@ -24,20 +24,14 @@
                 "$go",
                 "$tsc"
             ],
-            "detail": "Build complete Siros application with embedded frontend"
+            "detail": "Complete production build (frontend + backend)"
         },
         {
-            "label": "Build Backend Only",
+            "label": "siros:build_backend",
             "type": "shell",
-            "command": "${workspaceFolder}/scripts/build.sh",
+            "command": "${workspaceFolder}/scripts/backend/backend_build.sh",
             "windows": {
-                "command": "cd backend && go build -o siros-server.exe ./cmd/siros-server"
-            },
-            "linux": {
-                "command": "cd backend && go build -o siros-server ./cmd/siros-server"
-            },
-            "osx": {
-                "command": "cd backend && go build -o siros-server ./cmd/siros-server"
+                "command": "${workspaceFolder}/scripts/backend/backend_build.ps1"
             },
             "group": "build",
             "presentation": {
@@ -49,14 +43,14 @@
                 "clear": false
             },
             "problemMatcher": "$go",
-            "detail": "Build only the Go backend server"
+            "detail": "Go backend compilation"
         },
         {
-            "label": "Build Frontend Only",
+            "label": "siros:build_frontend",
             "type": "shell",
-            "command": "npm run build",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
+            "command": "${workspaceFolder}/scripts/frontend/frontend_build.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/frontend/frontend_build.ps1"
             },
             "group": "build",
             "presentation": {
@@ -71,10 +65,10 @@
                 "$tsc",
                 "$eslint-stylish"
             ],
-            "detail": "Build only the React frontend"
+            "detail": "React/TypeScript compilation and bundling"
         },
         {
-            "label": "Start Development Server",
+            "label": "siros:start_dev",
             "type": "shell",
             "command": "${workspaceFolder}/scripts/env_dev.sh",
             "windows": {
@@ -107,86 +101,14 @@
                     }
                 }
             ],
-            "detail": "Start both backend and frontend in development mode with hot reload"
+            "detail": "Concurrent backend and frontend development servers"
         },
         {
-            "label": "Start Backend Only",
+            "label": "siros:test_backend",
             "type": "shell",
-            "command": "go run ./cmd/siros-server",
-            "options": {
-                "cwd": "${workspaceFolder}/backend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": false,
-                "clear": true
-            },
-            "isBackground": true,
-            "problemMatcher": [
-                {
-                    "pattern": [
-                        {
-                            "regexp": ".",
-                            "file": 1,
-                            "location": 2,
-                            "message": 3
-                        }
-                    ],
-                    "background": {
-                        "activeOnStart": true,
-                        "beginsPattern": "^.*Starting server.*$",
-                        "endsPattern": "^.*Server listening on.*$"
-                    }
-                }
-            ],
-            "detail": "Start only the Go backend server"
-        },
-        {
-            "label": "Start Frontend Only",
-            "type": "shell",
-            "command": "npm run dev",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": false,
-                "clear": true
-            },
-            "isBackground": true,
-            "problemMatcher": [
-                {
-                    "pattern": [
-                        {
-                            "regexp": ".",
-                            "file": 1,
-                            "location": 2,
-                            "message": 3
-                        }
-                    ],
-                    "background": {
-                        "activeOnStart": true,
-                        "beginsPattern": "^.*VITE.*$",
-                        "endsPattern": "^.*Local:.*$"
-                    }
-                }
-            ],
-            "detail": "Start only the React frontend development server"
-        },
-        {
-            "label": "Test All",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/test.sh",
+            "command": "${workspaceFolder}/scripts/test_backend.sh",
             "windows": {
-                "command": "${workspaceFolder}/scripts/test.ps1"
+                "command": "${workspaceFolder}/scripts/test_backend.ps1"
             },
             "group": {
                 "kind": "test",
@@ -200,37 +122,15 @@
                 "showReuseMessage": true,
                 "clear": false
             },
-            "problemMatcher": [
-                "$go",
-                "$tsc"
-            ],
-            "detail": "Run all test suites (backend and frontend)"
-        },
-        {
-            "label": "Test Backend",
-            "type": "shell",
-            "command": "go test ./... -v",
-            "options": {
-                "cwd": "${workspaceFolder}/backend"
-            },
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
             "problemMatcher": "$go",
-            "detail": "Run Go backend tests"
+            "detail": "Comprehensive backend testing (tests, linting, security)"
         },
         {
-            "label": "Test Frontend",
+            "label": "siros:test_frontend",
             "type": "shell",
-            "command": "npm test",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
+            "command": "${workspaceFolder}/scripts/test_frontend.sh",
+            "windows": {
+                "command": "${workspaceFolder}/scripts/test_frontend.ps1"
             },
             "group": "test",
             "presentation": {
@@ -245,367 +145,7 @@
                 "$tsc",
                 "$eslint-stylish"
             ],
-            "detail": "Run React frontend tests"
-        },
-        {
-            "label": "Test with Coverage",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/test.sh --coverage",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/test.ps1 -Coverage"
-            },
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [
-                "$go",
-                "$tsc"
-            ],
-            "detail": "Run all tests with coverage reports"
-        },
-        {
-            "label": "Lint All",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/lint.sh",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/lint.ps1"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [
-                "$go",
-                "$eslint-stylish"
-            ],
-            "detail": "Run comprehensive linting for both backend (golangci-lint) and frontend (ESLint + TypeScript)"
-        },
-        {
-            "label": "Lint All (Verbose)",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/lint.sh",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/lint.ps1",
-                "args": [
-                    "-Verbose"
-                ]
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [
-                "$go",
-                "$eslint-stylish"
-            ],
-            "detail": "Run comprehensive linting with verbose output for debugging"
-        },
-        {
-            "label": "Lint Backend",
-            "type": "shell",
-            "command": "golangci-lint run",
-            "options": {
-                "cwd": "${workspaceFolder}/backend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": "$go",
-            "detail": "Run Go linting with golangci-lint"
-        },
-        {
-            "label": "Lint Frontend",
-            "type": "shell",
-            "command": "npm run lint",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": "$eslint-stylish",
-            "detail": "Run ESLint on TypeScript/React code"
-        },
-        {
-            "label": "Security Scan (Gosec)",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/backend_gosec.sh",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/backend_gosec.ps1"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [],
-            "detail": "Run Gosec security scanner on Go backend code"
-        },
-        {
-            "label": "Security Scan (No Fail)",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/backend_gosec.sh",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/backend_gosec.ps1",
-                "args": ["-NoFail"]
-            },
-            "args": ["--no-fail"],
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [],
-            "detail": "Run Gosec security scanner without failing on issues (warnings only)"
-        },
-        {
-            "label": "Format All",
-            "type": "shell",
-            "command": "gofmt -w .",
-            "options": {
-                "cwd": "${workspaceFolder}/backend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "dependsOn": "Format Frontend",
-            "detail": "Format all code (Go and TypeScript)"
-        },
-        {
-            "label": "Format Frontend",
-            "type": "shell",
-            "command": "npm run format",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Format TypeScript/React code with Prettier"
-        },
-        {
-            "label": "Clean Build Artifacts",
-            "type": "shell",
-            "command": "rm -rf backend/siros-server backend/siros-server.exe frontend/dist frontend/node_modules/.vite",
-            "windows": {
-                "command": "Remove-Item -Force -Recurse -ErrorAction SilentlyContinue backend/siros-server.exe, frontend/dist, frontend/node_modules/.vite"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Clean all build artifacts and temporary files"
-        },
-        {
-            "label": "Install Dependencies",
-            "type": "shell",
-            "command": "go mod download",
-            "options": {
-                "cwd": "${workspaceFolder}/backend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "dependsOn": "Install Frontend Dependencies",
-            "detail": "Install all dependencies (Go modules and npm packages)"
-        },
-        {
-            "label": "Install Frontend Dependencies",
-            "type": "shell",
-            "command": "npm ci",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Install npm dependencies for frontend"
-        },
-        {
-            "label": "Docker Build",
-            "type": "shell",
-            "command": "docker build -t siros:latest .",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Build Docker image for Siros"
-        },
-        {
-            "label": "Docker Compose Up",
-            "type": "shell",
-            "command": "docker-compose up -d",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Start Siros with Docker Compose (includes PostgreSQL)"
-        },
-        {
-            "label": "Generate Backend Call Graphs",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/backend_callgraph.sh",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/backend_callgraph.ps1",
-                "args": [
-                    "-SkipInstall"
-                ]
-            },
-            "linux": {
-                "command": "${workspaceFolder}/scripts/backend_callgraph.sh"
-            },
-            "osx": {
-                "command": "${workspaceFolder}/scripts/backend_callgraph.sh"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Generate backend call graph visualizations (auto-cleans previous graphs)"
-        },
-        {
-            "label": "Generate Backend Call Graphs (Verbose)",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/backend_callgraph.sh --verbose",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/backend_callgraph.ps1",
-                "args": [
-                    "-SkipInstall",
-                    "-VerboseOutput"
-                ]
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Generate call graphs with verbose output for debugging"
-        },
-        {
-            "label": "Update Call Graph Documentation",
-            "type": "shell",
-            "command": "${workspaceFolder}/scripts/backend_callgraph.sh && echo 'Call graphs updated. Opening documentation...' && code docs/BACKEND_CALL_GRAPH.md",
-            "windows": {
-                "command": "${workspaceFolder}/scripts/backend_callgraph.ps1 -SkipInstall; Write-Host 'Call graphs updated. Opening documentation...'; code docs/BACKEND_CALL_GRAPH.md"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Regenerate call graphs and open the documentation file"
-        },
-        {
-            "label": "Database Init",
-            "type": "shell",
-            "command": "psql -h localhost -U siros -d siros -f scripts/init.sql",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "detail": "Initialize PostgreSQL database with required schema"
+            "detail": "Comprehensive frontend testing (linting, type checking, unit tests)"
         }
     ]
 }

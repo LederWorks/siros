@@ -4,7 +4,6 @@
 [CmdletBinding()]
 param(
     [switch]$VerboseOutput,
-    [switch]$SkipSecurity,
     [switch]$SkipInstall,
     [string]$Config = "",
     [switch]$Help
@@ -18,7 +17,6 @@ if ($Help) {
     Write-Host ""
     Write-Host "OPTIONS:" -ForegroundColor Yellow
     Write-Host "  -VerboseOutput      Enable verbose output"
-    Write-Host "  -SkipSecurity       Skip security scanning with gosec"
     Write-Host "  -SkipInstall        Skip automatic tool installation/updates"
     Write-Host "  -Config <path>      Use custom golangci-lint config file"
     Write-Host "  -Help               Show this help message"
@@ -26,7 +24,6 @@ if ($Help) {
     Write-Host "EXAMPLES:" -ForegroundColor Yellow
     Write-Host "  .\scripts\backend_lint.ps1                      # Run with default settings"
     Write-Host "  .\scripts\backend_lint.ps1 -VerboseOutput       # Run with verbose output"
-    Write-Host "  .\scripts\backend_lint.ps1 -SkipSecurity      # Skip security scanning"
     Write-Host "  .\scripts\backend_lint.ps1 -SkipInstall       # Skip tool updates"
     exit 0
 }
@@ -130,73 +127,6 @@ try {
             Write-Error "golangci-lint not found and SkipInstall flag is set!"
             Write-Warning "Please install manually: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
             exit 1
-        }
-    }
-
-    # Security scanning (optional)
-    if (-not $SkipSecurity) {
-        Write-Status "Running security scan (gosec)..."
-
-        $gosecPath = Get-Command gosec -ErrorAction SilentlyContinue
-        if ($gosecPath) {
-            if (-not $SkipInstall) {
-                Write-Status "gosec found, updating to latest version..."
-                go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Success "gosec updated to latest version"
-                }
-                else {
-                    Write-Warning "Failed to update gosec, using existing version"
-                }
-            }
-            else {
-                Write-Status "gosec found, skipping update (SkipInstall flag set)"
-            }
-
-            Write-Host "  Running: gosec ./..." -ForegroundColor Gray
-            Write-Host ""  # Add spacing for better readability
-
-            $process = Start-Process -FilePath "gosec" -ArgumentList "./..." -NoNewWindow -Wait -PassThru
-            $securityExitCode = $process.ExitCode
-
-            Write-Host ""  # Add spacing after output
-            if ($securityExitCode -eq 0) {
-                Write-Success "Security scan passed!"
-            }
-            else {
-                Write-Warning "Security scan found issues (Exit code: $securityExitCode)"
-                Write-Host "Run 'gosec ./...' for details" -ForegroundColor Yellow
-            }
-        }
-        else {
-            if (-not $SkipInstall) {
-                Write-Status "gosec not found, installing..."
-                go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Success "gosec installed successfully"
-                    Write-Host "  Running: gosec ./..." -ForegroundColor Gray
-                    Write-Host ""  # Add spacing for better readability
-
-                    $process = Start-Process -FilePath "gosec" -ArgumentList "./..." -NoNewWindow -Wait -PassThru
-                    $securityExitCode = $process.ExitCode
-
-                    Write-Host ""  # Add spacing after output
-                    if ($securityExitCode -eq 0) {
-                        Write-Success "Security scan passed!"
-                    }
-                    else {
-                        Write-Warning "Security scan found issues (Exit code: $securityExitCode)"
-                        Write-Host "Run 'gosec ./...' for details" -ForegroundColor Yellow
-                    }
-                }
-                else {
-                    Write-Warning "Failed to install gosec, skipping security scan"
-                }
-            }
-            else {
-                Write-Warning "gosec not found and SkipInstall flag is set, skipping security scan"
-                Write-Warning "To install manually: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest"
-            }
         }
     }
 

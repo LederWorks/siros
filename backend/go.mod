@@ -12,7 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.88.4
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.9
-	github.com/rs/cors v1.10.1
+	github.com/rs/cors v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

@@ -74,7 +74,7 @@ try {
     if ($gosecPath) {
         if (-not $SkipInstall) {
             Write-Status "gosec found, updating to latest version..."
-            $updateProcess = Start-Process -FilePath "go" -ArgumentList "install", "github.com/securecodewarrior/gosec/v2/cmd/gosec@latest" -NoNewWindow -Wait -PassThru
+            $updateProcess = Start-Process -FilePath "go" -ArgumentList "install", "github.com/securego/gosec/v2/cmd/gosec@latest" -NoNewWindow -Wait -PassThru
             if ($updateProcess.ExitCode -eq 0) {
                 Write-Success "gosec updated to latest version"
             }
@@ -89,11 +89,11 @@ try {
     else {
         if (-not $SkipInstall) {
             Write-Status "gosec not found, installing..."
-            Write-Host "  Running: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest" -ForegroundColor Gray
+            Write-Host "  Running: go install github.com/securego/gosec/v2/cmd/gosec@latest" -ForegroundColor Gray
 
-            $installProcess = Start-Process -FilePath "go" -ArgumentList "install", "github.com/securecodewarrior/gosec/v2/cmd/gosec@latest" -NoNewWindow -Wait -PassThru
+            $installProcess = Start-Process -FilePath "go" -ArgumentList "install", "github.com/securego/gosec/v2/cmd/gosec@latest" -NoNewWindow -Wait -PassThru
             if ($installProcess.ExitCode -ne 0) {
-                Write-Error "Failed to install gosec! Please install manually with: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest"
+                Write-Error "Failed to install gosec! Please install manually with: go install github.com/securego/gosec/v2/cmd/gosec@latest"
                 exit 1
             }
 
@@ -108,7 +108,7 @@ try {
         }
         else {
             Write-Error "gosec not found and SkipInstall flag is set!"
-            Write-Warning "Please install manually: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest"
+            Write-Warning "Please install manually: go install github.com/securego/gosec/v2/cmd/gosec@latest"
             exit 1
         }
     }

@@ -128,10 +128,8 @@ func TestValidateConfigPath(t *testing.T) {
 				if !strings.Contains(err.Error(), tt.errMsg) {
 					t.Errorf("validateConfigPath() error = %v, want error containing %v", err, tt.errMsg)
 				}
-			} else {
-				if err != nil {
-					t.Errorf("validateConfigPath() unexpected error = %v", err)
-				}
+			} else if err != nil {
+				t.Errorf("validateConfigPath() unexpected error = %v", err)
 			}
 		})
 	}

@@ -20,6 +20,7 @@ AGENTS.md (root)                            ← Master tracking & entry point
 - **\*.instructions.md**: Technology-specific development standards and patterns
 - **Component AGENTS.md**: Detailed tracking for specific subsystems and components
 - **Scripts Instructions**: [scripts.instructions.md](../.github/instructions/scripts.instructions.md) - Script development standards, cross-platform compatibility, parameter conventions
+- **VS Code Instructions**: [vscode.instructions.md](../.github/instructions/vscode.instructions.md) - VS Code workspace configuration, task automation, development workflow optimization
 
 ## 📁 Scripts Inventory
 
@@ -360,6 +361,47 @@ Located in `/scripts/{component}/` subdirectories - these scripts perform specif
 
 This section documents the interdependencies between script components and other parts of the Siros project that require coordination when changes occur.
 
+### VS Code Tasks Integration Requirements
+
+When utility scripts are updated, the following VS Code task definitions require corresponding updates in `.vscode/tasks.json`:
+
+#### Task Naming Standards
+
+- **Build Tasks**: Use `build_all.ps1/sh` for production builds
+- **Development Tasks**: Use `env_dev.ps1/sh` for development environment orchestration
+- **Testing Tasks**: Use `test_backend.ps1/sh` and `test_frontend.ps1/sh` for comprehensive testing
+- **Code Quality**: Use `lint.ps1/sh` for orchestrated linting across all components
+
+#### Required Task Updates
+
+- **Parameter Passing**: Update task args to use `-VerboseOutput` instead of `-Verbose` for PowerShell compatibility
+- **Script Paths**: Ensure tasks reference utility scripts in `/scripts/*.ps1/sh` when available, component scripts when utility scripts don't exist
+- **Cross-Platform**: Maintain both Windows (PowerShell) and Unix (Bash) command variants
+- **Problem Matchers**: Configure appropriate problem matchers (`$go`, `$tsc`, `$eslint-stylish`) for each task type
+
+#### Missing Utility Scripts Requiring Component Script Coordination
+
+- **`lint.ps1/sh`**: Tasks must coordinate `backend/backend_lint.ps1/sh` + `frontend/frontend_lint.ps1/sh`
+- **`generate-callgraph.ps1/sh`**: Tasks use `backend/backend_callgraph.ps1/sh` directly
+- **`clean-callgraph.ps1/sh`**: No utility script exists, functionality embedded in component scripts
+
+#### Task Architecture Compliance
+
+- **Utility Scripts Priority**: VS Code tasks should call orchestration scripts when available
+- **Component Script Coordination**: When utility scripts don't exist (e.g., linting), tasks may coordinate component scripts directly with proper sequencing
+- **Single Responsibility**: Each task should have a clear, focused purpose aligned with script functions
+- **Documentation**: See [VS Code Instructions](../.github/instructions/vscode.instructions.md) for comprehensive task configuration guidance
+
+#### Task to Script Mapping
+
+- **Build All (Production)** → `build_all.ps1/sh` (utility script)
+- **Start Development Server** → `env_dev.ps1/sh` (utility script)
+- **Test Backend** → `test_backend.ps1/sh` (utility script)
+- **Test Frontend** → `test_frontend.ps1/sh` (utility script)
+- **Test All** → `test.ps1/sh` (utility script, if exists)
+- **Lint All** → Component script coordination (backend_lint + frontend_lint)
+- **Generate Call Graphs** → `backend/backend_callgraph.ps1/sh` (component script)
+
 ### Backend API Changes → Script Updates Required
 
 When backend APIs are modified, the following scripts need updates:
@@ -561,6 +603,8 @@ When making changes to other components, review this checklist:
 ### 🔧 Phase 5: Developer Experience (PLANNED)
 
 - [ ] **Interactive Mode**: Watch mode for continuous testing
+- [ ] **Hot Reload Enhancement**: Backend-only hot reload script (env_backend.ps1/sh) for Go-only development
+- [ ] **Hot Reload Enhancement**: Frontend-only hot reload script (env_frontend.ps1/sh) for React-only development
 - [ ] **IDE Integration**: Enhanced VS Code task integration
 - [ ] **Script Generator**: Automated script creation for new components
 - [ ] **Configuration Management**: Centralized script configuration
