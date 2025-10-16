@@ -71,7 +71,7 @@ The project includes component-specific AGENTS.md files for detailed development
 | [🐳 Infrastructure AGENTS.md](../infrastructure/AGENTS.md) | Deployment       | Docker, database, CI/CD, production deployment                                          |
 | [📚 Documentation AGENTS.md](../docs/AGENTS.md)            | Documentation    | API docs, guides, architecture specs, user documentation                                |
 
-**AGENTS.md Schema**: Each component AGENTS.md follows a standardized 8-section structure:
+**AGENTS.md Schema**: Each component AGENTS.md follows a standardized 10-section structure:
 
 - **📋 Documentation References**: Hierarchical documentation structure and cross-references
 - **📁 Repository Inventory** (or **Scripts Inventory** for scripts): File/folder tracking with implementation status
