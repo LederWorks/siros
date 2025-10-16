@@ -2,6 +2,8 @@
 # Multi-cloud resource management platform
 # Compatible with golangci-lint v1.64.8
 
+version: "2"
+
 run:
   timeout: 5m
   tests: true
