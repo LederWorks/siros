@@ -28,6 +28,8 @@ jobs:
   backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     services:
       postgres:
@@ -66,9 +68,9 @@ jobs:
         run: go mod download
 
       - name: Run Go linting
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          version: v2.1
           working-directory: ./backend
           args: --timeout=5m
 
