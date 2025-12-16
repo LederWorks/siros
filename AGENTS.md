@@ -1,16 +1,20 @@
-# Siros AI Agent Development & Component Tracking
+# Siros Component Development & Tracking
 
-This document serves as the master entry point for AI agent development guidance and component tracking across the Siros multi-cloud resource management platform.
+This document serves as the component-level entry point for development guidance and tracking for Siros - the vector database and long-term memory system within the Kosmos /ˈkɒz.mɒs/ ecosystem.
+
+**Inspired by the Greek word "Σιρός" (Siros)** — meaning _pit for holding grain_, symbolizing storage, preservation, and the safeguarding of essential resources. In Kosmos, the grain is **knowledge** — harvested, stored, and made ready for future use.
 
 ## 📋 Documentation References
 
-The Siros project uses a hierarchical documentation structure for comprehensive development guidance:
+Siros follows the Kosmos ecosystem's hierarchical documentation structure with **component authority**:
 
 ```
-AGENTS.md (root)                            ← Master tracking & entry point
-├── .github/copilot-instructions.md         ← GitHub Copilot project context
-├── .github/instructions/*.instructions.md  ← Technology-specific development standards
-└── */AGENTS.md                             ← Component-specific tracking documents
+kosmos/AGENTS.md                            ← Ecosystem coordination (defers to component)
+└── siros/AGENTS.md (THIS FILE)             ← Component authority & detailed tracking
+    ├── .github/copilot-instructions.md     ← GitHub Copilot component context
+    ├── .github/instructions/*.instructions.md ← Technology-specific standards
+    ├── infrastructure/AGENTS.md            ← Infrastructure component tracking
+    └── scripts/AGENTS.md                   ← Scripts component tracking
 ```
 
 ### 🎯 Documentation Purpose
@@ -20,83 +24,46 @@ AGENTS.md (root)                            ← Master tracking & entry point
 - **\*.instructions.md**: Technology-specific development standards and patterns
 - **Component AGENTS.md**: Detailed tracking for specific subsystems and components
 
-### 📋 Hierarchical AGENTS.md Authority System
+### 🎯 Documentation Purpose
 
-The Siros project implements a **bottom-up precedence** hierarchy where component-level AGENTS.md files have authority over root-level coordination:
+- **Siros Component AGENTS.md** (this file): Siros-specific tracking, implementation details, resource allocation
+- **Ecosystem AGENTS.md**: Cross-component coordination and ecosystem-wide standards
+- **copilot-instructions.md**: GitHub Copilot context and instruction file navigation
+- **\*.instructions.md**: Technology-specific development standards and patterns
+- **Sub-component AGENTS.md**: Detailed tracking for infrastructure and scripts components
+
+### Hierarchical AGENTS.md Authority System
+
+Siros implements the Kosmos ecosystem **bottom-up precedence** hierarchy where this component AGENTS.md has **primary authority** over Siros-specific decisions:
 
 ```
-Root AGENTS.md (General Coordination)
+Kosmos Ecosystem AGENTS.md (Ecosystem Coordination)
 ├── Limited Authority: Only coordinates where no component AGENTS.md exists
-├── Defers to Component Authority: Component-specific decisions override root
-└── Cross-Component Coordination: Manages integration between components
+├── Defers to Component Authority: Siros-specific decisions override ecosystem
+├── Cross-Component Coordination: Manages integration between Aeth, Kyrios, Siros
+└── Template Standards: Defines structure and validation for component AGENTS.md
 
-Component AGENTS.md (Primary Authority)
-├── Full Authority: Complete control over component-specific decisions
+Siros Component AGENTS.md (Primary Authority - THIS FILE)
+├── Full Authority: Complete control over Siros-specific decisions
 ├── Implementation Details: Technical implementation and tracking
 ├── Resource Allocation: Component resource and priority management
-└── Standards Compliance: Component-specific compliance and quality standards
+├── Standards Compliance: Siros-specific compliance and quality standards
+└── Cross-Component Dependencies: Siros integration requirements
 ```
 
 **Authority Rules:**
 
-1. **Component Precedence**: Component AGENTS.md files have full authority over their domains
-2. **Root Coordination**: Root AGENTS.md coordinates only when no component file exists
-3. **Cross-Component Issues**: Root AGENTS.md manages integration and coordination between components
-4. **Hierarchy Navigation**: Each AGENTS.md file must reference its position in the hierarchy
-5. **Conflict Resolution**: Component authority wins over root in case of conflicts
+1. **Component Precedence**: This AGENTS.md has full authority over Siros-specific domains
+2. **Ecosystem Coordination**: Ecosystem AGENTS.md coordinates only when no Siros-specific guidance exists
+3. **Cross-Component Issues**: Ecosystem AGENTS.md manages integration between Aeth, Kyrios, and Siros
+4. **Template Compliance**: This file follows the 10-section template defined in ecosystem AGENTS.md
+5. **Conflict Resolution**: Siros component authority overrides ecosystem coordination for Siros-specific decisions
 
-### 🏗️ Template Infrastructure
+## 📁 Inventory
 
-**Status**: 📋 **PLANNED**
-**Lead Technology**: Jinja2, Template Generation, Automated Content Creation
+Siros codebase is organized into distinct components, each responsible for specific functionality within the vector database and resource management platform.
 
-#### Planned Template System
-
-**Template Directory Structure:**
-
-```
-/templates/
-├── agents/
-│   ├── root-agents.md.j2          # Root AGENTS.md template
-│   ├── component-agents.md.j2     # Component AGENTS.md template
-│   └── agents-config.yaml         # AGENTS.md configuration schema
-├── instructions/
-│   ├── technology-instructions.md.j2  # Technology instruction template
-│   ├── instruction-config.yaml        # Instruction file configuration
-│   └── standard-headings.yaml         # Standard heading definitions
-├── scripts/
-│   ├── generate-agents.py          # AGENTS.md generation script
-│   ├── validate-hierarchy.py       # Hierarchy validation script
-│   └── template-utils.py           # Template utility functions
-└── schemas/
-    ├── agents-schema.json          # AGENTS.md validation schema
-    ├── instruction-schema.json     # Instruction file validation schema
-    └── hierarchy-schema.json       # Hierarchy validation schema
-```
-
-**Standard AGENTS.md Template Structure:**
-
-1. **📋 Documentation References** - Hierarchical documentation structure and cross-references
-2. **📁 Component Inventory** - File/folder tracking with implementation status
-3. **🏗️ Architecture Overview** - Component architecture and design principles
-4. **📚 Component Status Overview** - Detailed implementation tracking and cross-component coordination
-5. **🎯 Cross-Component Coordination** - Interdependencies and coordination requirements
-6. **🔄 Feature Roadmap** - Development priorities, phases, and long-term vision
-7. **📝 Standards Compliance** - Code quality, testing, and documentation standards adherence
-8. **🐛 Known Issues & Workarounds** - Current limitations, technical debt, and solutions
-
-**Standard Instruction File Headings:**
-
-1. **Purpose & Scope** - File purpose and application scope
-2. **Architecture Guidelines** - Core architectural principles and patterns
-3. **Implementation Standards** - Coding standards and best practices
-4. **Quality Assurance** - Testing, linting, and validation requirements
-5. **Security Standards** - Security best practices and compliance requirements
-6. **Performance Standards** - Performance optimization and monitoring guidelines
-7. **Documentation Standards** - Documentation requirements and formatting guidelines
-8. **Maintenance Standards** - Update procedures and lifecycle management
-
-## 📁 Repository Inventory
+**Repository Management**: Siros is managed as part of the Kosmos ecosystem via MyRepos. See [kosmos/AGENTS.md](../AGENTS.md#repository-management-with-myrepos-mr) for bulk repository operations across the ecosystem.
 
 ### Root Level Files & Folders
 
@@ -229,6 +196,18 @@ Component AGENTS.md (Primary Authority)
 **Details**: See [scripts/AGENTS.md](scripts/AGENTS.md)
 
 ## 🎯 Cross-Component Coordination
+
+### Kosmos Ecosystem Integration
+
+Siros integrates with other Kosmos ecosystem components:
+
+- **Aeth Integration**: Observability data persistence for long-term metrics storage
+- **Kyrios Integration**: Vector storage backend for agent memory and knowledge persistence  
+- **kosmos-auth**: Unified authentication and authorization
+- **kosmos-storage**: Multi-cloud storage abstraction layer
+- **kosmos-crypto**: Security and encryption for sensitive vector data
+
+For ecosystem-wide coordination, see [kosmos/AGENTS.md](../AGENTS.md#cross-component-coordination).
 
 ### Development Workflow Integration
 
@@ -506,11 +485,16 @@ Component AGENTS.md (Primary Authority)
 
 ### Development Workflow
 
+**Ecosystem Integration**: Siros follows the Kosmos ecosystem development guidelines. See [kosmos/AGENTS.md Contributing section](../AGENTS.md#contributing) for ecosystem-wide standards.
+
+**Siros-Specific Workflow**:
+
 1. **Local Setup**: Use `scripts/env_dev.ps1` or `scripts/env_dev.sh`
 2. **Testing**: Run component-specific tests via `scripts/test_*.ps1/sh`
 3. **Quality Checks**: Use `scripts/lint.ps1/sh` before committing
 4. **Documentation**: Update AGENTS.md files with significant changes
 5. **Integration**: Test cross-component functionality
+6. **MyRepos Management**: Use `mr status` and `mr update` for bulk repository operations
 
 ### AI Agent Guidance
 
@@ -524,4 +508,4 @@ This documentation structure is designed for AI agents to:
 
 ---
 
-_Last Updated: October 15, 2025 - This document serves as the master coordination point for all Siros development activities_
+_Last Updated: December 15, 2025 - This document serves as the component authority for all Siros development activities within the Kosmos ecosystem. For ecosystem-wide coordination, see [kosmos/AGENTS.md](../AGENTS.md)._
