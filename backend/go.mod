@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/rds v1.108.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.88.4
 	github.com/gorilla/mux v1.8.1
-	github.com/lib/pq v1.10.9
+	github.com/lib/pq v1.12.1
 	github.com/rs/cors v1.11.1
 	gopkg.in/yaml.v3 v3.0.1
 )
