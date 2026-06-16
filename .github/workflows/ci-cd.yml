@@ -325,7 +325,7 @@ jobs:
           sha256sum *.tar.gz > checksums.txt
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             release/*.tar.gz
